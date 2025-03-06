@@ -113,6 +113,10 @@ While True
 	EndIf
 WEnd
 
+Func CanPickUpEx($aItem)
+	Return 0
+EndFunc
+
 Func Out($msg)
 	GUICtrlSetData($lbl_status, GUICtrlRead($lbl_status) & "[" & @HOUR & ":" & @MIN & "]" & " " & $msg & @CRLF)
 	_GUICtrlEdit_Scroll($lbl_status, $SB_SCROLLCARET)

@@ -21,14 +21,25 @@
 #include <File.au3>
 #include <Date.au3>
 
+;~ include constants
+#include "constants\_constants.au3"
+
 ; GwAu3 includes
-#include "GwAu3\GwAu3\GwAu3_Core.au3"
-#include "GwAu3\GwAu3\GwAu3_Packet.au3"
-#include "GwAu3\GwAu3\GwAu3_Enqueue.au3"
-#include "GwAu3\GwAu3\GwAu3_PerformAction.au3"
-#include "GwAu3\GwAu3\GwAu3_GetInfo.au3"
-#include "GwAu3\GwAu3\GwAu3_ExtraInfo.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_Core.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_GetInfo.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_ExtraInfo.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_Packet.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_Enqueue.au3"
+;~ #include "GwAu3\GwAu3\GwAu3_PerformAction.au3"
+;~ #include "GwAu3\GWAddOns.au3"
+#include "GwAu3\_GwAu3.au3"
 
 ; gwApi includes
 #include "gwApi\agents.au3"
-;~ #include "gwApi\hero.au3"
+#include "gwApi\chat.au3"
+#include "gwApi\hero.au3"
+#include "gwApi\items.au3"
+#include "gwApi\map.au3"
+#include "gwApi\movement.au3"
+#include "gwApi\party.au3"
+#include "gwApi\skills.au3"
