@@ -60,7 +60,7 @@ Func GuiButtonHandler()
 		Out("Will pause after this run.")
 		$BotRunning = False
 	ElseIf $BotInitialized Then
-		
+		SendChat("Hello World", "#")
 		Out("**************************")
 	Else
 		Out("Initializing...")
