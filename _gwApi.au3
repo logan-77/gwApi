@@ -43,3 +43,4 @@
 #include "gwApi\movement.au3"
 #include "gwApi\party.au3"
 #include "gwApi\skills.au3"
+#include "gwApi\misc.au3"
