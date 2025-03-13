@@ -1,4 +1,24 @@
 #include-once
+#Region Instance
+;~ Description: Returns current load-state.
+Func GetInstanceType()
+	Return MemoryRead($mInstanceInfo + 0x4)
+EndFunc   ;==>GetInstanceType
+
+Func GetIsOutpost()
+	Return MemoryRead($mInstanceInfo + 0x4) = 0
+EndFunc
+
+Func GetIsExplorable()
+	Return MemoryRead($mInstanceInfo + 0x4) = 1
+EndFunc
+
+Func GetIsLoading()
+	Return MemoryRead($mInstanceInfo + 0x4) = 2
+EndFunc
+#EndRegion Instance
+
+
 #Region Travel
 ;~ Description: /resign and wait for wipe(atm only for solo+heros), then ReturnToOutpost
 ; prototype from somehwere, can be improved upon (e.g. GetIsPartyDefeated)
