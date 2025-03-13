@@ -60,7 +60,15 @@ Func GuiButtonHandler()
 		Out("Will pause after this run.")
 		$BotRunning = False
 	ElseIf $BotInitialized Then
-		SendChat("Hello World", "#")
+		;~ Buying at Trader
+		TraderRequestRune(899)
+		TraderRequestSell(GetItemPtrBySlot(1,1))
+		Sleep(1000)
+		;~ TraderBuy()
+		TraderSell()
+		Sleep(1000)
+		;~ Local $lItem = GetItemPtrBySlot(1,1)
+		;~ Out("ExtraID: " & GetItemExtraID($lItem))
 		Out("**************************")
 	Else
 		Out("Initializing...")
@@ -88,7 +96,6 @@ Func GuiButtonHandler()
 		SetMaxMemory()
 	EndIf
 EndFunc
-
 
 Func Test1()
 	Sleep(100)
