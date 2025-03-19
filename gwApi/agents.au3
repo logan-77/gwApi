@@ -29,7 +29,7 @@ Func GetAgentPtrArray($aMode = 0, $aType = 0xDB, $aAllegiance = 3, $aRange = 132
 			If $aPlayerNumber <> 0 And $aPlayerNumber <> MemoryRead($lTempPtr + 244, "word") Then ContinueLoop ; has PlayerNumber
 			If $aEffect <> 0 And Not BitAND(MemoryRead($lTempPtr + 312, 'long'), $aEffect) Then ContinueLoop ; has $aEffect
 			; ally Spirits/Minions have Allegiance 0x4/0x5
-			If $aAllegiance = 3 And (IsMinionAgent($lTempPtr) Or IsSpiritAgent($lTempPtr)) Then ContinueLoop
+			;~ If $aAllegiance = 3 And (IsMinionAgent($lTempPtr) Or IsSpiritAgent($lTempPtr)) Then ContinueLoop
 		EndIf
 		If $aMode = 5 And Not IsSensali($lTempPtr) Then ContinueLoop ; featherbot
 		If $aMode = 6 And Not IsCofEnemy($lTempPtr) Then ContinueLoop ; cof bot
@@ -159,7 +159,7 @@ Func GetNearestAgentPtr($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerN
 	For $i = 1 To $lAgentPtrArray[0]
 		If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
 		If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
-		If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
+		;~ If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
 		If $aPlayerNumber <> 0 And MemoryRead($lAgentPtrArray[$i] + 244, "word") <> $aPlayerNumber Then ContinueLoop
 		$lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
 		If $lDistance < $lNearestDistance Then
@@ -677,7 +677,6 @@ Func IsSensali($aAgent)
 	Return False
 EndFunc ;==>IsSensali
 
-;~ Checks if Agent is an enemy in CoF farm.
 Func IsCofEnemy($aAgent)
 	Local $lPlayerNumber = MemoryRead(GetAgentPtr($aAgent) + 244, "word")
 	Switch $lPlayerNumber

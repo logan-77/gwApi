@@ -271,10 +271,9 @@ Func DropItemsByModelID($aModelID, $aFullStack = False)
 EndFunc ;==>DropItemsByModelID
 
 ;Description: Destroys an Item
-Func DestroyItem($aItem, $aAmount = 0)
-	Local $lQuantity = GetItemQuantity($aItem)
-	If $aAmount = 0 Or $aAmount > $lQuantity Then $aAmount = $lQuantity
-	Return SendPacket(0xC, $HEADER_ITEM_DESTROY, ItemID($aItem), $aAmount)
+Func DestroyItem($aItem)
+	SendPacket(0x8, $HEADER_ITEM_DESTROY, ItemID($aItem))
+	PingSleep(100)
 EndFunc   ;==>DestroyItem
 
 ;~ Description: Moves an Item and can split up a Stack
@@ -430,6 +429,34 @@ Func WithdrawItemsByType($aType, $aFullStack = False)
 		Next
 	Next
 EndFunc ;==>WithdrawItemsByType
+
+Func GetItemInInventoryByType($aType)
+	Local $lItemPtr, $lBagPtr
+	For $bag = 1 To 4
+		$lBagPtr = GetBagPtr($bag)
+		If $lBagPtr = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($lBagPtr)
+			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
+			If $lItemPtr = 0 Then ContinueLoop
+			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		Next
+	Next
+	Return 0
+EndFunc ;==>GetItemInInventoryByType
+
+Func GetItemInChestByType($aType)
+	Local $lItemPtr, $lBagPtr
+	For $bag = 8 To 12
+		$lBagPtr = GetBagPtr($bag)
+		If $lBagPtr = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($lBagPtr)
+			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
+			If $lItemPtr = 0 Then ContinueLoop
+			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		Next
+	Next
+	Return 0
+EndFunc ;==>GetItemInChestByType
 
 #Region Identify And Salvage
 Func IdentifyItem2($aItem, $aIdKit = FindIDKit())	
@@ -714,7 +741,7 @@ EndFunc   ;==>BagID
 ;~ Description: Returns the Bag of an item by ItemID/ItemPtr/ItemStruct
 ;~ Is Zero if the item has been destroyed(e.g. IdKit)
 Func GetBagPtrByItem($aItem)
-	Return MemoryRead(GetItemPtr($aItem) + 12, 'ptr')
+	Return MemoryRead(GetItemPtr($aItem) + 0xC, 'ptr')
 EndFunc   ;==>GetBagPtrByItem
 
 ;~ Description: Returns the Bag Index of an item by ItemID/ItemPtr/ItemStruct
@@ -1275,34 +1302,6 @@ Func IsEventItem($aModelID)
 	Return False
 EndFunc ;==>IsEventItem
 
-;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
-Func IsInsignia($aItem)
-	Local $lModstruct = GetModStruct($aItem)
-
-	For $i = 0 To UBound($array_insignia) - 1
-		If $array_insignia[$i][$insig_value] = 0 Then ContinueLoop
-		If StringInStr($lModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then Return $array_insignia[$i][$insig_value]
-	Next
-	Return 0
-EndFunc ;==>IsInsignia
-
-Func IsRune($aItem)
-	Local $lModstruct = GetModStruct($aItem), $lRarity = GetRarity($aItem)
-
-	Switch $lRarity
-		Case $rarity_blue
-			For $i = 0 To UBound($array_rune_minor) - 1
-				If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
-				If StringInStr($lModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then Return $array_rune_minor[$i][$rune_value]
-			Next
-		Case $rarity_purple
-
-		Case $rarity_gold
-
-	EndSwitch
-	Return 0
-EndFunc ;==>IsRune
-
 Func IsRareRune($aItem)
     Local $ModStruct = GetModStruct($aItem)
 	
@@ -1417,4 +1416,50 @@ Func IsRareRune($aItem)
 	EndIf	
 	Return True
 EndFunc ;==>IsRareRune
+
+;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
+Func IsInsignia($aItem)
+	Local $lModstruct = GetModStruct($aItem)
+
+	For $i = 0 To UBound($array_insignia) - 1
+		If $array_insignia[$i][$insig_value] = 0 Then ContinueLoop
+		If StringInStr($lModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then
+			Out($array_insignia[$i][$insig_name])	
+			Return $array_insignia[$i][$insig_value]
+		EndIf
+	Next
+	Return 0
+EndFunc ;==>IsInsignia
+
+Func IsRune($aItem)
+	Local $lModstruct = GetModStruct($aItem), $lRarity = GetRarity($aItem)
+
+	Switch $lRarity
+		Case $rarity_blue
+			For $i = 0 To UBound($array_rune_minor) - 1
+				If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
+				If StringInStr($lModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then
+					Out($array_rune_minor[$i][$rune_name])
+					Return $array_rune_minor[$i][$rune_value]
+				EndIf
+			Next
+		Case $rarity_purple
+			For $i = 0 To UBound($array_rune_major) - 1
+				If $array_rune_major[$i][$rune_value] = 0 Then ContinueLoop
+				If StringInStr($lModstruct, $array_rune_major[$i][$rune_mod_string]) > 0 Then
+					Out($array_rune_major[$i][$rune_name])
+					Return $array_rune_major[$i][$rune_value]
+				EndIf
+			Next
+		Case $rarity_gold
+			For $i = 0 To UBound($array_rune_superior) - 1
+				If $array_rune_superior[$i][$rune_value] = 0 Then ContinueLoop
+				If StringInStr($lModstruct, $array_rune_superior[$i][$rune_mod_string]) > 0 Then
+					Out($array_rune_superior[$i][$rune_name])
+					Return $array_rune_superior[$i][$rune_value]
+				EndIf
+			Next
+	EndSwitch
+	Return 0
+EndFunc ;==>IsRune
 #EndRegion Custom
