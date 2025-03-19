@@ -69,11 +69,8 @@ Func GuiButtonHandler()
 		;~ Sleep(1000)
 		;~ ;~ Local $lItem = GetItemPtrBySlot(1,1)
 		;~ ;~ Out("ExtraID: " & GetItemExtraID($lItem))
-		DepositGold(20000)
-		Out("Ptr: " & GetInventoryPtr()+0x90)
-		Local $lOffset[4] = [0, 0x18, 0x40, 0xF8]
-		Local $lReturn = MemoryReadPtr($mBasePointer, $lOffset, "ptr")
-		Out($lReturn[1]+0x90)
+		Out(GetRarity(GetItemPtrBySlot(1,1)))
+		Out(MemoryRead(GetItemPtrBySlot(1,1) + 78, "byte"))
 		Out("**************************")
 	Else
 		Out("Initializing...")

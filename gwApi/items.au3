@@ -1275,6 +1275,34 @@ Func IsEventItem($aModelID)
 	Return False
 EndFunc ;==>IsEventItem
 
+;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
+Func IsInsignia($aItem)
+	Local $lModstruct = GetModStruct($aItem)
+
+	For $i = 0 To UBound($array_insignia) - 1
+		If $array_insignia[$i][$insig_value] = 0 Then ContinueLoop
+		If StringInStr($lModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then Return $array_insignia[$i][$insig_value]
+	Next
+	Return 0
+EndFunc ;==>IsInsignia
+
+Func IsRune($aItem)
+	Local $lModstruct = GetModStruct($aItem), $lRarity = GetRarity($aItem)
+
+	Switch $lRarity
+		Case $rarity_blue
+			For $i = 0 To UBound($array_rune_minor) - 1
+				If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
+				If StringInStr($lModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then Return $array_rune_minor[$i][$rune_value]
+			Next
+		Case $rarity_purple
+
+		Case $rarity_gold
+
+	EndSwitch
+	Return 0
+EndFunc ;==>IsRune
+
 Func IsRareRune($aItem)
     Local $ModStruct = GetModStruct($aItem)
 	
