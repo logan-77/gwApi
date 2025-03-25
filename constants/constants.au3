@@ -270,7 +270,7 @@ Global Const $model_id_tot_bag			= 28434
 ;Hero IDs
 Global Enum $hero_id_norgu = 1, $hero_id_goren, $hero_id_tahlkora, $hero_id_master, $hero_id_jin, $hero_id_koss, $hero_id_dunkoro, $hero_id_sousuke, $hero_id_melonni, $hero_id_zhed, $hero_id_morgahn, $hero_id_margrid, $hero_id_zenmai, $hero_id_olias, $hero_id_razah, $hero_id_mox, $hero_id_keiran, $hero_id_jora, $hero_id_pyre, $hero_id_anton, $hero_id_livia, $hero_id_hayda, $hero_id_kahmu, $hero_id_gwen, $hero_id_xandra, $hero_id_vekk, $hero_id_ogden, $hero_id_mercenary_1, $hero_id_mercenary_2, $hero_id_mercenary_3, $hero_id_mercenary_4, $hero_id_mercenary_5, $hero_id_mercenary_6, $hero_id_mercenary_7, $hero_id_mercenary_8, $hero_id_miku , $hero_id_zei_ri
 Global Enum $Backpack = 1, $BeltPouch, $Bag1, $Bag2, $EquipmentPack, $UnclaimedItems = 7, $Storage1, $Storage2, $Storage3, $Storage4, $Storage5, $Storage6, $Storage7, $Storage8, $Storage9, $Storage10, $Storage11, $Storage12, $Storage13, $StorageAnniversary
-Global Const $HERO_ID[38][2] = [ [37, 1], [1, "Norgu"], [2, "Goren"], [3, "Tahlkora"], [4, "Master"], [5, "Jin"], [6, "Koss"], [7, "Dunkoro"], [8, "Sousuke"], [9, "Melonni"], [10, "Zhed"], [11, "Morgahn"], [12, "Margrid"], [13, "Zenmai"], [14, "Olias"], [15, "Razah"], [16, "Mox"], [17, "Keiran"], [18, "Jora"], [19, "Brandor"], [20, "Anton"], [21, "Livia"], [22, "Hayda"], [23, "Kahmu"], [24, "Gwen"], [25, "Xandra"], [26, "Vekk"], [27, "Ogden"], [28, "Mercenary Hero 1"], [29, "Mercenary Hero 2"], [30, "Mercenary Hero 3"], [31, "Mercenary Hero 4"], [32, "Mercenary Hero 5"], [33, "Mercenary Hero 6"], [34, "Mercenary Hero 7"], [35, "Mercenary Hero 8"], [36, "Miku"], [37, "Zei Ri"] ]
+Global Const $HERO_ID[38][2] = [ [37, 1], [1, "Norgu"], [2, "Goren"], [3, "Tahlkora"], [4, "Master"], [5, "Jin"], [6, "Koss"], [7, "Dunkoro"], [8, "Sousuke"], [9, "Melonni"], [10, "Zhed"], [11, "Morgahn"], [12, "Margrid"], [13, "Zenmai"], [14, "Olias"], [15, "Razah"], [16, "Mox"], [17, "Keiran"], [18, "Jora"], [19, "Pyre"], [20, "Anton"], [21, "Livia"], [22, "Hayda"], [23, "Kahmu"], [24, "Gwen"], [25, "Xandra"], [26, "Vekk"], [27, "Ogden"], [28, "Mercenary Hero 1"], [29, "Mercenary Hero 2"], [30, "Mercenary Hero 3"], [31, "Mercenary Hero 4"], [32, "Mercenary Hero 5"], [33, "Mercenary Hero 6"], [34, "Mercenary Hero 7"], [35, "Mercenary Hero 8"], [36, "Miku"], [37, "Zei Ri"] ]
 Global Const $item_type_ID [12] = [$item_type_STAFF, $item_type_WAND, $item_type_OFFHAND, $item_type_SHIELD, $item_type_AXE, $item_type_BOW, $item_type_HAMMER, $item_type_DAGGERS, $item_type_SCYTHE, $item_type_SPEAR, $item_type_SWORD, $item_type_SALVAGE]
 Global Const $GH_Array[16] = [4, 5, 6, 51, 176, 177, 178, 179, 275, 276, 359, 360, 529, 530, 537, 538]
 #Endregion
@@ -542,7 +542,6 @@ Global Const $model_id_suffering		= 4231
 ; Nightfall Pcons farm
 Global Const $model_id_fanged_iboga = 4388 ; all need to be checked!?
 Global Const $model_id_fanged_iboga_lvl_6 = 4386
-Global Const $model_id_fanged_iboga_lvl_10 = 4388
 Global Const $model_id_stormseed_jacaranda_lvl_6 = 4385
 Global Const $model_id_stormseed_jacaranda_lvl_10 = 4387
 Global Const $model_id_grub_lance_lvl_8 = 4377
