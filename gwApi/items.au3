@@ -6,7 +6,7 @@ EndFunc ;==>GetItemExists
 
 ;~ Description: Returns the AgentID of Item; $aItem = Ptr/Struct/ID
 Func GetItemAgentID($aItem) 
-	Return MemoryRead(GetItemPtr($aItem) + 4, 'long')
+	Return MemoryRead(GetItemPtr($aItem) + 0x4, 'long')
 EndFunc ;==>GetItemAgentID
 
 ;~ Description: Returns the Type of Item; $aItem = Ptr/Struct/ID
@@ -16,7 +16,7 @@ EndFunc ;==>GetItemType
 
 ;~ Description: Returns the ExtraID of Item; $aItem = Ptr/Struct/ID
 Func GetItemExtraID($aItem)
-	Return MemoryRead(GetItemPtr($aItem) + 34, 'short')
+	Return MemoryRead(GetItemPtr($aItem) + 0x22, 'short')
 EndFunc ;==>GetItemExtraID
 
 ;~ Description: Returns the Value of Item; $aItem = Ptr/Struct/ID
@@ -26,7 +26,7 @@ EndFunc ;==>GetItemValue
 
 ;~ Description: Returns the ModelID of Item; $aItem = Ptr/Struct/ID
 Func GetItemModelID($aItem)
-	Return MemoryRead(GetItemPtr($aItem) + 44, 'long')
+	Return MemoryRead(GetItemPtr($aItem) + 0x2C, 'long')
 EndFunc ;==>GetItemModelID
 
 ;~ Description: Returns rarity (name color) of an item; $aItem = Ptr/Struct/ID
@@ -128,6 +128,34 @@ Func GetItemInChest($aModelID)
 	Return GetItemPtrByModelID($aModelID, 8, 12)
 EndFunc ;==>GetItemInChest
 
+Func GetItemInInventoryByType($aType)
+	Local $lItemPtr, $lBagPtr
+	For $bag = 1 To 4
+		$lBagPtr = GetBagPtr($bag)
+		If $lBagPtr = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($lBagPtr)
+			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
+			If $lItemPtr = 0 Then ContinueLoop
+			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		Next
+	Next
+	Return 0
+EndFunc ;==>GetItemInInventoryByType
+
+Func GetItemInChestByType($aType)
+	Local $lItemPtr, $lBagPtr
+	For $bag = 8 To 12
+		$lBagPtr = GetBagPtr($bag)
+		If $lBagPtr = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($lBagPtr)
+			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
+			If $lItemPtr = 0 Then ContinueLoop
+			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		Next
+	Next
+	Return 0
+EndFunc ;==>GetItemInChestByType
+
 ;~ Description: Returns amount of items of $aModelID in selected bags.
 Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
 	Local $lItemPtr, $lBagPtr, $lItemArrayPtr, $lModelID
@@ -175,7 +203,6 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
 				$lItemPtr = MemoryRead($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
 				If GetItemModelID($lItemPtr) = $aModelID Then
-					; Out("Bag: " & $bag & "; Slot: " & ($slot+1))
 					If $aCountSlotsOnly Then
 						$lCount += 1
 					Else
@@ -201,6 +228,80 @@ EndFunc ;==>GetQuantityChest
 ; Returns the amount of an Item by ModelID in Inventory+Chest
 Func GetQuantity($aModelID, $aCountSlotsOnly = False)
 	Return CountItemByModelID($aModelID, 1, 12, $aCountSlotsOnly)
+EndFunc ;==>GetQuantity
+
+;~ Description: Returns amount of items of $aType in selected bags.
+Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
+	Local $lItemPtr, $lBagPtr, $lItemArrayPtr, $lType
+	If IsArray($aType) Then
+		Local $lCount[UBound($aType)]
+		For $i = 0 To UBound($aType) - 1
+			$lCount[$i] = 0
+		Next
+	Else
+		Local $lCount = 0
+	EndIf
+	
+	If IsArray($aType) Then
+		For $bag = $aFirstBag To $aLastBag
+			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
+			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
+			If $bag = 7 Then ContinueLoop
+			$lBagPtr = GetBagPtr($bag)
+			If $lBagPtr = 0 Then ContinueLoop
+			$lItemArrayPtr = MemoryRead($lBagPtr + 24, 'ptr')
+			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
+				$lItemPtr = MemoryRead($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $lItemPtr = 0 Then ContinueLoop
+				$lType = GetItemType($lItemPtr)
+				For $i = 0 To UBound($aType) - 1
+					If $lType = $aType[$i] Then
+						If $aCountSlotsOnly Then
+							$lCount[$i] += 1
+						Else
+							$lCount[$i] += GetItemQuantity($lItemPtr)
+						EndIf
+					EndIf
+				Next
+			Next
+		Next	
+	Else
+		For $bag = $aFirstBag To $aLastBag
+			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
+			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
+			If $bag = 7 Then ContinueLoop
+			$lBagPtr = GetBagPtr($bag)
+			If $lBagPtr = 0 Then ContinueLoop
+			$lItemArrayPtr = MemoryRead($lBagPtr + 24, 'ptr')
+			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
+				$lItemPtr = MemoryRead($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $lItemPtr = 0 Then ContinueLoop
+				If GetItemType($lItemPtr) = $aType Then
+					If $aCountSlotsOnly Then
+						$lCount += 1
+					Else
+						$lCount += GetItemQuantity($lItemPtr)
+					EndIf
+				EndIf
+			Next
+		Next	
+	EndIf
+	Return $lCount
+EndFunc ;==>CountItemByType
+
+; Returns the amount of an Item in Inventory by Type
+Func GetQuantityInventoryByType($aType, $aCountSlotsOnly = False)
+	Return CountItemByType($aType, 1, 4, $aCountSlotsOnly)
+EndFunc ;==>GetQuantityInventory
+
+; Return the amount of an Item in Chest by Type
+Func GetQuantityChestByType($aType, $aCountSlotsOnly = False)
+	Return CountItemByType($aType, 8, 12, $aCountSlotsOnly)
+EndFunc ;==>GetQuantityChest
+
+; Returns the amount of an Item by Type in Inventory+Chest
+Func GetQuantityByType($aType, $aCountSlotsOnly = False)
+	Return CountItemByType($aType, 1, 12, $aCountSlotsOnly)
 EndFunc ;==>GetQuantity
 
 ;~ === Move Items around ===
@@ -429,34 +530,6 @@ Func WithdrawItemsByType($aType, $aFullStack = False)
 		Next
 	Next
 EndFunc ;==>WithdrawItemsByType
-
-Func GetItemInInventoryByType($aType)
-	Local $lItemPtr, $lBagPtr
-	For $bag = 1 To 4
-		$lBagPtr = GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
-		Next
-	Next
-	Return 0
-EndFunc ;==>GetItemInInventoryByType
-
-Func GetItemInChestByType($aType)
-	Local $lItemPtr, $lBagPtr
-	For $bag = 8 To 12
-		$lBagPtr = GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
-		Next
-	Next
-	Return 0
-EndFunc ;==>GetItemInChestByType
 
 #Region Identify And Salvage
 Func IdentifyItem2($aItem, $aIdKit = FindIDKit())	
@@ -1301,121 +1374,6 @@ Func IsEventItem($aModelID)
 	
 	Return False
 EndFunc ;==>IsEventItem
-
-Func IsRareRune($aItem)
-    Local $ModStruct = GetModStruct($aItem)
-	
-	If StringInStr($ModStruct, "C202EA27", 0, 1) > 0 Then ; Mod struct for Sup vigor rune
-		Out("Sup Vigor Rune.")
-	ElseIf StringInStr($ModStruct, "C202E927", 0, 1) > 0 Then ; Major Vigor
-		Out("Major Vigor Rune.")
-	ElseIf StringInStr($ModStruct, "C202E827", 0, 1) > 0 Then ; Minor Vigor
-		Out("Minor Vigor Rune.")
-	; ElseIf StringInStr($ModStruct, "25043025", 0, 1) > 0 Then ; Rune of Vitae
-		; Out("Rune of Vitae.")
-	; ElseIf StringInStr($ModStruct, "23043025", 0, 1) > 0 Then ; Rune of Attunement
-		; Out("Rune of Attunement.")
-	; ElseIf StringInStr($ModStruct, "D20330A5", 0, 1) > 0 Then ; Blessed insig
-		; Out("Blessed Insignia.")
-	; ElseIf StringInStr($ModStruct, "2B043025", 0, 1) > 0 Then ; Rune of Clarity
-		; Out("Rune of Clarity.")
-	ElseIf StringInStr($ModStruct, "0100E821", 0, 1) > 0 Then ; Minor Fast Casting
-		Out("Minor Fast Casting.")
-	; ElseIf StringInStr($ModStruct, "0101E821", 0, 1) > 0 Then ; Minor Illusion
-		; Out("Minor Illusion.")
-	ElseIf StringInStr($ModStruct, "0103E821", 0, 1) > 0 Then ; Minor Inspiration
-		Out("Minor Inspiration.")
-	; ElseIf StringInStr($ModStruct, "0200E821", 0, 1) > 0 Then ; Major Fast Casting
-		; Out("Major Fast Casting.")
-	; ElseIf StringInStr($ModStruct, "0202E821", 0, 1) > 0 Then ; Major Domination
-		; Out("Major Domination.")
-	ElseIf StringInStr($ModStruct, "0302E821", 0, 1) > 0 Then ; Superior Domination
-		Out("Superior Domination.")
-	ElseIf StringInStr($ModStruct, "C60330A5", 0, 1) > 0 Then ; Prodigy insig
-		Out("Prodigy Insignia.")
-	ElseIf StringInStr($ModStruct, "0124E821", 0, 1) > 0 Then ; Minor Spawning
-		Out("Minor Spawning Power.")
-	; ElseIf StringInStr($ModStruct, "0122E821", 0, 1) > 0 Then ; Minor Channeling
-		; Out("Minor Channeling Magic.")
-	; ElseIf StringInStr($ModStruct, "0121E821", 0, 1) > 0 Then ; Minor Restoration
-		; Out("Minor Restoration Magic.")
-	; ElseIf StringInStr($ModStruct, "0224E821", 0, 1) > 0 Then ; Major Spawning
-		; Out("Major Spawning Power.")
-	ElseIf StringInStr($ModStruct, "080430A5", 0, 1) > 0 Then ; Shamans insig
-		Out("Shaman's Insignia.")
-	; ElseIf StringInStr($ModStruct, "0C0430A5", 0, 1) > 0 Then ; Mystic insig
-		; Out("Mystic's Insignia.")
-	ElseIf StringInStr($ModStruct, "0106E821", 0, 1) > 0 Then ; Minor SoulReaping
-		Out("Minor Soul Reaping.")
-	; ElseIf StringInStr($ModStruct, "0204E821", 0, 1) > 0 Then ; Major Blood Magic
-		; Out("Major Blood Magic.")
-	; ElseIf StringInStr($ModStruct, "0206E821", 0, 1) > 0 Then ; Major SoulReaping
-		; Out("Major Soul Reaping.")
-	; ElseIf StringInStr($ModStruct, "0205E821", 0, 1) > 0 Then ; Major Death Magic
-		; Out("Major Death Magic.")
-	; ElseIf StringInStr($ModStruct, "D80330A5", 0, 1) > 0 Then ; Tormentor insig
-		; Out("Tormentor's Insignia.")
-	; ElseIf StringInStr($ModStruct, "14043025", 0, 1) > 0 Then ; Bloodstained insig
-		; Out("Bloodstained Insignia.")
-	; ElseIf StringInStr($ModStruct, "EA02E827", 0, 1) > 0 Then ; Minor Absorption
-		; Out("Minor Absorption.")
-	; ElseIf StringInStr($ModStruct, "0111E821", 0, 1) > 0 Then ; Minor Strength
-		; Out("Minor Strength.")
-	; ElseIf StringInStr($ModStruct, "0112E821", 0, 1) > 0 Then ; Minor Axe Mastery
-		; Out("Minor Axe Mastery.")
-	; ElseIf StringInStr($ModStruct, "0113E821", 0, 1) > 0 Then ; Minor Hammer Mastery
-		; Out("Minor Hammer Mastery.")
-	; ElseIf StringInStr($ModStruct, "0114E821", 0, 1) > 0 Then ; Minor Swordsmanship
-		; Out("Minor Swordsmanship.")
-	; ElseIf StringInStr($ModStruct, "0115E821", 0, 1) > 0 Then ; Minor Tactics
-		; Out("Minor Tactics.")
-	; ElseIf StringInStr($ModStruct, "F60330A5", 0, 1) > 0 Then ; Sentinel insig
-		; Out("Sentinels Insignia.")
-	; ElseIf StringInStr($ModStruct, "0116E821", 0, 1) > 0 Then ; Minor Beast Mastery
-		; Out("Minor Beast Mastery.")
-	; ElseIf StringInStr($ModStruct, "0118E821", 0, 1) > 0 Then ; Minor Wilderness Survival
-		; Out("Minor Wilderness Survival.")
-	; ElseIf StringInStr($ModStruct, "0119E821", 0, 1) > 0 Then ; Minor Marksmanship
-		; Out("Minor Marksmanship.")
-	; ElseIf StringInStr($ModStruct, "0117E821", 0, 1) > 0 Then ; Minor Expertise
-		; Out("Minor Expertise.")
-	; ElseIf StringInStr($ModStruct, "0110E821", 0, 1) > 0 Then ; Minor Divine Favor
-		; Out("Minor Divine Favor.")
-	; ElseIf StringInStr($ModStruct, "010FE821", 0, 1) > 0 Then ; Minor Protection Prayers
-		; Out("Minor Protection Prayers.")
-	; ElseIf StringInStr($ModStruct, "F00330A5", 0, 1) > 0 Then ; Anchorite insig
-		; Out("Anchorite Insignia.")
-	; ElseIf StringInStr($ModStruct, "010CE821", 0, 1) > 0 Then ; Minor Energy Storage
-		; Out("Minor Energy Storage.")
-	; ElseIf StringInStr($ModStruct, "0108E821", 0, 1) > 0 Then ; Minor Air Magic
-		; Out("Minor Air Magic.")
-	; ElseIf StringInStr($ModStruct, "0109E821", 0, 1) > 0 Then ; Minor Earth Magic
-		; Out("Minor Earth Magic.")
-	; ElseIf StringInStr($ModStruct, "010BE821", 0, 1) > 0 Then ; Minor Water Magic
-		; Out("Minor Water Magic.")
-	; ElseIf StringInStr($ModStruct, "020CE821", 0, 1) > 0 Then ; Major Energy Storage
-		; Out("Major Energy Storage.")
-	ElseIf StringInStr($ModStruct, "0123E821", 0, 1) > 0 Then ; Minor Critical Strikes
-		Out("Minor Critical Strikes.")
-	; ElseIf StringInStr($ModStruct, "011DE821", 0, 1) > 0 Then ; Minor Dagger Mastery
-		; Out("Minor Dagger Mastery.")
-	; ElseIf StringInStr($ModStruct, "C20330A5", 0, 1) > 0 Then ; Nightstalker insig
-		; Out("Nightstalker Insignia.")
-	ElseIf StringInStr($ModStruct, "032BE821", 0, 1) > 0 Then ; Sup earth prayers
-		Out("Superior Earth Prayers.")
-	ElseIf StringInStr($ModStruct, "012CE821", 0, 1) > 0 Then ; Minor Mysticism
-		Out("Minor Mysticism.")
-	ElseIf StringInStr($ModStruct, "0129E821", 0, 1) > 0 Then ; Minor Scythe Mastery
-		Out("Minor Scythe Mastery.")
-	ElseIf StringInStr($ModStruct, "040430A5", 0, 1) > 0 Then ; Windwalker insig
-		Out("Windwalker Insignia.")
-	ElseIf StringInStr($ModStruct, "0E04708000003081", 0, 1) > 0 Then ; Centurion insig
-		Out("Centurion Insignia.")
-	Else
-		Return False
-	EndIf	
-	Return True
-EndFunc ;==>IsRareRune
 
 ;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
 Func IsInsignia($aItem)
