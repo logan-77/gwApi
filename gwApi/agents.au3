@@ -564,11 +564,6 @@ Func GetMaxAgents()
 EndFunc   ;==>GetMaxAgents
 
 #Region Interaction
-;~ Description: Changes WeaponSet with CtoS packet
-Func SwitchWeaponSet($aWeaponSet)
-    Return SendPacket(0x8, 0x31, $aWeaponSet)
-EndFunc   ;==>SwitchWeaponSet
-
 ;~ Func DropHeroBundle($aHeroNumber)
 ;~ 	SendPacket(0x8, 0x19, GetHeroID($aHeroNumber)) ; Drop bundle
 ;~ EndFunc   ;==>DropHeroBundle
