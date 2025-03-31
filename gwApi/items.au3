@@ -1142,9 +1142,11 @@ Func MinMaxGold()
 	If $lCharacter < 20000 Then
 		Out("Withdrawing Gold.")
 		WithdrawGold(20000)
+		PingSleep(100)
 	ElseIf $lCharacter > 50000 Then
 		Out("Depositing Gold.")
 		DepositGold(25000)
+		PingSleep(100)
 	EndIf
 	Return 1
 EndFunc ;==>MinMaxGold
@@ -1300,7 +1302,7 @@ Func SellJunk()
 			$lModelID = GetItemModelID($lItemPtr)
 			$lQuantity = GetItemQuantity($lItemPtr)			
 			Switch $lModelID
-				Case $model_id_shing_jea_key
+				Case $model_id_shing_jea_key, $model_id_istani_key
 					ContinueCase
 				Case $model_id_wood, $model_id_chitin, $model_id_scales
 					ContinueCase

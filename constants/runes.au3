@@ -3,7 +3,7 @@
     $array_insignia
     $array_rune_minor
     $array_rune_major
-    $array_rune_major
+    $array_rune_superior
 #ce
 
 Global Enum $insig_name, $insig_model_id, $insig_mod_string, $insig_value, $insig_enum_size
