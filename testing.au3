@@ -27,7 +27,7 @@ Global $free_storage_slots = 100
 #EndRegion Declarations
 
 #Region GUI
-$hGui = GUICreate("Feather Farmer", 300, 610, -1, -1)
+$hGui = GUICreate("Testing", 300, 610, -1, -1)
 $cbx_char_select = GUICtrlCreateCombo("", 5, 5, 105, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
 	GUICtrlSetData(-1, GetLoggedCharNames())
 $RunsLabel = GUICtrlCreateLabel("Runs:", 5, 30, 31, 17)
@@ -60,17 +60,8 @@ Func GuiButtonHandler()
 		Out("Will pause after this run.")
 		$BotRunning = False
 	ElseIf $BotInitialized Then
-		;~ Buying at Trader
-		;~ TraderRequestRune(899)
-		;~ TraderRequestSell(GetItemPtrBySlot(1,1))
-		;~ Sleep(1000)
-		;~ ;~ TraderBuy()
-		;~ TraderSell()
-		;~ Sleep(1000)
-		;~ ;~ Local $lItem = GetItemPtrBySlot(1,1)
-		;~ ;~ Out("ExtraID: " & GetItemExtraID($lItem))
-		Out(GetRarity(GetItemPtrBySlot(1,1)))
-		Out(MemoryRead(GetItemPtrBySlot(1,1) + 78, "byte"))
+		; Put here your testing code
+		
 		Out("**************************")
 	Else
 		Out("Initializing...")
@@ -92,7 +83,7 @@ Func GuiButtonHandler()
 		GUICtrlSetData($cbx_char_select, $CharName, $CharName)
 		GUICtrlSetState($cbx_char_select, $GUI_DISABLE)
 		GUICtrlSetData($btn_start, "Testing")
-		WinSetTitle($hGui, "", "Feather Farmer - " & $CharName)
+		WinSetTitle($hGui, "", "Testing - " & $CharName)
 		; $BotRunning = True
 		$BotInitialized = True
 		SetMaxMemory()
