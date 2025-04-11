@@ -104,14 +104,16 @@ Global Const $model_id_amber_chunk				= 6532
 Global Const $model_id_jadeit_shard				= 6533
 
 ; === Trophies ===
+Global Const $model_id_shadowy_remnant	= 441
+Global Const $model_id_abnormal_seed	= 442
 Global Const $model_id_dark_remain		= 522
 Global Const $model_id_dragon_root		= 819
 Global Const $model_id_feathered_crest	= 835
-Global Const $model_id_skalefin			= 19184
-Global Const $model_id_iboga_petal		= 19183
-Global Const $model_id_drake_flesh		= 19185
 Global Const $model_id_skale_tooth		= 1603
 Global Const $model_id_skale_claw		= 1604
+Global Const $model_id_iboga_petal		= 19183
+Global Const $model_id_skalefin			= 19184
+Global Const $model_id_drake_flesh		= 19185
 Global Const $model_id_saurian_bones	= 27035
 Global Const $model_id_glacial_stone	= 27047
 
@@ -239,6 +241,7 @@ Global Const $model_id_transmogrifier_tonic	= 15837
 ; == Misc Mode's ==
 Global Const $model_id_gold_coins		= 2511
 Global Const $model_id_lockpick			= 22751
+Global Const $model_id_krytan_key		= 5964
 Global Const $model_id_obsidian_key		= 5971
 Global Const $model_id_shing_jea_key	= 6537
 Global Const $model_id_istani_key		= 15557
@@ -450,8 +453,9 @@ Global Const $map_id_doomlore_shrine = 648
 Global Const $map_id_longeyes_ledge = 650
 Global Const $map_id_kamadan = 449
 Global Const $map_id_kamadan_wintersday = 819
-Global Const $map_id_plains_of_jarin = 430
 Global Const $map_id_rilohn_refuge = 425
+Global Const $map_id_moddok_crevice = 427
+Global Const $map_id_plains_of_jarin = 430
 Global Const $map_id_the_floodplain_of_mahnkelon = 384
 Global Const $map_id_the_astralarium = 502
 Global Const $map_id_zehlon_reach = 483
@@ -565,6 +569,12 @@ Global Const $model_id_crypt_banshee	= 7030
 Global Const $model_id_shock_phantom	= 7032
 Global Const $model_id_ash_phantom		= 7034
 Global Const $model_id_servant_of_murakai = 7018
+; ToA Dust Farm
+Global Const $model_id_fog_nightmare = 1729
+; Moddok Farm
+Global Const $model_id_corsair_cutthroat = 5076
+Global Const $model_id_corsair_raider = 5077
+Global Const $model_id_corsair_captain = 5079
 ; FoW and UW
 Global Const $model_id_champion_of_balthazar	= 1947
 Global Const $model_id_avatar_of_grenth			= 1945
