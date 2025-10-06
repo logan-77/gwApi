@@ -1,17 +1,17 @@
 #include-once
 ;~ Description: Resign.
 Func Resign()
-	SendChat('resign', '/')
+	Chat_SendChat('resign', '/')
 EndFunc   ;==>Resign
 
 ;~ Description: Stuck.
 Func Stuck()
-	Return SendChat('stuck', '/')
+	Return Chat_SendChat('stuck', '/')
 EndFunc   ;==>Stuck
 
 ;~ Description: Kneel.
 Func Kneel()
-	Return SendChat('kneel', '/')
+	Return Chat_SendChat('kneel', '/')
 EndFunc ;==>Kneel
 
 #Region Emotes
@@ -35,37 +35,37 @@ EndFunc   ;==>Emoting
 
 ;~ Description: Dance emote.
 Func Dance()
-   SendChat('dance', '/')
+   Chat_SendChat('dance', '/')
 EndFunc   ;==>Dance
 
 ;~ Description: Clap emote.
 Func Clap()
-   SendChat('clap', '/')
+   Chat_SendChat('clap', '/')
 EndFunc   ;==>Clap
 
 ;~ Description: Excited emote.
 Func Excited()
-   SendChat('excited', '/')
+   Chat_SendChat('excited', '/')
 EndFunc   ;==>Excited
 
 ;~ Description: Drum emote.
 Func Drum()
-   SendChat('drum', '/')
+   Chat_SendChat('drum', '/')
 EndFunc   ;==>Drum
 
 ;~ Description: Flute emote.
 Func Flute()
-   SendChat('flute', '/')
+   Chat_SendChat('flute', '/')
 EndFunc   ;==>Flute
 
 ;~ Description: Violin emote.
 Func Violin()
-   SendChat('violin', '/')
+   Chat_SendChat('violin', '/')
 EndFunc   ;==>Violin
 
 ;~ Description: Jump emote.
 Func Jump()
-   SendChat('jump', '/')
+   Chat_SendChat('jump', '/')
 EndFunc   ;==>Jump
 #EndRegion Emotes
 

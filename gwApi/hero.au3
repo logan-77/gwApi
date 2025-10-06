@@ -19,7 +19,7 @@
 ;~ Description: Returns number of heroes you control.
 Func GetHeroCount()
 	Local $lOffset[5] = [0, 0x18, 0x4C, 0x54, 0x2C]
-	Local $lHeroCount = MemoryReadPtr($mBasePointer, $lOffset)
+	Local $lHeroCount = Memory_ReadPtr($g_p_BasePointer, $lOffset)
 	Return $lHeroCount[1]
 EndFunc   ;==>GetHeroCount
 
@@ -28,7 +28,7 @@ Func GetHeroID($aHeroNumber)
 	If $aHeroNumber = 0 Then Return GetMyID()
 	Local $lOffset[6] = [0, 0x18, 0x4C, 0x54, 0x24, 0]
 	$lOffset[5] = 0x18 * ($aHeroNumber - 1)
-	Local $lAgentID = MemoryReadPtr($mBasePointer, $lOffset)
+	Local $lAgentID = Memory_ReadPtr($g_p_BasePointer, $lOffset)
 	Return $lAgentID[1]
 EndFunc   ;==>GetHeroID
 
@@ -40,8 +40,8 @@ Func GetHeroNumberByAgentID($aAgentID)
 
 	For $i = 1 To GetHeroCount()
 		$lOffset[5] = 0x18 * ($i - 1)
-		$lAgentID = MemoryReadPtr($mBasePointer, $lOffset)
-		If $lAgentID[1] = ConvertID($aAgentID) Then Return $i
+		$lAgentID = Memory_ReadPtr($g_p_BasePointer, $lOffset)
+		If $lAgentID[1] = Agent_ConvertID($aAgentID) Then Return $i
 	Next
 	Return False
 EndFunc   ;==>GetHeroNumberByAgentID
@@ -53,8 +53,8 @@ Func GetHeroNumberByHeroID($aHeroId)
 
 	For $i = 1 To GetHeroCount()
 		$lOffset[5] = 8 + 0x18 * ($i - 1)
-		$lAgentID = MemoryReadPtr($mBasePointer, $lOffset)
-		If $lAgentID[1] = ConvertID($aHeroId) Then Return $i
+		$lAgentID = Memory_ReadPtr($g_p_BasePointer, $lOffset)
+		If $lAgentID[1] = Agent_ConvertID($aHeroId) Then Return $i
 	Next
 	Return 0
 EndFunc   ;==>GetHeroNumberByHeroID
@@ -65,11 +65,11 @@ Func GetHeroProfession($aHeroNumber, $aSecondary = False)
 	Local $lBuffer
 	$aHeroNumber = GetHeroID($aHeroNumber)
 	For $i = 0 To GetHeroCount()
-		$lBuffer = MemoryReadPtr($mBasePointer, $lOffset)
+		$lBuffer = Memory_ReadPtr($g_p_BasePointer, $lOffset)
 		If $lBuffer[1] = $aHeroNumber Then
 			$lOffset[4] += 4
 			If $aSecondary Then $lOffset[4] += 4
-			$lBuffer = MemoryReadPtr($mBasePointer, $lOffset)
+			$lBuffer = Memory_ReadPtr($g_p_BasePointer, $lOffset)
 			Return $lBuffer[1]
 		EndIf
 		$lOffset[4] += 0x14

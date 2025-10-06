@@ -94,7 +94,7 @@ Global Const $array_rune_minor[][$rune_enum_size] = [ _
 ["Assassin Rune of Minor Shadow Arts", 6324, "011FE821", 0], _
 ["Ritualist Rune of Minor Channeling Magic", 6327, "0122E821", 0], _
 ["Ritualist Rune of Minor Restoration Magic", 6327, "0121E821", 0], _
-["Ritualist Rune of Minor Communing", 6327, "0120E821", 0], _
+["Ritualist Rune of Minor Communing", 6327, "0120E821", 1000], _
 ["Ritualist Rune of Minor Spawning Power", 6327, "0124E821", 2000], _
 ["Dervish Rune of Minor Mysticism", 15545, "012CE821", 0], _
 ["Dervish Rune of Minor Earth Prayers", 15545, "012BE821", 0], _

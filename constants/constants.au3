@@ -1,6 +1,7 @@
 #include-once
 Global Enum $normalmode, $hardmode
 Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
+Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
 
 ; === gold related ==
 Global Const $mMaxGoldStorage = 1000000
@@ -112,10 +113,11 @@ Global Const $model_id_feathered_crest	= 835
 Global Const $model_id_skale_tooth		= 1603
 Global Const $model_id_skale_claw		= 1604
 Global Const $model_id_iboga_petal		= 19183
-Global Const $model_id_skalefin			= 19184
+Global Const $model_id_skale_fin		= 19184
 Global Const $model_id_drake_flesh		= 19185
 Global Const $model_id_saurian_bones	= 27035
 Global Const $model_id_glacial_stone	= 27047
+Global Const $model_id_silver_bullion_coin = 1579
 
 ; === Kits ===
 Global Const $model_id_salvage_kit			= 2992
@@ -461,6 +463,7 @@ Global Const $map_id_the_astralarium = 502
 Global Const $map_id_zehlon_reach = 483
 Global Const $map_id_jokanur_diggings = 491
 Global Const $map_id_fahranur = 481
+Global Const $map_id_champions_dawn = 479
 Global Const $map_id_blacktide_den = 492
 Global Const $map_id_the_underworld = 72
 Global Const $map_id_the_fissure_of_woe = 34
@@ -644,6 +647,7 @@ Global Const $model_id_white_mantle_fanatic_4	= 8199 ; tainted flesh
 ; === Specific ItemID's ===
 Global Const $model_id_keirans_bow = 35829
 Global Const $model_id_balthazars_shortbow = 37866
+Global Const $model_id_balthazars_flatbow = 37862
 Global Const $model_id_bramble_shortbow = 957
 Global Const $model_id_bramble_longbow = 868
 Global Const $model_id_bramble_hornbow = 906

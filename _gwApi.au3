@@ -25,14 +25,7 @@
 #include "constants\_constants.au3"
 
 ; GwAu3 includes
-;~ #include "GwAu3\GwAu3\GwAu3_Core.au3"
-;~ #include "GwAu3\GwAu3\GwAu3_GetInfo.au3"
-;~ #include "GwAu3\GwAu3\GwAu3_ExtraInfo.au3"
-;~ #include "GwAu3\GwAu3\GwAu3_Packet.au3"
-;~ #include "GwAu3\GwAu3\GwAu3_Enqueue.au3"
-;~ #include "GwAu3\GwAu3\GwAu3_PerformAction.au3"
-;~ #include "GwAu3\GWAddOns.au3"
-#include "GwAu3\_GwAu3.au3"
+#include "GwAu3\API\_GwAu3.au3"
 
 ; gwApi includes
 #include "gwApi\agents.au3"

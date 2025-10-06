@@ -5,7 +5,7 @@ Func GetPartyPtrArray($aAgentPtrArray = 0)
 	Local $lReturnPtrArray[1] = [0]
 	If $aAgentPtrArray = 0 Then $aAgentPtrArray = GetAgentPtrArray(2, 0xDB, $allegiance_ally)
 	For $i = 1 To $aAgentPtrArray[0]
-		If BitAND(MemoryRead($aAgentPtrArray[$i] + 344, "Long"), 131072) Or BitAND(MemoryRead($aAgentPtrArray[$i] + 344, "Long"), 131584) Then ; 131584 = Mercenary Heroes
+		If BitAND(Memory_Read($aAgentPtrArray[$i] + 344, "Long"), 131072) Or BitAND(Memory_Read($aAgentPtrArray[$i] + 344, "Long"), 131584) Then ; 131584 = Mercenary Heroes
 			$lReturnPtrArray[0] += 1
 			ReDim $lReturnPtrArray[$lReturnPtrArray[0] + 1]
 			$lReturnPtrArray[$lReturnPtrArray[0]] = $aAgentPtrArray[$i]
@@ -18,7 +18,7 @@ Func GetPartyLeaderPtr($aPartyPtrArray = 0)
 	Local $lPartyLeader, $lPlayerNumber, $lLowestPlayerNumber = 1000
 	If $aPartyPtrArray = 0 Then $aPartyPtrArray = GetPartyPtrArray()
 	
-	If GetIsPartyLeader() Then Return GetAgentPtr(-2)
+	If GetIsPartyLeader() Then Return Agent_GetAgentPtr(-2)
 	
 	For $i = 1 To $aPartyPtrArray[0]
 		$lPlayerNumber = GetPlayerNumber($aPartyPtrArray[$i])
@@ -40,7 +40,7 @@ EndFunc ;==>GetPartyLeaderPtr
 ;~ 	0x100 = Observe-Mode
 Func GetPartyState($aFlag)
 	Local $lOffset[4] = [0, 0x18, 0x4C, 0x14]
-	Local $lBitMask = MemoryReadPtr($mBasePointer, $lOffset)
+	Local $lBitMask = Memory_ReadPtr($g_p_BasePointer, $lOffset)
 	Return BitAND($lBitMask[1], $aFlag) > 0
 EndFunc   ;==>GetPartyState
 
@@ -62,17 +62,17 @@ EndFunc ;==>GetIsPartyLeader
 
 Func GetPartySize()
 	Local $lOffset0[5] = [0, 0x18, 0x4C, 0x54, 0xC]
-	Local $lplayersPtr = MemoryReadPtr($mBasePointer, $lOffset0)
+	Local $lplayersPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset0)
 
 	Local $lOffset1[5] = [0, 0x18, 0x4C, 0x54, 0x1C]
-	Local $lhenchmenPtr = MemoryReadPtr($mBasePointer, $lOffset1)
+	Local $lhenchmenPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset1)
 
 	Local $lOffset2[5] = [0, 0x18, 0x4C, 0x54, 0x2C]
-	Local $lheroesPtr = MemoryReadPtr($mBasePointer, $lOffset2)
+	Local $lheroesPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset2)
 
-	Local $Party1 = MemoryRead($lplayersPtr[0], 'long') ; players
-	Local $Party2 = MemoryRead($lhenchmenPtr[0], 'long') ; henchmen
-	Local $Party3 = MemoryRead($lheroesPtr[0], 'long') ; heroes
+	Local $Party1 = Memory_Read($lplayersPtr[0], 'long') ; players
+	Local $Party2 = Memory_Read($lhenchmenPtr[0], 'long') ; henchmen
+	Local $Party3 = Memory_Read($lheroesPtr[0], 'long') ; heroes
 
 	Local $lReturn = $Party1 + $Party2 + $Party3
 ;~    If $lReturn > 12 or $lReturn < 1 Then $lReturn = 8
@@ -82,12 +82,12 @@ EndFunc   ;==>GetPartySize
 ;~ Returns how many real players are in the party
 Func GetPlayerPartySize()
 	Local $lOffset0[5] = [0, 0x18, 0x4C, 0x54, 0xC]
-	Local $lplayersPtr = MemoryReadPtr($mBasePointer, $lOffset0)
-	Return MemoryRead($lplayersPtr[0], 'long') ; players
+	Local $lplayersPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset0)
+	Return Memory_Read($lplayersPtr[0], 'long') ; players
 EndFunc   ;==>GetPlayerPartySize
 
-; MemoryRead($lplayersPtr[0] + 4, 'long')
-; MemoryRead($lplayersPtr[0] + 8, 'long')
+; Memory_Read($lplayersPtr[0] + 4, 'long')
+; Memory_Read($lplayersPtr[0] + 8, 'long')
 
 ;~ Returns if all Partymembers are connected
 Func GetPartyConnected($PartyNumber)
@@ -119,7 +119,7 @@ Func GetPartyPlayerNames()
 	If $aPartyPtrArray[0] = 1 Then Return $ret
 
 	For $i = 2 To $aPartyPtrArray[0]
-		; If MemoryRead($aPartyPtrArray[$i] + 344, "long") = 0x20200 Then ContinueLoop ; excludes players in outpost who are not in our part
+		; If Memory_Read($aPartyPtrArray[$i] + 344, "long") = 0x20200 Then ContinueLoop ; excludes players in outpost who are not in our part
 		$playerName = GetPlayerName(ID($aPartyPtrArray[$i]))
 		If Not $playerName = 0 Then
 			$ret &= "|"
@@ -137,7 +137,7 @@ Func GetPartyHealth($aPartyPtrArray = 0)
 	For $i = 1 To $PartyPtrArray[0]
 		If GetIsDead($PartyPtrArray[$i]) Then ContinueLoop
 		$aAgent = $PartyPtrArray[$i]
-		$aTotalTeamHP += MemoryRead($PartyPtrArray[$i] + 304, "Float")
+		$aTotalTeamHP += Memory_Read($PartyPtrArray[$i] + 304, "Float")
 	Next
 	$nAverageHP = Round($aTotalTeamHP / $PartyPtrArray[0], 6)
 	Return $nAverageHP
@@ -166,27 +166,27 @@ EndFunc   ;==>GetMaxPartySize
 
 ;~ Description: Invite a player to the party.
 Func InvitePlayer($aPlayerName)
-	SendChat('invite ' & $aPlayerName, '/')
+	Chat_SendChat('invite ' & $aPlayerName, '/')
 EndFunc   ;==>InvitePlayer
 
 Func InvitePlayerByPlayerNumber($aPlayerNumber)
-	Return SendPacket(0x8, $HEADER_PARTY_INVITE_PLAYER, $aPlayerNumber)
+	Return Core_SendPacket(0x8, $GC_I_HEADER_PARTY_INVITE_PLAYER, $aPlayerNumber)
 EndFunc   ;==>InvitePlayerByPlayerNumber
 
 ; $aAgent = Ptr/Struct/AgentID
 Func InvitePlayerByAgentPtr($aAgent)
-	Local $lAgentPtr = GetAgentPtr($aAgent)
-	If $lAgentPtr <> 0 Then Return SendPacket(0x8, $HEADER_PARTY_INVITE_PLAYER, GetPlayerNumber($lAgentPtr))
+	Local $lAgentPtr = Agent_GetAgentPtr($aAgent)
+	If $lAgentPtr <> 0 Then Return Core_SendPacket(0x8, $GC_I_HEADER_PARTY_INVITE_PLAYER, GetPlayerNumber($lAgentPtr))
 EndFunc   ;==>InvitePlayerByAgentPtr
 
 Func InviteTarget()
-	If GetCurrentTargetID() = 0 Then Return False
-	Return SendPacket(0x8, $HEADER_PARTY_INVITE_PLAYER, GetPlayerNumber(-1))
+	If $g_i_CurrentTarget = 0 Then Return False
+	Return Core_SendPacket(0x8, $GC_I_HEADER_PARTY_INVITE_PLAYER, GetPlayerNumber(-1))
 EndFunc
 
 ;~ Description: Accepts pending invite.
-Func AcceptInvite($aAgent = GetAgentPtr(-1))
+Func AcceptInvite($aAgent = Agent_GetAgentPtr(-1))
 	If $aAgent = 0 Then Return False
 	Local $lAgentPlayerNumber = GetPlayerNumber($aAgent)
-	Return SendPacket(0x8, $HEADER_PARTY_ACCEPT_INVITE, $lAgentPlayerNumber)
+	Return Core_SendPacket(0x8, $GC_I_HEADER_PARTY_ACCEPT_INVITE, $lAgentPlayerNumber)
 EndFunc   ;==>AcceptInvite

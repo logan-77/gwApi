@@ -12,24 +12,19 @@
 #Region Declarations
 Opt("GUIOnEventMode", True)
 Opt("GUICloseOnESC", False)
-Global $Runs = 0
-Global $Fails = 0
-Global $Drops = 0
 Global $BotRunning = False
 Global $BotInitialized = False
 Global $TotalSeconds = 0 ; Bot Run Time
 Global $tRunTimer ; used to calculate Run Avg
 Global $TimeTotal = 0 ; used to calculate Run Avg
 Global $TimeRunAverage = 0 ; used to calculate Run Avg
-Global $HWND
-Global $gPID = 0
-Global $free_storage_slots = 100
+Global $hWnd = 0, $gPID = 0
 #EndRegion Declarations
 
 #Region GUI
 $hGui = GUICreate("Testing", 300, 610, -1, -1)
 $cbx_char_select = GUICtrlCreateCombo("", 5, 5, 105, 25, BitOR($CBS_DROPDOWN, $CBS_AUTOHSCROLL))
-	GUICtrlSetData(-1, GetLoggedCharNames())
+	GUICtrlSetData(-1, Scanner_GetLoggedCharNames())
 $RunsLabel = GUICtrlCreateLabel("Runs:", 5, 30, 31, 17)
 $lbl_run_count = GUICtrlCreateLabel("0", 34, 30, 75, 17, $SS_RIGHT)
 $FailsLabel = GUICtrlCreateLabel("Fails:", 5, 50, 31, 17)
@@ -60,33 +55,11 @@ Func GuiButtonHandler()
 		Out("Will pause after this run.")
 		$BotRunning = False
 	ElseIf $BotInitialized Then
-		; Put here your testing code
-		
+		; put test code here
+
 		Out("**************************")
 	Else
-		Out("Initializing...")
-		Local $CharName = GUICtrlRead($cbx_char_select)
-		If $CharName == "" Then
-			If Initialize(ProcessExists("gw.exe"), True, True) == False Then
-				MsgBox(0, "Error", "Guild Wars is not running.")
-				Exit
-			EndIf
-		Else
-			If Initialize($CharName, True, True) == False Then
-				MsgBox(0, "Error", "Could not find a Guild Wars client with a character named '" & $CharName & "'")
-				Exit
-			EndIf
-		EndIf
-		$HWND = $mGWWindowHandle
-		GUICtrlSetState($cbx_rendering, $GUI_ENABLE)
-		$CharName = GetCharname()
-		GUICtrlSetData($cbx_char_select, $CharName, $CharName)
-		GUICtrlSetState($cbx_char_select, $GUI_DISABLE)
-		GUICtrlSetData($btn_start, "Testing")
-		WinSetTitle($hGui, "", "Testing - " & $CharName)
-		; $BotRunning = True
-		$BotInitialized = True
-		SetMaxMemory()
+		StartBot()
 	EndIf
 EndFunc
 
@@ -111,10 +84,36 @@ While True
 			Sleep(500)
 		WEnd
 	EndIf
+	Sleep(500)
 WEnd
 
 Func CanPickUpEx($aItem)
 	Return 0
+EndFunc
+
+Func StartBot()
+	Out("Initializing...")
+	Local $CharName = GUICtrlRead($cbx_char_select)
+	If $CharName == "" Then
+		If Core_Initialize(ProcessExists("gw.exe"), True) = 0 Then
+			MsgBox(0, "Error", "Guild Wars is not running.")
+			_exit()
+		EndIf
+	Else
+		If Core_Initialize($CharName, True) = 0 Then
+			MsgBox(0, "Error", "Could not find a Guild Wars client with a character named '" & $CharName & "'")
+			_exit()
+		EndIf
+	EndIf
+	$hWnd = Scanner_GetWindowHandle()
+	GUICtrlSetState($cbx_rendering, $GUI_ENABLE)
+	$CharName = Player_GetCharname()
+	GUICtrlSetData($cbx_char_select, $CharName, $CharName)
+	GUICtrlSetState($cbx_char_select, $GUI_DISABLE)
+	GUICtrlSetData($btn_start, "Testing")
+	WinSetTitle($hGui, "", "Testing - " & $CharName)
+	; $BotRunning = True
+	$BotInitialized = True
 EndFunc
 
 Func Out($msg)
