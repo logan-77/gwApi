@@ -710,35 +710,17 @@ Func BuySalvageKit()
 	Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
 
-; Buys the cheapest Salvage Kit, use only in Embark Beach
-Func BuySalvageKitEmbark()
-	Merchant_BuyItem($model_id_salvage_kit, 1)
-	Other_PingSleep(1000)
-EndFunc ;==>BuySalvageKitEmbark
-
-; Buys the cheapest Salvage Kit
+; Buys Expert Salvage Kit
 Func BuyExpertSalvageKit()
 	Merchant_BuyItem($model_id_expert_salvage_kit, 1)
 	Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
 
-; Buys the cheapest Salvage Kit, use only in Embark Beach
-Func BuyExpertSalvageKitEmbark()
-	Merchant_BuyItem($model_id_expert_salvage_kit, 1)
-	Other_PingSleep(1000)
-EndFunc ;==>BuySalvageKitEmbark
-
-; Buys the cheapest Salvage Kit
+; Buys Superior Salvage Kit
 Func BuySuperiorSalvageKit()
 	Merchant_BuyItem($model_id_superior_salvage_kit, 1)
 	Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
-
-; Buys the cheapest Salvage Kit, use only in Embark Beach
-Func BuySuperiorSalvageKitEmbark()
-	Merchant_BuyItem($model_id_superior_salvage_kit, 1)
-	Other_PingSleep(1000)
-EndFunc ;==>BuySalvageKitEmbark
 
 ;~ Description: Buys an ID kit.
 Func BuyIDKit()
@@ -746,20 +728,8 @@ Func BuyIDKit()
 	Other_PingSleep(1000)
 EndFunc   ;==>BuyIDKit
 
-;~ Description: Buys an ID kit, use only in Embark Beach
-Func BuyIDKitEmbark()
-	Merchant_BuyItem($model_id_identification_kit, 1)
-	Other_PingSleep(1000)
-EndFunc   ;==>BuyIDKit
-
 ; Buys Superior ID kit.
 Func BuySuperiorIDKit()
-	Merchant_BuyItem($model_id_superior_identification_kit, 1)
-	Other_PingSleep(1000)
-EndFunc
-
-; Buys Superior ID kit, use only in Embark Beach
-Func BuySuperiorIDKitEmbark()
 	Merchant_BuyItem($model_id_superior_identification_kit, 1)
 	Other_PingSleep(1000)
 EndFunc
