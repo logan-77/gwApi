@@ -36,11 +36,11 @@ $lbl_avg_time = GUICtrlCreateLabel("-", 70, 90, 40, 17, $SS_RIGHT)
 $TotTimeLabel = GUICtrlCreateLabel("Total time:", 5, 110, 50, 17)
 $lbl_total_time = GUICtrlCreateLabel("-", 55, 110, 55, 17, $SS_RIGHT)
 $lbl_status = GUICtrlCreateEdit("", 115, 5, 180, 600, 2097220)
-$cbx_rendering = GUICtrlCreateCheckbox("Disable Rendering", 5, 130, 105, 17)
-	;~ GUICtrlSetOnEvent(-1, "ToggleRendering")
-	GUICtrlSetState($cbx_rendering, $GUI_DISABLE)
+$cbx_ontop = GUICtrlCreateCheckbox("Always On Top", 5, 130, 105, 17)
+	GUICtrlSetOnEvent($cbx_ontop, "ToggleOnTop")
+	GUICtrlSetState($cbx_ontop, $GUI_CHECKED)
 $btn_start = GUICtrlCreateButton("Start", 5, 150, 105, 40)
-	GUICtrlSetOnEvent(-1, "GuiButtonHandler")
+	GUICtrlSetOnEvent($btn_start, "GuiButtonHandler")
 $TestButton = GUICtrlCreateButton("Test1", 5, 200, 105, 40)
 	GUICtrlSetOnEvent(-1, "Test1")
 $TestButton2 = GUICtrlCreateButton("Test2", 5, 250, 105, 40)
@@ -56,7 +56,9 @@ Func GuiButtonHandler()
 		$BotRunning = False
 	ElseIf $BotInitialized Then
 		; put test code here
-
+		Local $lItemPtr = GetItemPtrBySlot(1,1)
+		Out("IntAction: " & "0x" & Hex(Item_GetItemInfoByPtr($lItemPtr, "Interaction"), 8))
+		Out("IsSalv: " & Item_GetItemInfoByPtr($lItemPtr, "IsMaterialSalvageable"))
 		Out("**************************")
 	Else
 		StartBot()
@@ -73,6 +75,8 @@ EndFunc
 #EndRegion ButtonHandling
 
 #Region Loops
+ToggleOnTop()
+
 While Not $BotRunning
 	Sleep(500)
 WEnd
@@ -86,6 +90,14 @@ While True
 	EndIf
 	Sleep(500)
 WEnd
+
+Func ToggleOnTop()
+	If GUICtrlRead($cbx_ontop) = $GUI_CHECKED Then
+		WinSetOnTop($hGui, "", $WINDOWS_ONTOP)
+	Else
+		WinSetOnTop($hGui, "", $WINDOWS_NOONTOP)
+	EndIf
+EndFunc ;==>ToggleOnTop
 
 Func CanPickUpEx($aItem)
 	Return 0
@@ -106,7 +118,6 @@ Func StartBot()
 		EndIf
 	EndIf
 	$hWnd = Scanner_GetWindowHandle()
-	GUICtrlSetState($cbx_rendering, $GUI_ENABLE)
 	$CharName = Player_GetCharname()
 	GUICtrlSetData($cbx_char_select, $CharName, $CharName)
 	GUICtrlSetState($cbx_char_select, $GUI_DISABLE)
@@ -114,6 +125,7 @@ Func StartBot()
 	WinSetTitle($hGui, "", "Testing - " & $CharName)
 	; $BotRunning = True
 	$BotInitialized = True
+	Out("Init complete.")
 EndFunc
 
 Func Out($msg)

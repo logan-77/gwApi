@@ -20,17 +20,28 @@ EndFunc
 
 
 #Region Travel
-;~ Description: /resign and wait for wipe(atm only for solo+heros), then ReturnToOutpost
-; prototype from somehwere, can be improved upon (e.g. GetIsPartyDefeated)
-Func ResignAndReturn($aMapID = 0, $aLanguage = Map_GetCharacterInfo("Language"), $aRegion = Map_GetCharacterInfo("Region"))
+;~ Customized Wrapper
+Func WaitMapLoading($aMapID = -1, $aInstanceType = -1, $aTimeout = 15000)
+	Map_WaitMapLoading($aMapID, $aInstanceType, $aTimeout)
+	Other_RndSleep(2500)
+EndFunc ;==>WaitMapLoading
+
+;~ Customized Wrapper
+Func TravelTo($aMapID, $aLanguage = Map_GetCharacterInfo("Language"), $aRegion = Map_GetCharacterInfo("Region"), $aDistrict = 0, $aWaitToLoad = True)
+	Map_TravelTo($aMapID, $aLanguage, $aRegion, $aDistrict, $aWaitToLoad)
+	Other_RndSleep(2500)
+EndFunc ;==>TravelTo
+
+;~ Description: /resign+wait for wipe+return to outpost+wait for mapload
+Func ResignAndReturn()
 	Resign()
-	Other_PingSleep(5000)
-	If $aMapID = 0 Then
-		Map_ReturnToOutpost()
-		Map_WaitMapLoading()
-	Else
-		Map_TravelTo($aMapID, $aLanguage, $aRegion)
-	EndIf
+	Local $lDeadlock = TimerInit()
+	Do
+		Sleep(100)
+	Until GetPartyDefeated() or (TimerDiff($lDeadlock) > 5000)
+	Other_PingSleep(1000)
+
+	Map_ReturnToOutpost()
 EndFunc   ;==>ResignAndReturn
 #EndRegion Travel
 

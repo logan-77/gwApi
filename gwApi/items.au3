@@ -43,18 +43,22 @@ EndFunc ;==>GetQuantity
 
 ;~ Description: Tests if an item is identified.
 Func GetIsIDed($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 40, 'long'), 1) > 0
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x1) > 0
 EndFunc ;==>GetIsIDed
 
-;~ Descriptions: Tests if an item is unidentfied and can be identified.
-Func GetIsUnIDed($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 40, 'long'), 0x800000) > 0
-EndFunc ;==>GetIsUnIDed
+Func GetIsIdentified($aItem)
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x1) > 0
+EndFunc ;==>GetIsIdentified
 
-;~ Description: Returns True if item has a suffix, prefix or inscription in it that isnt fixed.
-Func GetIsUpgraded($lItemPtr)
-	Return BitAND(Memory_Read($lItemPtr + 40, 'long'), 0x4110000) > 0
-EndFunc ;==>GetIsUpgraded
+;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
+Func GetCanBeIdentified($aItem)
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x00800000) > 0
+EndFunc ;==>GetCanBeIdentified
+
+;~ Description: Tests if an Item can be salvaged into Materials.
+Func GetIsSalvageable($aItem)
+	Return (Memory_Read(Item_GetItemPtr($aItem) + 0x4A, "byte") <> 0)
+EndFunc ;==>GetIsSalvageable
 
 Func GetItemPtrBySlot($aBag, $aSlot)
 	Local $lBagPtr = Item_GetBagPtr($aBag)
