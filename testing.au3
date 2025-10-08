@@ -58,7 +58,7 @@ Func GuiButtonHandler()
 		; put test code here
 		Local $lItemPtr = GetItemPtrBySlot(1,1)
 		Out("IntAction: " & "0x" & Hex(Item_GetItemInfoByPtr($lItemPtr, "Interaction"), 8))
-		Out("IsSalv: " & Item_GetItemInfoByPtr($lItemPtr, "IsMaterialSalvageable"))
+		Out("IsSalv: " & GetIsSalvageable($lItemPtr))
 		Out("**************************")
 	Else
 		StartBot()

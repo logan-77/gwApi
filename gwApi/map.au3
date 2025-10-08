@@ -20,16 +20,22 @@ EndFunc
 
 
 #Region Travel
-;~ Customized Wrapper
+;~ Customized Wrapper (added extra sleep)
 Func WaitMapLoading($aMapID = -1, $aInstanceType = -1, $aTimeout = 15000)
 	Map_WaitMapLoading($aMapID, $aInstanceType, $aTimeout)
-	Other_RndSleep(2500)
+	Other_RndSleep(3000)
 EndFunc ;==>WaitMapLoading
 
-;~ Customized Wrapper
+;~ Customized Wrapper (added extra sleep)
+Func WaitMapIsLoaded($aTimeout = 15000)
+	Map_WaitMapIsLoaded($aTimeout)
+	Other_RndSleep(1000)
+EndFunc ;==>WaitMapIsLoaded
+
+;~ Customized Wrapper (added extra sleep)
 Func TravelTo($aMapID, $aLanguage = Map_GetCharacterInfo("Language"), $aRegion = Map_GetCharacterInfo("Region"), $aDistrict = 0, $aWaitToLoad = True)
 	Map_TravelTo($aMapID, $aLanguage, $aRegion, $aDistrict, $aWaitToLoad)
-	Other_RndSleep(2500)
+	Other_RndSleep(1000)
 EndFunc ;==>TravelTo
 
 ;~ Description: /resign+wait for wipe+return to outpost+wait for mapload
@@ -42,6 +48,7 @@ Func ResignAndReturn()
 	Other_PingSleep(1000)
 
 	Map_ReturnToOutpost()
+	Other_RndSleep(1000)
 EndFunc   ;==>ResignAndReturn
 #EndRegion Travel
 
