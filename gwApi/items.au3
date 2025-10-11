@@ -501,9 +501,9 @@ Func StoreItemsByType($aType, $aFullStack = False)
 	Next
 EndFunc ;==>StoreItemsByType
 
-Func WithdrawItemsByModelID($aModelID, $aFullStack = False)
+Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $lItemPtr, $lBagPtr
+	Local $lItemPtr, $lBagPtr, $lQuantity = 0
 	For $bag = 8 To 12
 		$lBagPtr = Item_GetBagPtr($bag)
 		If $lBagPtr = 0 Then ContinueLoop
@@ -513,6 +513,10 @@ Func WithdrawItemsByModelID($aModelID, $aFullStack = False)
 			If GetItemModelID($lItemPtr) <> $aModelID Then ContinueLoop
 			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
 			If MoveItemToInventory($lItemPtr) = False Then Return
+			If $aQuantity > 0 Then
+				$lQuantity += 1
+				If $lQuantity >= $aQuantity Then Return
+			EndIf
 		Next
 	Next
 EndFunc ;==>WithdrawItemsByModelID
