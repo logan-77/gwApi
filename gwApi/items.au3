@@ -953,11 +953,18 @@ Func IsDualVamp($aItem)
 	Local $lModstruct = GetModStruct($aItem)
 	Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
 	Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
-	Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
-	Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
-	If $lDv15 > 0 Or $lDv14 > 0 Or $lDz15 > 0 Or $lDz14 > 0 Then Return True
+	If $lDv15 > 0 Or $lDv14 > 0 Then Return True
 	Return False
 EndFunc ;==>IsDualVamp
+
+Func IsDualZeal($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	Local $lModstruct = GetModStruct($aItem)
+	Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
+	Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
+	If $lDz15 > 0 Or $lDz14 > 0 Then Return True
+	Return False
+EndFunc ;==>IsDualZeal
 
 ; Mod: +15% dmg / -10 armor while attacking
 Func Is15Minus10($aItem)
