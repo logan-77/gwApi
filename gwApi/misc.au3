@@ -5,6 +5,7 @@ EndFunc ;==>CheckDisconnected
 
 ; Converts an Input in Seconds to a HH:MM:SS format
 Func GetTimeString($aSeconds)
+	$aSeconds = Int($aSeconds) ; make sure the param is integer
 	Local $tmpMinutes = Floor($aSeconds/60) ; total amount of minutes
 	Local $lHours = Floor($tmpMinutes/60) ; amount of hours, result
 	Local $lSeconds = $aSeconds - $tmpMinutes*60 ; seconds in the current minute, result
