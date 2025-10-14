@@ -812,348 +812,6 @@ Func GetBagNumberByItem($aItem)
 EndFunc   ;==>GetBagNumberByItem
 #EndRegion Bag
 
-#Region ModStruct
-;~ Description: Returns modstruct of an item.
-Func GetModStruct($aItem)
-	If IsString($aItem) Then Return $aItem
-	Local $lItemPtr = Item_GetItemPtr($aItem)
-	If $lItemPtr = 0 Then Return 0
-
-	Local $lModStructPtr = Item_GetItemInfoByPtr($lItemPtr, "ModStruct")
-    If $lModStructPtr = 0 Then Return 0
-
-	Local $lModStructSize = Item_GetItemInfoByPtr($lItemPtr, "ModStructSize")
-    If $lModStructSize = 0 Then Return 0
-	
-	Return Memory_Read($lModStructPtr, 'Byte[' & $lModStructSize * 4 & ']')
-EndFunc   ;==>GetModStruct
-
-;~ Description: Returns an array of a the requested mod.
-Func GetModByIdentifier($aItem, $aIdentifier)
-	Local $lReturn[2] = [0, 0]
-	Local $lString = StringTrimLeft(GetModStruct($aItem), 2)
-	For $i = 0 To StringLen($lString) / 8 - 2
-		If StringMid($lString, 8 * $i + 5, 4) == $aIdentifier Then
-			$lReturn[0] = Int("0x" & StringMid($lString, 8 * $i + 1, 2))
-			$lReturn[1] = Int("0x" & StringMid($lString, 8 * $i + 3, 2))
-			ExitLoop
-		EndIf
-	Next
-	Return $lReturn
-EndFunc   ;==>GetModByIdentifier
-
-;~ Description: Returns a weapon or shield's minimum required attribute.
-Func GetItemReq($aItem)
-	Local $lMod = GetModByIdentifier($aItem, '9827')
-	Return $lMod[0]
-EndFunc   ;==>GetItemReq
-
-;~ Description: Returns a weapon or shield's required attribute.
-Func GetItemAttribute($aItem)
-	Local $lMod = GetModByIdentifier($aItem, '9827')
-	Return $lMod[1]
-EndFunc   ;==>GetItemAttribute
-
-;~ Description: Returns the maximum Dmg/Energy/Armor
-Func GetItemMaxDmg($aItem)
-	Local $lModString = GetModStruct($aItem)
-	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-	If $lPos = 0 Then Return 0
-	Return Int("0x" & StringMid($lModString, $lPos - 2, 2))
-EndFunc ;==>GetItemMaxDmg
-
-;~ Description: Returns the minimum Dmg/Energy/Armor
-Func GetItemMinDmg($aItem)
-	Local $lModString = GetModStruct($aItem)
-	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-	If $lPos = 0 Then Return 0
-	Return Int("0x" & StringMid($lModString, $lPos - 4, 2))
-EndFunc ;==>GetItemMinDmg
-
-;~ Description: Returns Dmg/Energy/Armor
-Func GetItemDmg($aItem)
-	Local $lModString = GetModStruct($aItem)
-	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-	If $lPos = 0 Then Return 0
-	Local $lMod[2] = [0, 0]
-	$lMod[0] = Int("0x" & StringMid($lModString, $lPos - 4, 2))
-	$lMod[1] = Int("0x" & StringMid($lModString, $lPos - 2, 2))
-	Return $lMod
-EndFunc ;==>GetItemDmg
-
-Func IsItemMaxDmg($aItem)
-	Local $lDmg = GetItemDmg($aItem)
-	If $lDmg = 0 Then Return False
-	Local $lType = GetItemType($aItem)
-
-	Switch $lType
-		Case $item_type_axe
-			If $lDmg[0] = 6 And $lDmg[1] = 28 Then Return True
-		Case $item_type_bow
-			If $lDmg[0] = 15 And $lDmg[1] = 28 Then Return True
-		Case $item_type_offhand
-			If $lDmg[1] = 12 Then Return True
-		Case $item_type_hammer
-			If $lDmg[0] = 19 And $lDmg[1] = 35 Then Return True
-		Case $item_type_wand
-			If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
-		Case $item_type_shield
-			If $lDmg[1] = 16 Then Return True
-		Case $item_type_staff
-			If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
-		Case $item_type_sword
-			If $lDmg[0] = 15 And $lDmg[1] = 22 Then Return True
-		Case $item_type_daggers
-			If $lDmg[0] = 7 And $lDmg[1] = 17 Then Return True
-		Case $item_type_scythe
-			If $lDmg[0] = 9 And $lDmg[1] = 41 Then Return True
-		Case $item_type_spear
-			If $lDmg[0] = 14 And $lDmg[1] = 27 Then Return True
-	EndSwitch
-	Return False
-EndFunc ;==>IsItemMaxDmg
-
-;~ Description: Checks if weapon has +20% ench upgrade
-Func Is20Ench($aItem)
-	If StringInStr(GetModStruct($aItem), "1400B822") > 0 Then Return True
-	Return False
-EndFunc ;==>Is20Ench
-
-;~ Description: Checks if weapon has +45^ench upgrade
-Func Is45HPEnch($aItem)
-	Local $l45 = GetModByIdentifier($aItem, '6823')
-	If $l45[1] = 45 Then Return True
-	Return False
-EndFunc ;==>Is45HPEnch
-
-;~ Description: Checks if weapon has +30HP upgrade
-Func Is30HP($aItem)
-	If GetItemType($aItem) <> $item_type_shield Then Return False
-	Local $l30 = GetModByIdentifier($aItem, '4823')
-	If $l30[1] = 30 Then Return True
-	Return False
-EndFunc ;==>Is30HP
-
-; Mod: +5 energy / "I have the power!"
-Func Is5Energy($aItem)
-	If IsWeapon($aItem) = False Then Return False
-	If StringInStr(GetModStruct($aItem), "0500D822") > 0 Then Return True
-	Return False
-EndFunc ;==>Is5Energy
-
-;~ Description: Check if an OS Weapon has Dual Vamp Mod (or Zeal)
-Func IsDualVamp($aItem)
-	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-	Local $lModstruct = GetModStruct($aItem)
-	Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
-	Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
-	If $lDv15 > 0 Or $lDv14 > 0 Then Return True
-	Return False
-EndFunc ;==>IsDualVamp
-
-Func IsDualZeal($aItem)
-	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-	Local $lModstruct = GetModStruct($aItem)
-	Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
-	Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
-	If $lDz15 > 0 Or $lDz14 > 0 Then Return True
-	Return False
-EndFunc ;==>IsDualZeal
-
-; Mod: +15% dmg / -10 armor while attacking
-Func Is15Minus10($aItem)
-	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-	If StringInStr(GetModStruct($aItem), "0F0038220A001820") > 0 Then Return True
-	Return False
-EndFunc ;==>Is15Minus10
-
-; Mod: +15% dmg / -5 energy
-Func Is15Minus5($aItem)
-	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-	Local $lModstruct = GetModStruct($aItem)
-	Local $l15m5 = StringInStr($lModstruct, "0F0038220500B820")
-	If $l15m5 > 0 Then Return True
-	Return False
-EndFunc ;==>Is15Minus5
-
-; Mod 15% dmg / Health above 50%
-Func Is1550($aItem)
-	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-	If StringInStr(GetModStruct($aItem), "0F327822") > 0 Then Return True
-	Return False
-EndFunc ;==>Is1550
-
-;~ Description: Check if Weapon has Vamp upgrade
-Func IsVamp($aItem)
-	If IsWeapon($aItem) = False Then Return False
-	Local $lVamp = GetModByIdentifier($aItem, 'E820')
-	If $lVamp[0] = 1 Then Return True
-	Return False
-EndFunc
-
-;~ Description: Check if Weapon has Zealous upgrade
-Func IsZealous($aItem)
-	If IsWeapon($aItem) = False Then Return False
-	Local $lZeal = GetModByIdentifier($aItem, 'C820')
-	If $lZeal[0] = 1 Then Return True
-	Return False
-EndFunc
-
-;~ Description: Check if weapon has Forget Me Not inscription
-Func IsForgetMeNot($aItem)
-	If GetItemType($aItem) <> $item_type_offhand Then Return False
-	Local $lForget = GetModByIdentifier($aItem, '2828')
-	If $lForget[1] >= 19 Then Return True
-	Return False
-EndFunc ;==>IsForgetMeNot
-
-;~ Description: Check if focus has +20% HCT
-Func Is20HCTFocus($aItem)
-	If GetItemType($aItem) <> $item_type_offhand Then Return False
-	Local $lHct = GetModByIdentifier($aItem, '0828')
-	If $lHct[1] = 20 Then Return True
-	Return False
-EndFunc ;==>Is20HCTFocus
-
-; Mod: 10% HCT Focus
-Func Is10HCTFocus($aItem)
-	If GetItemType($aItem) <> $item_type_offhand Then Return False
-	If StringInStr(GetModStruct($aItem), "000A0822") > 0 Then Return True
-	Return False
-EndFunc ;==>Is10HCTFocus
-
-; Mod: 10% HSR Focus
-Func Is10HSRFocus($aItem)
-	If GetItemType($aItem) <> $item_type_offhand Then Return False
-	If StringInStr(GetModStruct($aItem), "000AA823") > 0 Then Return True
-	Return False
-EndFunc ;==>Is10HSRFocus
-
-;~ Returns True if the Item is of a Weapon Type
-Func IsWeapon($aItem)
-	Switch GetItemType($aItem)
-		Case $item_type_axe, $item_type_bow, $item_type_offhand
-			Return True
-		Case $item_type_hammer, $item_type_wand, $item_type_shield
-			Return True
-		Case $item_type_staff, $item_type_sword, $item_type_daggers
-			Return True
-		Case $item_type_scythe, $item_type_spear
-			Return True
-	EndSwitch
-	Return False
-EndFunc ;==>IsWeapon
-
-;~ Returns True if the Item is of a Weapon Type
-Func IsWeaponByType($aType)
-	Switch $aType
-		Case $item_type_axe, $item_type_bow, $item_type_offhand
-			Return True
-		Case $item_type_hammer, $item_type_wand, $item_type_shield
-			Return True
-		Case $item_type_staff, $item_type_sword, $item_type_daggers
-			Return True
-		Case $item_type_scythe, $item_type_spear
-			Return True
-	EndSwitch
-	Return False
-EndFunc ;==>IsWeaponByType
-
-Func IsPerfectShield($aItem)
-	If GetItemType($aItem) <> $item_type_shield Then Return False ; check if shield
-
-	Local $lModStruct = GetModStruct($aItem)
-	; Universal mods
-	Local $Plus30 = StringInStr($lModStruct, "001E4823", 0, 1) ; +30HP
-	Local $Plus45Ench = StringInStr($lModStruct, "002D6823", 0, 1) ; +45^ench
-	Local $Plus44Ench = StringInStr($lModStruct, "002C6823", 0, 1) ; +44^ench
-	Local $Minus2Ench = StringInStr($lModStruct, "2008820", 0, 1) ; -2^ench
-	Local $Minus3Hex = StringInStr($lModStruct, "3009820", 0, 1) ; -3^hex
-	; +1 20% Mods ~ Updated 08/10/2018 - FINISHED
-	Local $PlusIllusion = StringInStr($lModStruct, "0118240", 0, 1) ; +1 Illu 20%
-	Local $PlusDomination = StringInStr($lModStruct, "0218240", 0, 1) ; +1 Dom 20%
-	Local $PlusInspiration = StringInStr($lModStruct, "0318240", 0, 1) ; +1 Insp 20%
-	Local $PlusBlood = StringInStr($lModStruct, "0418240", 0, 1) ; +1 Blood 20%
-	Local $PlusDeath = StringInStr($lModStruct, "0518240", 0, 1) ; +1 Death 20%
-	Local $PlusSoulReap = StringInStr($lModStruct, "0618240", 0, 1) ; +1 SoulR 20%
-	Local $PlusCurses = StringInStr($lModStruct, "0718240", 0, 1) ; +1 Curses 20%
-	Local $PlusAir = StringInStr($lModStruct, "0818240", 0, 1) ; +1 Air 20%
-	Local $PlusEarth = StringInStr($lModStruct, "0918240", 0, 1) ; +1 Earth 20%
-	Local $PlusFire = StringInStr($lModStruct, "0A18240", 0, 1) ; +1 Fire 20%
-	Local $PlusWater = StringInStr($lModStruct, "0B18240", 0, 1) ; +1 Water 20%
-	Local $PlusHealing = StringInStr($lModStruct, "0D18240", 0, 1) ; +1 Heal 20%
-	Local $PlusSmite = StringInStr($lModStruct, "0E18240", 0, 1) ; +1 Smite 20%
-	Local $PlusProt = StringInStr($lModStruct, "0F18240", 0, 1) ; +1 Prot 20%
-	Local $PlusDivine = StringInStr($lModStruct, "1018240", 0, 1) ; +1 Divine 20%
-	; +10vsMonster Mods
-	Local $PlusUndead = StringInStr($lModStruct, "0A004821", 0, 1) ; +10vs Undead
-	Local $PlusCharr = StringInStr($lModStruct, "0A014821", 0 ,1) ; +10vs Charr
-	Local $PlusTrolls = StringInStr($lModStruct, "0A024821", 0 ,1) ; +10vs Trolls
-	Local $PlusPlants = StringInStr($lModStruct, "0A034821", 0, 1) ; +10vs Plants
-	Local $PlusSkeletons = StringInStr($lModStruct, "0A044821", 0 ,1) ; +10vs Skeletons
-	Local $PlusGiants = StringInStr($lModStruct, "0A054821", 0 ,1) ; +10vs Giants
-	Local $PlusDwarves = StringInStr($lModStruct, "0A064821", 0 ,1) ; +10vs Dwarves
-	Local $PlusTengu = StringInStr($lModStruct, "0A074821", 0, 1) ; +10vs Tengu
-	Local $PlusDemons = StringInStr($lModStruct, "0A084821", 0, 1) ; +10vs Demons
-	Local $PlusDragons = StringInStr($lModStruct, "0A094821", 0, 1) ; +10vs Dragons
-	Local $PlusOgres = StringInStr($lModStruct, "0A0A4821", 0 ,1) ; +10vs Ogres
-	; +10vs Dmg
-	Local $PlusBlunt = StringInStr($lModStruct, "0A0018210", 0, 1) ; +10vs Blunt
-	Local $PlusPiercing = StringInStr($lModStruct, "0A011821", 0, 1) ; +10vs Piercing
-	Local $PlusSlashing = StringInStr($lModStruct, "0A021821", 0, 1) ; +10vs Slashing
-	Local $PlusCold = StringInStr($lModStruct, "0A031821", 0, 1) ; +10 vs Cold
-	Local $PlusLightning = StringInStr($lModStruct, "0A041821", 0, 1) ; +10vs Lightning
-	Local $PlusVsFire = StringInStr($lModStruct, "0A051821", 0, 1) ; +10vs Fire
-	Local $PlusVsEarth = StringInStr($lModStruct, "0A0B1821", 0, 1) ; +10vs Earth	
-
-    If $Plus30 > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-	      Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-		  Return True
-	   ElseIf $Minus2Ench > 0 Or $Minus3Hex > 0 Then
-		  Return False
-	   Else
-		  Return False
-	   EndIf
-	EndIf
-    If $Plus45Ench > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-	      Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   ElseIf $Minus2Ench > 0 Then
-		  Return True
-	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-		  Return True
-	   Else
-		  Return False
-	   EndIf
-	EndIf
-	If $Minus2Ench > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-		  Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   EndIf
-	EndIf
-    If $Plus44Ench > 0 Then
-	   If $PlusDemons > 0 Then
-	      Return True
-	   EndIf
-	EndIf
-	Return False
-EndFunc
-#EndRegion ModStruct
-
 #Region Equipment
 ;~ Description: Unequips item to $abag, $aslot (1-based).
 ;~ Equipmentslots:	1 -> Mainhand/Two-hand	2 -> Offhand	3 -> Chestpiece	4 -> Leggings
@@ -1453,3 +1111,351 @@ Func IsRune($aItem)
 	Return 0
 EndFunc ;==>IsRune
 #EndRegion Custom
+
+#Region ModStruct
+;~ Description: Returns modstruct of an item.
+Func GetModStruct($aItem)
+	If IsString($aItem) Then Return $aItem
+	Local $lItemPtr = Item_GetItemPtr($aItem)
+	If $lItemPtr = 0 Then Return 0
+
+	Local $lModStructPtr = Item_GetItemInfoByPtr($lItemPtr, "ModStruct")
+    If $lModStructPtr = 0 Then Return 0
+
+	Local $lModStructSize = Item_GetItemInfoByPtr($lItemPtr, "ModStructSize")
+    If $lModStructSize = 0 Then Return 0
+	
+	Return Memory_Read($lModStructPtr, 'Byte[' & $lModStructSize * 4 & ']')
+EndFunc   ;==>GetModStruct
+
+;~ Description: Returns an array of a the requested mod.
+Func GetModByIdentifier($aItem, $aIdentifier)
+	Local $lReturn[2] = [0, 0]
+	Local $lString = StringTrimLeft(GetModStruct($aItem), 2)
+	For $i = 0 To StringLen($lString) / 8 - 2
+		If StringMid($lString, 8 * $i + 5, 4) == $aIdentifier Then
+			$lReturn[0] = Int("0x" & StringMid($lString, 8 * $i + 1, 2))
+			$lReturn[1] = Int("0x" & StringMid($lString, 8 * $i + 3, 2))
+			ExitLoop
+		EndIf
+	Next
+	Return $lReturn
+EndFunc   ;==>GetModByIdentifier
+#EndRegion ModStruct
+
+#Region Weapons
+;~ Description: Returns a weapon or shield's minimum required attribute.
+Func GetItemReq($aItem)
+	Local $lMod = GetModByIdentifier($aItem, '9827')
+	Return $lMod[0]
+EndFunc   ;==>GetItemReq
+
+;~ Description: Returns a weapon or shield's required attribute.
+Func GetItemAttribute($aItem)
+	Local $lMod = GetModByIdentifier($aItem, '9827')
+	Return $lMod[1]
+EndFunc   ;==>GetItemAttribute
+
+;~ Description: Returns the maximum Dmg/Energy/Armor
+Func GetItemMaxDmg($aItem)
+	Local $lModString = GetModStruct($aItem)
+	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
+	If $lPos = 0 Then Return 0
+	Return Int("0x" & StringMid($lModString, $lPos - 2, 2))
+EndFunc ;==>GetItemMaxDmg
+
+;~ Description: Returns the minimum Dmg/Energy/Armor
+Func GetItemMinDmg($aItem)
+	Local $lModString = GetModStruct($aItem)
+	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
+	If $lPos = 0 Then Return 0
+	Return Int("0x" & StringMid($lModString, $lPos - 4, 2))
+EndFunc ;==>GetItemMinDmg
+
+;~ Description: Returns Dmg/Energy/Armor
+Func GetItemDmg($aItem)
+	Local $lModString = GetModStruct($aItem)
+	Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
+	If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
+	If $lPos = 0 Then Return 0
+	Local $lMod[2] = [0, 0]
+	$lMod[0] = Int("0x" & StringMid($lModString, $lPos - 4, 2))
+	$lMod[1] = Int("0x" & StringMid($lModString, $lPos - 2, 2))
+	Return $lMod
+EndFunc ;==>GetItemDmg
+
+Func IsItemMaxDmg($aItem)
+	Local $lDmg = GetItemDmg($aItem)
+	If $lDmg = 0 Then Return False
+	Local $lType = GetItemType($aItem)
+
+	Switch $lType
+		Case $item_type_axe
+			If $lDmg[0] = 6 And $lDmg[1] = 28 Then Return True
+		Case $item_type_bow
+			If $lDmg[0] = 15 And $lDmg[1] = 28 Then Return True
+		Case $item_type_offhand
+			If $lDmg[1] = 12 Then Return True
+		Case $item_type_hammer
+			If $lDmg[0] = 19 And $lDmg[1] = 35 Then Return True
+		Case $item_type_wand
+			If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
+		Case $item_type_shield
+			If $lDmg[1] = 16 Then Return True
+		Case $item_type_staff
+			If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
+		Case $item_type_sword
+			If $lDmg[0] = 15 And $lDmg[1] = 22 Then Return True
+		Case $item_type_daggers
+			If $lDmg[0] = 7 And $lDmg[1] = 17 Then Return True
+		Case $item_type_scythe
+			If $lDmg[0] = 9 And $lDmg[1] = 41 Then Return True
+		Case $item_type_spear
+			If $lDmg[0] = 14 And $lDmg[1] = 27 Then Return True
+	EndSwitch
+	Return False
+EndFunc ;==>IsItemMaxDmg
+
+;~ Returns True if the Item is of a Weapon Type
+Func IsWeapon($aItem)
+	Switch GetItemType($aItem)
+		Case $item_type_axe, $item_type_bow, $item_type_offhand
+			Return True
+		Case $item_type_hammer, $item_type_wand, $item_type_shield
+			Return True
+		Case $item_type_staff, $item_type_sword, $item_type_daggers
+			Return True
+		Case $item_type_scythe, $item_type_spear
+			Return True
+	EndSwitch
+	Return False
+EndFunc ;==>IsWeapon
+
+;~ Returns True if the Item is of a Weapon Type
+Func IsWeaponByType($aType)
+	Switch $aType
+		Case $item_type_axe, $item_type_bow, $item_type_offhand
+			Return True
+		Case $item_type_hammer, $item_type_wand, $item_type_shield
+			Return True
+		Case $item_type_staff, $item_type_sword, $item_type_daggers
+			Return True
+		Case $item_type_scythe, $item_type_spear
+			Return True
+	EndSwitch
+	Return False
+EndFunc ;==>IsWeaponByType
+#Region Weapons
+
+#Region Weapon Mods
+;~ Description: Checks if weapon has +20% ench upgrade
+Func Is20Ench($aItem)
+	If StringInStr(GetModStruct($aItem), "1400B822") > 0 Then Return True
+	Return False
+EndFunc ;==>Is20Ench
+
+;~ Description: Checks if weapon has +45^ench upgrade
+Func Is45HPEnch($aItem)
+	Local $l45 = GetModByIdentifier($aItem, '6823')
+	If $l45[1] = 45 Then Return True
+	Return False
+EndFunc ;==>Is45HPEnch
+
+;~ Description: Checks if weapon has +30HP upgrade
+Func Is30HP($aItem)
+	If GetItemType($aItem) <> $item_type_shield Then Return False
+	Local $l30 = GetModByIdentifier($aItem, '4823')
+	If $l30[1] = 30 Then Return True
+	Return False
+EndFunc ;==>Is30HP
+
+; Mod: +5 energy / "I have the power!"
+Func Is5Energy($aItem)
+	If IsWeapon($aItem) = False Then Return False
+	If StringInStr(GetModStruct($aItem), "0500D822") > 0 Then Return True
+	Return False
+EndFunc ;==>Is5Energy
+
+;~ Description: Check if an OS Weapon has Dual Vamp Mod (or Zeal)
+Func IsDualVamp($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	Local $lModstruct = GetModStruct($aItem)
+	Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
+	Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
+	If $lDv15 > 0 Or $lDv14 > 0 Then Return True
+	Return False
+EndFunc ;==>IsDualVamp
+
+Func IsDualZeal($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	Local $lModstruct = GetModStruct($aItem)
+	Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
+	Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
+	If $lDz15 > 0 Or $lDz14 > 0 Then Return True
+	Return False
+EndFunc ;==>IsDualZeal
+
+; Mod: +15% dmg / -10 armor while attacking
+Func Is15Minus10($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	If StringInStr(GetModStruct($aItem), "0F0038220A001820") > 0 Then Return True
+	Return False
+EndFunc ;==>Is15Minus10
+
+; Mod: +15% dmg / -5 energy
+Func Is15Minus5($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	Local $lModstruct = GetModStruct($aItem)
+	Local $l15m5 = StringInStr($lModstruct, "0F0038220500B820")
+	If $l15m5 > 0 Then Return True
+	Return False
+EndFunc ;==>Is15Minus5
+
+; Mod 15% dmg / Health above 50%
+Func Is1550($aItem)
+	If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
+	If StringInStr(GetModStruct($aItem), "0F327822") > 0 Then Return True
+	Return False
+EndFunc ;==>Is1550
+
+;~ Description: Check if Weapon has Vamp upgrade
+Func IsVamp($aItem)
+	If IsWeapon($aItem) = False Then Return False
+	Local $lVamp = GetModByIdentifier($aItem, 'E820')
+	If $lVamp[0] = 1 Then Return True
+	Return False
+EndFunc
+
+;~ Description: Check if Weapon has Zealous upgrade
+Func IsZealous($aItem)
+	If IsWeapon($aItem) = False Then Return False
+	Local $lZeal = GetModByIdentifier($aItem, 'C820')
+	If $lZeal[0] = 1 Then Return True
+	Return False
+EndFunc
+
+;~ Description: Check if weapon has Forget Me Not inscription
+Func IsForgetMeNot($aItem)
+	If GetItemType($aItem) <> $item_type_offhand Then Return False
+	Local $lForget = GetModByIdentifier($aItem, '2828')
+	If $lForget[1] >= 19 Then Return True
+	Return False
+EndFunc ;==>IsForgetMeNot
+
+;~ Description: Check if focus has +20% HCT
+Func Is20HCTFocus($aItem)
+	If GetItemType($aItem) <> $item_type_offhand Then Return False
+	Local $lHct = GetModByIdentifier($aItem, '0828')
+	If $lHct[1] = 20 Then Return True
+	Return False
+EndFunc ;==>Is20HCTFocus
+
+; Mod: 10% HCT Focus
+Func Is10HCTFocus($aItem)
+	If GetItemType($aItem) <> $item_type_offhand Then Return False
+	If StringInStr(GetModStruct($aItem), "000A0822") > 0 Then Return True
+	Return False
+EndFunc ;==>Is10HCTFocus
+
+; Mod: 10% HSR Focus
+Func Is10HSRFocus($aItem)
+	If GetItemType($aItem) <> $item_type_offhand Then Return False
+	If StringInStr(GetModStruct($aItem), "000AA823") > 0 Then Return True
+	Return False
+EndFunc ;==>Is10HSRFocus
+#EndRegion Weapon Mods
+
+#Region OS Filter
+Func IsPerfectShield($aItem)
+	If GetItemType($aItem) <> $item_type_shield Then Return False ; check if shield
+
+	Local $lModStruct = GetModStruct($aItem)
+	; Universal mods
+	Local $Plus30 = StringInStr($lModStruct, "001E4823", 0, 1) ; +30HP
+	Local $Plus45Ench = StringInStr($lModStruct, "002D6823", 0, 1) ; +45^ench
+	Local $Plus44Ench = StringInStr($lModStruct, "002C6823", 0, 1) ; +44^ench
+	Local $Minus2Ench = StringInStr($lModStruct, "2008820", 0, 1) ; -2^ench
+	Local $Minus3Hex = StringInStr($lModStruct, "3009820", 0, 1) ; -3^hex
+	; +1 20% Mods ~ Updated 08/10/2018 - FINISHED
+	Local $PlusIllusion = StringInStr($lModStruct, "0118240", 0, 1) ; +1 Illu 20%
+	Local $PlusDomination = StringInStr($lModStruct, "0218240", 0, 1) ; +1 Dom 20%
+	Local $PlusInspiration = StringInStr($lModStruct, "0318240", 0, 1) ; +1 Insp 20%
+	Local $PlusBlood = StringInStr($lModStruct, "0418240", 0, 1) ; +1 Blood 20%
+	Local $PlusDeath = StringInStr($lModStruct, "0518240", 0, 1) ; +1 Death 20%
+	Local $PlusSoulReap = StringInStr($lModStruct, "0618240", 0, 1) ; +1 SoulR 20%
+	Local $PlusCurses = StringInStr($lModStruct, "0718240", 0, 1) ; +1 Curses 20%
+	Local $PlusAir = StringInStr($lModStruct, "0818240", 0, 1) ; +1 Air 20%
+	Local $PlusEarth = StringInStr($lModStruct, "0918240", 0, 1) ; +1 Earth 20%
+	Local $PlusFire = StringInStr($lModStruct, "0A18240", 0, 1) ; +1 Fire 20%
+	Local $PlusWater = StringInStr($lModStruct, "0B18240", 0, 1) ; +1 Water 20%
+	Local $PlusHealing = StringInStr($lModStruct, "0D18240", 0, 1) ; +1 Heal 20%
+	Local $PlusSmite = StringInStr($lModStruct, "0E18240", 0, 1) ; +1 Smite 20%
+	Local $PlusProt = StringInStr($lModStruct, "0F18240", 0, 1) ; +1 Prot 20%
+	Local $PlusDivine = StringInStr($lModStruct, "1018240", 0, 1) ; +1 Divine 20%
+	; +10vsMonster Mods
+	Local $PlusUndead = StringInStr($lModStruct, "0A004821", 0, 1) ; +10vs Undead
+	Local $PlusCharr = StringInStr($lModStruct, "0A014821", 0 ,1) ; +10vs Charr
+	Local $PlusTrolls = StringInStr($lModStruct, "0A024821", 0 ,1) ; +10vs Trolls
+	Local $PlusPlants = StringInStr($lModStruct, "0A034821", 0, 1) ; +10vs Plants
+	Local $PlusSkeletons = StringInStr($lModStruct, "0A044821", 0 ,1) ; +10vs Skeletons
+	Local $PlusGiants = StringInStr($lModStruct, "0A054821", 0 ,1) ; +10vs Giants
+	Local $PlusDwarves = StringInStr($lModStruct, "0A064821", 0 ,1) ; +10vs Dwarves
+	Local $PlusTengu = StringInStr($lModStruct, "0A074821", 0, 1) ; +10vs Tengu
+	Local $PlusDemons = StringInStr($lModStruct, "0A084821", 0, 1) ; +10vs Demons
+	Local $PlusDragons = StringInStr($lModStruct, "0A094821", 0, 1) ; +10vs Dragons
+	Local $PlusOgres = StringInStr($lModStruct, "0A0A4821", 0 ,1) ; +10vs Ogres
+	; +10vs Dmg
+	Local $PlusBlunt = StringInStr($lModStruct, "0A0018210", 0, 1) ; +10vs Blunt
+	Local $PlusPiercing = StringInStr($lModStruct, "0A011821", 0, 1) ; +10vs Piercing
+	Local $PlusSlashing = StringInStr($lModStruct, "0A021821", 0, 1) ; +10vs Slashing
+	Local $PlusCold = StringInStr($lModStruct, "0A031821", 0, 1) ; +10 vs Cold
+	Local $PlusLightning = StringInStr($lModStruct, "0A041821", 0, 1) ; +10vs Lightning
+	Local $PlusVsFire = StringInStr($lModStruct, "0A051821", 0, 1) ; +10vs Fire
+	Local $PlusVsEarth = StringInStr($lModStruct, "0A0B1821", 0, 1) ; +10vs Earth	
+
+    If $Plus30 > 0 Then
+	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
+	      Return True
+	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
+		  Return True
+	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
+		  Return True
+	   ElseIf $Minus2Ench > 0 Or $Minus3Hex > 0 Then
+		  Return False
+	   Else
+		  Return False
+	   EndIf
+	EndIf
+    If $Plus45Ench > 0 Then
+	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
+	      Return True
+	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
+		  Return True
+	   ElseIf $Minus2Ench > 0 Then
+		  Return True
+	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
+		  Return True
+	   Else
+		  Return False
+	   EndIf
+	EndIf
+	If $Minus2Ench > 0 Then
+	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
+		  Return True
+	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
+		  Return True
+	   EndIf
+	EndIf
+    If $Plus44Ench > 0 Then
+	   If $PlusDemons > 0 Then
+	      Return True
+	   EndIf
+	EndIf
+	Return False
+EndFunc
+#EndRegion OS Filter
