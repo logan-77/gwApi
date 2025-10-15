@@ -2,6 +2,8 @@
 Global Enum $normalmode, $hardmode
 Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
+Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, $mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, $mode_essence
+Global Enum $state_farm_feather, $state_farm_dust, $state_craft_cons
 
 ; === gold related ==
 Global Const $mMaxGoldStorage = 1000000
@@ -69,7 +71,7 @@ Global Const $model_id_bones		= 921
 Global Const $model_id_cloth		= 925
 Global Const $model_id_dust			= 929
 Global Const $model_id_feathers		= 933
-Global Const $model_id_plant_fibers	= 934
+Global Const $model_id_fibers		= 934
 Global Const $model_id_tanned_hide	= 940
 Global Const $model_id_wood			= 946
 Global Const $model_id_iron			= 948
