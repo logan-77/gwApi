@@ -1373,15 +1373,22 @@ EndFunc ;==>Is10HSRFocus
 #Region OS Filter
 Func IsPerfectShield($aItem)
 	If GetItemType($aItem) <> $item_type_shield Then Return False ; check if shield
-
+	If Not IsItemMaxDmg($aItem) Then Return False
+	
+	Local $lReq = GetItemReq($aItem)
 	Local $lModStruct = GetModStruct($aItem)
 	; Universal mods
 	Local $Plus30 = StringInStr($lModStruct, "001E4823", 0, 1) ; +30HP
 	Local $Plus45Ench = StringInStr($lModStruct, "002D6823", 0, 1) ; +45^ench
 	Local $Plus44Ench = StringInStr($lModStruct, "002C6823", 0, 1) ; +44^ench
+	Local $Plus43Ench = StringInStr($lModStruct, "002B6823", 0, 1) ; +43^ench
+	Local $Plus42Ench = StringInStr($lModStruct, "002A6823", 0, 1) ; +42^ench
+	Local $Plus41Ench = StringInStr($lModStruct, "00296823", 0, 1) ; +41^ench
 	Local $Minus2Ench = StringInStr($lModStruct, "2008820", 0, 1) ; -2^ench
 	Local $Minus3Hex = StringInStr($lModStruct, "3009820", 0, 1) ; -3^hex
-	; +1 20% Mods ~ Updated 08/10/2018 - FINISHED
+	Local $Plus60Hex = StringInStr($lModStruct, "003C7823", 0, 1) ; +60^hex
+	Local $Plus45Stance = StringInStr($lModStruct, "002D8823", 0, 1) ; +45^stance
+	; +1 20% Mods
 	Local $PlusIllusion = StringInStr($lModStruct, "0118240", 0, 1) ; +1 Illu 20%
 	Local $PlusDomination = StringInStr($lModStruct, "0218240", 0, 1) ; +1 Dom 20%
 	Local $PlusInspiration = StringInStr($lModStruct, "0318240", 0, 1) ; +1 Insp 20%
@@ -1399,16 +1406,8 @@ Func IsPerfectShield($aItem)
 	Local $PlusDivine = StringInStr($lModStruct, "1018240", 0, 1) ; +1 Divine 20%
 	; +10vsMonster Mods
 	Local $PlusUndead = StringInStr($lModStruct, "0A004821", 0, 1) ; +10vs Undead
-	Local $PlusCharr = StringInStr($lModStruct, "0A014821", 0 ,1) ; +10vs Charr
-	Local $PlusTrolls = StringInStr($lModStruct, "0A024821", 0 ,1) ; +10vs Trolls
-	Local $PlusPlants = StringInStr($lModStruct, "0A034821", 0, 1) ; +10vs Plants
 	Local $PlusSkeletons = StringInStr($lModStruct, "0A044821", 0 ,1) ; +10vs Skeletons
-	Local $PlusGiants = StringInStr($lModStruct, "0A054821", 0 ,1) ; +10vs Giants
-	Local $PlusDwarves = StringInStr($lModStruct, "0A064821", 0 ,1) ; +10vs Dwarves
-	Local $PlusTengu = StringInStr($lModStruct, "0A074821", 0, 1) ; +10vs Tengu
 	Local $PlusDemons = StringInStr($lModStruct, "0A084821", 0, 1) ; +10vs Demons
-	Local $PlusDragons = StringInStr($lModStruct, "0A094821", 0, 1) ; +10vs Dragons
-	Local $PlusOgres = StringInStr($lModStruct, "0A0A4821", 0 ,1) ; +10vs Ogres
 	; +10vs Dmg
 	Local $PlusBlunt = StringInStr($lModStruct, "0A0018210", 0, 1) ; +10vs Blunt
 	Local $PlusPiercing = StringInStr($lModStruct, "0A011821", 0, 1) ; +10vs Piercing
@@ -1416,45 +1415,76 @@ Func IsPerfectShield($aItem)
 	Local $PlusCold = StringInStr($lModStruct, "0A031821", 0, 1) ; +10 vs Cold
 	Local $PlusLightning = StringInStr($lModStruct, "0A041821", 0, 1) ; +10vs Lightning
 	Local $PlusVsFire = StringInStr($lModStruct, "0A051821", 0, 1) ; +10vs Fire
-	Local $PlusVsEarth = StringInStr($lModStruct, "0A0B1821", 0, 1) ; +10vs Earth	
+	Local $PlusVsEarth = StringInStr($lModStruct, "0A0B1821", 0, 1) ; +10vs Earth
 
-    If $Plus30 > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-	      Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-		  Return True
-	   ElseIf $Minus2Ench > 0 Or $Minus3Hex > 0 Then
-		  Return False
-	   Else
-		  Return False
-	   EndIf
+	Local $VsBlind = StringInStr($lModStruct, "DF017824", 0, 1) ; +20% vs Blind
+
+	If $Plus30 > 0 Then
+		If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
+			Return True
+		EndIf
+		If $lReq <= 9 Then
+			If $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusVsFire > 0 Then
+				Return True
+			ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
+				Return True
+			ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 _
+				Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
+					Return True
+			ElseIf $Minus2Ench > 0 Then
+				Return True
+			EndIf
+		Else
+			Return False
+		EndIf
 	EndIf
     If $Plus45Ench > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-	      Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   ElseIf $Minus2Ench > 0 Then
-		  Return True
-	   ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-		  Return True
-	   Else
-		  Return False
-	   EndIf
+		If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
+			Return True
+		EndIf
+		If $lReq <= 9 Then
+			If $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusVsFire > 0 Then
+				Return True
+			ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
+				Return True
+			ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 _
+				Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
+					Return True
+			ElseIf $Minus2Ench > 0 Then
+				Return True
+			EndIf
+		EndIf
 	EndIf
-	If $Minus2Ench > 0 Then
-	   If $PlusDemons > 0 Or $PlusPiercing > 0 Or $PlusDragons > 0 Or $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusPlants > 0 Or $PlusCold > 0 Or $PlusUndead > 0 Or $PlusSlashing > 0 Or $PlusTengu > 0 Or $PlusVsFire > 0 Then
-		  Return True
-	   ElseIf $PlusCharr > 0 Or $PlusTrolls > 0 Or $PlusSkeletons > 0 Or $PlusGiants > 0 Or $PlusDwarves > 0 Or $PlusDragons > 0 Or $PlusOgres > 0 Or $PlusBlunt > 0 Then
-		  Return True
-	   EndIf
+	If $lReq <= 9 And $Minus2Ench > 0 Then
+		If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
+			Return True
+		ElseIf $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusFire > 0 Then
+			Return True
+		ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
+			Return True
+		EndIf
 	EndIf
-    If $Plus44Ench > 0 Then
-	   If $PlusDemons > 0 Then
-	      Return True
-	   EndIf
+    If $lReq <= 9 And ($Plus44Ench > 0 Or $Plus43Ench Or $Plus42Ench Or $Plus41Ench) Then
+		If $PlusDemons > 0 Or $PlusSkeletons > 0 Then
+			Return True
+		EndIf
+	EndIf
+	If $Minus3Hex > 0 Then
+		If $PlusSkeletons > 0 Then
+			Return True
+		;~ ElseIf $Plus60Hex > 0 Then
+		;~ 	Return True
+		EndIf
+	EndIf
+	If $VsBlind > 0 Then
+		If $PlusSkeletons > 0 Or $PlusLightning > 0 Then
+			Return True
+		EndIf
+	EndIf
+	If $PlusDemons > 0 Then
+		If $PlusDomination > 0 Then
+			Return True
+		EndIf
 	EndIf
 	Return False
 EndFunc
