@@ -1409,7 +1409,7 @@ Func IsPerfectShield($aItem)
 	Local $PlusSkeletons = StringInStr($lModStruct, "0A044821", 0 ,1) ; +10vs Skeletons
 	Local $PlusDemons = StringInStr($lModStruct, "0A084821", 0, 1) ; +10vs Demons
 	; +10vs Dmg
-	Local $PlusBlunt = StringInStr($lModStruct, "0A0018210", 0, 1) ; +10vs Blunt
+	Local $PlusBlunt = StringInStr($lModStruct, "0A001821", 0, 1) ; +10vs Blunt
 	Local $PlusPiercing = StringInStr($lModStruct, "0A011821", 0, 1) ; +10vs Piercing
 	Local $PlusSlashing = StringInStr($lModStruct, "0A021821", 0, 1) ; +10vs Slashing
 	Local $PlusCold = StringInStr($lModStruct, "0A031821", 0, 1) ; +10 vs Cold
@@ -1487,5 +1487,5 @@ Func IsPerfectShield($aItem)
 		EndIf
 	EndIf
 	Return False
-EndFunc
+EndFunc ;==>IsPerfectShield
 #EndRegion OS Filter
