@@ -612,10 +612,11 @@ Global Const $model_id_luxon_hauler_turtle = 3585
 Global Const $model_id_kurzick_carrier_juggernaut = 3367
 ; War Supply Farm
 Global Const $model_id_white_mantle_ritualist_6 = 8237 ; rit/paragon spear
-Global Const $model_id_white_mantle_ritualist_8	= 8238 ; rit/monk (preservation, strong heal, hexremove, spirits)
+Global Const $model_id_white_mantle_ritualist_8	= 8238 ; rit/monk (preservation, strong heal, hexremove, spirits) primary
 Global Const $model_id_white_mantle_ritualist	= 8239 ; SoS 
 Global Const $model_id_white_mantle_ritualist_2	= 8240 ; PRIMARY (shadowsong,bloodsong,pain,anguish)
-Global Const $model_id_white_mantle_ritualist_7	= 8241 ; minions 2nd prio; 8242=weapon of remedy rit(hardrez, prio)
+Global Const $model_id_white_mantle_ritualist_7	= 8241 ; minions 2nd prio; 
+Global Const $model_id_white_mantle_ritualist_9 = 8242 ; weapon of remedy rit(hardrez, prio)
 Global Const $model_id_white_mantle_ritualist_3	= 8192
 Global Const $model_id_white_mantle_ritualist_4	= 8193 ; 
 Global Const $model_id_white_mantle_ritualist_5	= 8194
