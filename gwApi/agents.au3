@@ -413,7 +413,7 @@ EndFunc   ;==>GetSkillID
 
 ;~ Description: Returns the skill currently being cast by an agent.
 Func GetSkillID($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 436, "word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B4, "word")
 EndFunc   ;==>GetSkillID
 
 ;~ Description: Returns the weapon Type of an agent.
