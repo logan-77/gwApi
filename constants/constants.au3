@@ -247,6 +247,7 @@ Global Const $model_id_gold_coins		= 2511
 Global Const $model_id_lockpick			= 22751
 Global Const $model_id_krytan_key		= 5964
 Global Const $model_id_obsidian_key		= 5971
+Global Const $model_id_phantom_key		= 5882
 Global Const $model_id_shing_jea_key	= 6537
 Global Const $model_id_istani_key		= 15557
 Global Const $model_id_diessa_chalice	= 24353
