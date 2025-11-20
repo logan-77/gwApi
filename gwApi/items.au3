@@ -1012,7 +1012,7 @@ Func IsEventItem($aModelID)
 	; If $aModelID = $model_id_lunar_token Then Return True
 	
 	; Lucky Treats Week
-	; If $aModelID = $model_id_four_leaf_clover Then Return True
+	; If $aModelID = $model_id_clover Then Return True
 	; If $aModelID = $model_id_shamrock_ale Then Return True
 	
 	; Sweet Treats Week
@@ -1049,7 +1049,7 @@ Func IsEventItem($aModelID)
 	; If $aModelID = $model_id_grog Then Return True
 	
 	; Halloween
-	If $aModelID = $model_id_tot_bag Then Return True
+	;~ If $aModelID = $model_id_tot_bag Then Return True
 	
 	; Special Treats Week
 	If $aModelID = $model_id_pumpkin_pie Then Return True ; + Hard Apple Cider, see above

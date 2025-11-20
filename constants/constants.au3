@@ -227,12 +227,12 @@ Global Const $model_id_aged_hunters_ale	= 31145
 Global Const $model_id_grog				= 30855
 Global Const $model_id_krytan_brandy	= 35124
 Global Const $model_id_firewater		= 2513
-Global Const $model_id_spiked_eggnogg	= 6366
+Global Const $model_id_spiked_eggnog	= 6366
 
 Global Const $model_id_shamrock_ale		= 22190
 Global Const $model_id_hard_apple_cider	= 28435
 Global Const $model_id_hunters_ale		= 910
-Global Const $model_id_eggnogg			= 6375
+Global Const $model_id_eggnog			= 6375
 Global Const $model_id_vial_of_absinthe	= 6367
 Global Const $model_id_witchs_brew		= 6049
 
