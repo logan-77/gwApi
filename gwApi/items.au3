@@ -827,11 +827,11 @@ Func MinMaxGold()
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return 0
 	Local $lCharacter = GetGoldCharacter()
 	
-	If $lCharacter < 20000 Then
+	If $lCharacter < 30000 Then
 		Out("Withdrawing Gold.")
-		Item_WithdrawGold(20000)
+		Item_WithdrawGold(30000)
 		Other_PingSleep(100)
-	ElseIf $lCharacter > 50000 Then
+	ElseIf $lCharacter > 70000 Then
 		Out("Depositing Gold.")
 		Item_DepositGold(25000)
 		Other_PingSleep(100)
@@ -855,6 +855,86 @@ EndFunc   ;==>GetGoldStorage
 #EndRegion Gold
 
 #Region Custom
+;~ Return the Name of a Common or Rare Material by ModelID
+Func GetMaterialName($aModelID)
+	Switch $aModelID
+		Case $model_id_bones
+			Return "Bones"
+		Case $model_id_cloth
+			Return "Cloth"
+		Case $model_id_dust
+			Return "Dust"
+		Case $model_id_feather
+			Return "Feathers"
+		Case $model_id_fiber
+			Return "Fibers"
+		Case $model_id_tanned_hide
+			Return "Tanned Hide Squares"
+		Case $model_id_wood
+			Return "Wood Planks"
+		Case $model_id_iron
+			Return "Iron"
+		Case $model_id_scales
+			Return "Scales"
+		Case $model_id_chitin
+			Return "Chitin"
+		Case $model_id_granite
+			Return "Granite"
+		Case $model_id_charcoal
+			Return "Charcoal"
+		Case $model_id_monstrous_claw
+			Return "Monstrous Claw"
+		Case $model_id_linen
+			Return "Linen"
+		Case $model_id_damask
+			Return "Damask"
+		Case $model_id_silk
+			Return "Silk"
+		Case $model_id_ecto
+			Return "Ecto"
+		Case $model_id_monstrous_eye
+			Return "Monstrous Eye"
+		Case $model_id_monstrous_fang
+			Return "Monstrous Fang"
+		Case $model_id_diamond
+			Return "Diamond"
+		Case $model_id_onyx
+			Return "Onyx"
+		Case $model_id_ruby
+			Return "Ruby"
+		Case $model_id_sapphire
+			Return "Sapphire"
+		Case $model_id_glass_vial
+			Return "Glass Vial"
+		Case $model_id_fur_square
+			Return "Fur Square"
+		Case $model_id_leather_square
+			Return "Leather Square"
+		Case $model_id_elonian_leather_square
+			Return "Elonian Leather Square"
+		Case $model_id_vial_of_ink
+			Return "Vial of Ink"
+		Case $model_id_obsidian_shard
+			Return "Obsidian Shard"
+		Case $model_id_steel_ingot
+			Return "Steel Ingot"
+		Case $model_id_deldrimor_steel_ingot
+			Return "Deldrimor Steel Ingot"
+		Case $model_id_roll_of_parchment
+			Return "Roll of Parchment"
+		Case $model_id_roll_of_vellum
+			Return "Roll of Vellum"
+		Case $model_id_spiritwood_plank
+			Return "Spiritwood Plank"
+		Case $model_id_amber_chunk
+			Return "Amber Chunk"
+		Case $model_id_jadeite_shard
+			Return "Jadeite Shard"		
+		Case Else
+			Return "Not a Material!"
+	EndSwitch
+EndFunc ;==>GetMaterialName
+
 Func IsBlackDye($aModelID, $aExtraID)
 	If $aModelID = $model_id_dye And $aExtraID = $item_extraid_black_dye Then Return True
 	Return False
@@ -904,13 +984,13 @@ EndFunc ;==>UseAlc
 ;~ Description: Checks if ModelID belongs to an Alcohol Item
 Func CheckIsAlc($aModelID)
 	Switch $aModelID
-		Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnogg ; 1min
+		Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnog ; 1min
 			Return True
 		Case $model_id_witchs_brew, $model_id_vial_of_absinthe, $model_id_shamrock_ale
 			Return True
 		Case $model_id_keg_of_aged_hunters_ale, $model_id_firewater, $model_id_aged_hunters_ale ; 3min
 			Return True
-		Case $model_id_krytan_brandy, $model_id_spiked_eggnogg, $model_id_grog
+		Case $model_id_krytan_brandy, $model_id_spiked_eggnog, $model_id_grog
 			Return True
 		Case Else
 			Return False
@@ -921,7 +1001,7 @@ EndFunc ;==>CheckIsAlc
 ;~ Description: Checks if ModelID belongs to an Alcohol Item
 Func CheckIsOneMinAlc($aModelID)
 	Switch $aModelID
-		Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnogg ; 1min
+		Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnog ; 1min
 			Return True
 		Case $model_id_witchs_brew, $model_id_vial_of_absinthe, $model_id_shamrock_ale
 			Return True
@@ -992,7 +1072,7 @@ Func SellJunk()
 			Switch $lModelID
 				Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key
 					ContinueCase
-				Case $model_id_wood, $model_id_chitin, $model_id_scales
+				Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
 					ContinueCase
 				Case $model_id_cloth, $model_id_tanned_hide
 					Merchant_SellItem($lItemPtr, $lQuantity)

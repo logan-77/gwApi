@@ -2,8 +2,9 @@
 Global Enum $normalmode, $hardmode
 Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
-Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, $mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, $mode_essence
-Global Enum $state_farm_feather, $state_farm_dust, $state_craft_cons
+Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, $mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, _
+			$mode_essence, $mode_scrolls, $mode_grail, $mode_armor, $mode_conset
+Global Enum $state_farm_feather, $state_farm_dust, $state_farm_bones, $state_farm_fiber, $state_farm_iron, $state_craft_cons, $state_next
 
 ; === gold related ==
 Global Const $mMaxGoldStorage = 1000000
@@ -70,8 +71,8 @@ Global Const $item_type_not_equipped		= 46
 Global Const $model_id_bones		= 921
 Global Const $model_id_cloth		= 925
 Global Const $model_id_dust			= 929
-Global Const $model_id_feathers		= 933
-Global Const $model_id_fibers		= 934
+Global Const $model_id_feather		= 933
+Global Const $model_id_fiber		= 934
 Global Const $model_id_tanned_hide	= 940
 Global Const $model_id_wood			= 946
 Global Const $model_id_iron			= 948
@@ -104,7 +105,7 @@ Global Const $model_id_roll_of_parchment		= 951
 Global Const $model_id_roll_of_vellum			= 952
 Global Const $model_id_spiritwood_plank			= 956
 Global Const $model_id_amber_chunk				= 6532
-Global Const $model_id_jadeit_shard				= 6533
+Global Const $model_id_jadeite_shard			= 6533
 
 ; === Trophies ===
 Global Const $model_id_shadowy_remnant	= 441

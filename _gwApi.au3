@@ -20,6 +20,8 @@
 #include <Math.au3>
 #include <File.au3>
 #include <Date.au3>
+#include <SQLite.au3>
+#include <SQLite.dll.au3>
 
 ;~ include constants
 #include "constants\_constants.au3"
