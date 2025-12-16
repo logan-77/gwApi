@@ -2,19 +2,19 @@
 #Region Instance
 ;~ Description: Returns current load-state.
 Func GetInstanceType()
-	Return Memory_Read($g_p_InstanceInfo + 0x4)
+	Return Memory_Read($g_p_InstanceInfo + 0x4, "dword")
 EndFunc   ;==>GetInstanceType
 
 Func GetIsOutpost()
-	Return Memory_Read($g_p_InstanceInfo + 0x4) = 0
+	Return Memory_Read($g_p_InstanceInfo + 0x4, "dword") = 0
 EndFunc
 
 Func GetIsExplorable()
-	Return Memory_Read($g_p_InstanceInfo + 0x4) = 1
+	Return Memory_Read($g_p_InstanceInfo + 0x4, "dword") = 1
 EndFunc
 
 Func GetIsLoading()
-	Return Memory_Read($g_p_InstanceInfo + 0x4) = 2
+	Return Memory_Read($g_p_InstanceInfo + 0x4, "dword") = 2
 EndFunc
 #EndRegion Instance
 

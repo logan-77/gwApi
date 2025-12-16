@@ -6,32 +6,32 @@ EndFunc ;==>GetItemExists
 
 ;~ Description: Returns the AgentID of Item; $aItem = Ptr/Struct/ID
 Func GetItemAgentID($aItem) 
-	Return Memory_Read(Item_GetItemPtr($aItem) + 0x4, 'long')
+	Return Memory_Read(Item_GetItemPtr($aItem) + 0x4, 'dword')
 EndFunc ;==>GetItemAgentID
 
 ;~ Description: Returns the Type of Item; $aItem = Ptr/Struct/ID
 Func GetItemType($aItem)
-	Return Memory_Read(Item_GetItemPtr($aItem) + 32, 'byte')
+	Return Memory_Read(Item_GetItemPtr($aItem) + 0x20, 'byte')
 EndFunc ;==>GetItemType
 
 ;~ Description: Returns the ExtraID of Item; $aItem = Ptr/Struct/ID
 Func GetItemExtraID($aItem)
-	Return Memory_Read(Item_GetItemPtr($aItem) + 0x22, 'short')
+	Return Memory_Read(Item_GetItemPtr($aItem) + 0x22, 'byte')
 EndFunc ;==>GetItemExtraID
 
 ;~ Description: Returns the Value of Item; $aItem = Ptr/Struct/ID
 Func GetItemValue($aItem)
-	Return Memory_Read(Item_GetItemPtr($aItem) + 36, 'short')
+	Return Memory_Read(Item_GetItemPtr($aItem) + 0x24, 'short')
 EndFunc ;==>GetItemValue
 
 ;~ Description: Returns the ModelID of Item; $aItem = Ptr/Struct/ID
 Func GetItemModelID($aItem)
-	Return Memory_Read(Item_GetItemPtr($aItem) + 0x2C, 'long')
+	Return Memory_Read(Item_GetItemPtr($aItem) + 0x2C, 'dword')
 EndFunc ;==>GetItemModelID
 
 ;~ Description: Returns rarity (name color) of an item; $aItem = Ptr/Struct/ID
 Func GetRarity($aItem)
-	Local $lNameString = Memory_Read(Item_GetItemPtr($aItem) + 56, "ptr")
+	Local $lNameString = Memory_Read(Item_GetItemPtr($aItem) + 0x38, "ptr")
 	If $lNameString = 0 Then Return
 	Return Memory_Read($lNameString, "ushort")
 EndFunc ;==>GetRarity
@@ -43,16 +43,16 @@ EndFunc ;==>GetQuantity
 
 ;~ Description: Tests if an item is identified.
 Func GetIsIDed($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x1) > 0
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x1) > 0
 EndFunc ;==>GetIsIDed
 
 Func GetIsIdentified($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x1) > 0
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x1) > 0
 EndFunc ;==>GetIsIdentified
 
 ;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
 Func GetCanBeIdentified($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'long'), 0x00800000) > 0
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword;:'), 0x00800000) > 0
 EndFunc ;==>GetCanBeIdentified
 
 ;~ Description: Tests if an Item can be salvaged into Materials.
@@ -86,7 +86,7 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEqu
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -109,7 +109,7 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEqu
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -179,7 +179,7 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -202,7 +202,7 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -253,7 +253,7 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -276,7 +276,7 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
 			If $bag = 7 Then ContinueLoop
 			$lBagPtr = Item_GetBagPtr($bag)
 			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 24, 'ptr')
+			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
 			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
 				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
 				If $lItemPtr = 0 Then ContinueLoop
@@ -399,9 +399,9 @@ Func PickUpLootEx($iMaxDist = 2500)
 	For $i = 1 To $lAgentPtrArray[0]
 		$lAgentPtr = $lAgentPtrArray[$i]
 		$lAgentID = ID($lAgentPtr)
-		$lItemPtr = GetItemPtrByAgentID($lAgentID) ; GetItemPtrByAgentPtr($lAgentPtr)
+		$lItemPtr = GetItemPtrByAgentPtr($lAgentPtr)
 		If $lItemPtr = 0 Then ContinueLoop
-		$lOwner = Memory_Read($lAgentPtr + 196, 'long')
+		$lOwner = Memory_Read($lAgentPtr + 0xC4, 'long')
 		If $lOwner <> 0 And $lOwner <> GetMyID() Then ContinueLoop ; assigned to another player
 		If CanPickUpEx($lItemPtr) And GetDistance($lAgentPtr) < $iMaxDist Then
 			If GetDistanceToXY(X($lAgentPtr), Y($lAgentPtr)) > 250 Then MoveTo(X($lAgentPtr), Y($lAgentPtr))
@@ -415,9 +415,16 @@ Func PickUpLootEx($iMaxDist = 2500)
 EndFunc   ;==>PickupLootEx
 
 ;~ Description: Returns Itemptr by agentid.
-Func GetItemPtrByAgentID($aAgentID)
-	Return Item_GetItemPtr(Memory_Read(Agent_GetAgentPtr($aAgentID) + 200))
+Func GetItemPtrByAgentID($iAgentID)
+	$iAgentID = Agent_GetAgentPtr($iAgentID)
+	If $iAgentID = 0 Then Return 0
+	Return Item_GetItemPtr(Memory_Read($iAgentID + 0xC8, 'dword'))
 EndFunc   ;==>GetItemPtrByAgentID
+
+Func GetItemPtrByAgentPtr($pAgent)
+	If Not IsPtr($pAgent) Then Return 0
+	Return Item_GetItemPtr(Memory_Read($pAgent + 0xC8, 'dword'))
+EndFunc   ;==>GetItemPtrByAgentPtr
 
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ If $aStackItem=True, it will try to stack Items with same ModelID
@@ -748,7 +755,7 @@ EndFunc
 Func GetMaxSlots($aBag)
 	Local $lBagPtr = Item_GetBagPtr($aBag)
 	If $lBagPtr = 0 Then Return 0
-	Return Memory_Read($lBagPtr + 32, 'long')
+	Return Memory_Read($lBagPtr + 0x20, 'long')
 EndFunc   ;==>GetMaxSlots
 
 ;~ Description: Returns amount of slots available to character.
@@ -756,11 +763,11 @@ Func GetMaxTotalSlots()
    Local $SlotCount = 0, $lBagPtr
    For $Bag = 1 to 4
 	  $lBagPtr = Item_GetBagPtr($Bag)
-	  $SlotCount += Memory_Read($lBagPtr + 32, 'long')
+	  $SlotCount += Memory_Read($lBagPtr + 0x20, 'long')
    Next
    For $Bag = 8 to 12
 	  $lBagPtr = Item_GetBagPtr($Bag)
-	  $SlotCount += Memory_Read($lBagPtr + 32, 'long')
+	  $SlotCount += Memory_Read($lBagPtr + 0x20, 'long')
    Next
    Return $SlotCount
 EndFunc   ;==>GetMaxTotalSlots
@@ -771,7 +778,7 @@ Func CountFreeSlots()
 	For $lBag = 1 To 4
 		$lBagPtr = Item_GetBagPtr($lBag)
 		If $lBagPtr = 0 Then ContinueLoop
-		$lCount += Memory_Read($lBagPtr + 32, "long") - Memory_Read($lBagPtr + 16, "long")
+		$lCount += Memory_Read($lBagPtr + 0x20, "long") - Memory_Read($lBagPtr + 0x10, "dword")
 	Next
 	Return $lCount
 EndFunc   ;==>CountFreeSlots
@@ -782,7 +789,7 @@ Func CountFreeSlotsStorage()
 	For $lBag = 8 To 12
 		$lBagPtr = Item_GetBagPtr($lBag)
 		If $lBagPtr = 0 Then ContinueLoop
-		$lCount += Memory_Read($lBagPtr + 32, "long") - Memory_Read($lBagPtr + 16, "long")
+		$lCount += Memory_Read($lBagPtr + 0x20, "long") - Memory_Read($lBagPtr + 0x10, "dword")
 	Next
 	Return $lCount
 EndFunc ;==>CountFreeSlotsStorage
@@ -791,11 +798,11 @@ EndFunc ;==>CountFreeSlotsStorage
 #Region Bag
 Func BagID($aBag)
 	If IsPtr($aBag) Then
-		Return Memory_Read($aBag + 8, "long")
+		Return Memory_Read($aBag + 0x8, "dword")
 	ElseIf IsDllStruct($aBag) Then
 		Return DllStructGetData($aBag, "ID")
 	Else
-		Return Memory_Read(Item_GetBagPtr($aBag) + 8, "long")
+		Return Memory_Read(Item_GetBagPtr($aBag) + 0x8, "dword")
 	EndIf
 EndFunc   ;==>BagID
 
@@ -808,7 +815,8 @@ EndFunc   ;==>GetBagPtrByItem
 ;~ Description: Returns the Bag Index of an item by ItemID/ItemPtr/ItemStruct
 Func GetBagNumberByItem($aItem)
 	Local $lBagPtr = GetBagPtrByItem($aItem)
-	Return Memory_Read($lBagPtr + 4, "long") + 1
+	If $lBagPtr = 0 Then Return 0
+	Return Memory_Read($lBagPtr + 0x4, "dword")
 EndFunc   ;==>GetBagNumberByItem
 #EndRegion Bag
 

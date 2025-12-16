@@ -41,13 +41,13 @@ Func UseSkillEx($aSkillSlot, $aTarget = -2, $aTimeout = 3000, $aCallTarget = Fal
 		Sleep(50)
 		If GetIsDead($lAgentID) Or GetIsDead($lMe) Then Return		
 	Until Not IsRecharged($aSkillSlot, $aSkillbarPtr) Or TimerDiff($lDeadlock) > $aTimeout
-	Sleep(Memory_Read($lSkill + 64, "float") * 1000) ; Aftercast
+	Sleep(Memory_Read($lSkill + 0x40, "float") * 1000) ; Aftercast
 	Return True
 EndFunc   ;==>UseskillEX
 
 ;~ Description: Returns energy cost of a skill.
 Func GetEnergyReq($aSkillID)
-	Local $lEnergycost = Memory_Read(Skill_GetSkillPtr($aSkillID) + 53, "byte")
+	Local $lEnergycost = Memory_Read(Skill_GetSkillPtr($aSkillID) + 0x35, "byte")
 	If $lEnergycost = 11 Then Return 15
 	If $lEnergycost = 12 Then Return 25
 	Return $lEnergycost
@@ -65,7 +65,7 @@ EndFunc ;==>IsRecharged
 ;~ Description: Returns the recharge time remaining of an equipped skill in milliseconds.
 Func GetSkillbarSkillRecharge($aSkillSlot, $aHeroNumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
 	$aSkillSlot -= 1
-	Local $lTimestamp = Memory_Read($aSkillbarPtr + 12 + $aSkillSlot * 20, "dword")
+	Local $lTimestamp = Memory_Read($aSkillbarPtr + 0xC + ($aSkillSlot * 0x14), "dword")
 	If $lTimestamp = 0 Then Return 0
 	Return $lTimestamp - Skill_GetSkillTimer()
 EndFunc ;==>GetSkillbarSkillRecharge
@@ -73,13 +73,13 @@ EndFunc ;==>GetSkillbarSkillRecharge
 ;~ Description: Returns the skill ID of an equipped skill.
 Func GetSkillbarSkillID($askillslot, $aHeronumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
 	$askillslot -= 1
-	Return Memory_Read($aSkillbarPtr + 16 + $aSkillslot * 20, "dword")
+	Return Memory_Read($aSkillbarPtr + 0x10 + ($aSkillslot * 0x14), "dword")
 EndFunc ;==>GetSkillbarSkillID
 
 ;~ Description: Returns the adrenaline charge of an equipped skill.
 Func GetSkillbarSkillAdrenaline($aSkillSlot, $aHeroNumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
 	$aSkillSlot -= 1
-	Return Memory_Read($aSkillbarPtr + 4 + $aSkillSlot * 20, "long")
+	Return Memory_Read($aSkillbarPtr + 0x4 + ($aSkillSlot * 0x14), "dword")
 EndFunc   ;==>GetSkillbarSkillAdrenaline
 #EndRegion Skills
 
@@ -182,18 +182,18 @@ Func GetEffectTimeRemaining($aEffect)
 	If IsArray($aEffect) Then Return 0
 	If $aEffect = 0 Then Return 0
 	If IsPtr($aEffect) Then
-		$lTimestamp = Memory_Read($aEffect + 20, 'long')
-		$lDuration = Memory_Read($aEffect + 16, 'float')
+		$lTimestamp = Memory_Read($aEffect + 0x14, 'long')
+		$lDuration = Memory_Read($aEffect + 0x10, 'float')
 	ElseIf IsDllStruct($aEffect) <> 0 Then
 		$lTimestamp = DllStructGetData($aEffect, 'TimeStamp')
 		$lDuration = DllStructGetData($aEffect, 'Duration')
 	Else
 		Local $lPtr = GetSkillEffectPtr($aEffect)
 		If $lPtr = 0 Then Return 0
-		$lTimestamp = Memory_Read($lPtr + 20, 'long')
-		$lDuration = Memory_Read($lPtr + 16, 'float')
+		$lTimestamp = Memory_Read($lPtr + 0x14, 'long')
+		$lDuration = Memory_Read($lPtr + 0x10, 'float')
 	EndIf
-	Local $lReturn = $lDuration * 1000 - (Skill_GetSkillTimer() - $lTimestamp)
+	Local $lReturn = $lDuration * 1000 - BitAND(Skill_GetSkillTimer() - $lTimestamp, 0xFFFFFFFF)
 	Return $lReturn
 EndFunc   ;==>GetEffectTimeRemaining
 

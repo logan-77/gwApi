@@ -5,7 +5,7 @@ Func GetPartyPtrArray($aAgentPtrArray = 0)
 	Local $lReturnPtrArray[1] = [0]
 	If $aAgentPtrArray = 0 Then $aAgentPtrArray = GetAgentPtrArray(2, 0xDB, $allegiance_ally)
 	For $i = 1 To $aAgentPtrArray[0]
-		If BitAND(Memory_Read($aAgentPtrArray[$i] + 344, "Long"), 131072) Or BitAND(Memory_Read($aAgentPtrArray[$i] + 344, "Long"), 131584) Then ; 131584 = Mercenary Heroes
+		If BitAND(Memory_Read($aAgentPtrArray[$i] + 0x15C, "dword"), 131072) Or BitAND(Memory_Read($aAgentPtrArray[$i] + 0x15C, "dword"), 131584) Then ; 131584 = Mercenary Heroes
 			$lReturnPtrArray[0] += 1
 			ReDim $lReturnPtrArray[$lReturnPtrArray[0] + 1]
 			$lReturnPtrArray[$lReturnPtrArray[0]] = $aAgentPtrArray[$i]

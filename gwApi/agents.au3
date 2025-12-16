@@ -12,8 +12,8 @@ Functions for retrieving information from the Agent Struct.
 ;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
 Func GetAgentPtrArray($aMode = 0, $aType = 0xDB, $aAllegiance = 3, $aRange = 1320, $aAgent = Agent_GetAgentPtr(-2), $aPlayerNumber = 0, $aEffect = 0, $aX = X($aAgent), $aY = Y($aAgent))
 	Local $lMaxAgents = Agent_GetMaxAgents()
-	Local $lAgentPtrStruct = DllStructCreate("PTR[" & $lMaxAgents & "]")
-	DllCall($g_h_Kernel32, "BOOL", "ReadProcessMemory", "HANDLE", $g_h_GWProcess, "PTR", Memory_Read($g_p_AgentBase), "STRUCT*", $lAgentPtrStruct, "ULONG_PTR", $lMaxAgents * 4, "ULONG_PTR*", 0)
+	Local $lAgentPtrStruct = DllStructCreate("ptr[" & $lMaxAgents & "]")
+	DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, "ptr", Memory_Read($g_p_AgentBase), "struct*", $lAgentPtrStruct, "ulong_ptr", $lMaxAgents * 4, "ulong_ptr*", 0)
 	Local $lTempPtr
 	Local $lAgentArray[$lMaxAgents + 1]
 	$lAgentArray[0] = 0
@@ -21,13 +21,13 @@ Func GetAgentPtrArray($aMode = 0, $aType = 0xDB, $aAllegiance = 3, $aRange = 132
 	For $i = 1 To $lMaxAgents
 		$lTempPtr = DllStructGetData($lAgentPtrStruct, 1, $i)
 		If $lTempPtr = 0 Then ContinueLoop
-		If $aMode >= 1 And Memory_Read($lTempPtr + 156, 'long') <> $aType Then ContinueLoop
-		If $aMode >= 2 And Memory_Read($lTempPtr + 433, 'byte') <> $aAllegiance Then ContinueLoop
+		If $aMode >= 1 And Memory_Read($lTempPtr + 0x9C, 'long') <> $aType Then ContinueLoop
+		If $aMode >= 2 And Memory_Read($lTempPtr + 0x1B5, 'byte') <> $aAllegiance Then ContinueLoop
 		If $aMode >= 3 Then
 			If $aEffect <> 0x0010 And GetIsDead($lTempPtr) Then ContinueLoop ; HP > 0
 			If $aRange <> 0 And GetDistanceToXY($aX, $aY, $lTempPtr) > $aRange Then ContinueLoop ; is in $aRange
-			If $aPlayerNumber <> 0 And $aPlayerNumber <> Memory_Read($lTempPtr + 244, "word") Then ContinueLoop ; has PlayerNumber
-			If $aEffect <> 0 And Not BitAND(Memory_Read($lTempPtr + 312, 'long'), $aEffect) Then ContinueLoop ; has $aEffect
+			If $aPlayerNumber <> 0 And $aPlayerNumber <> Memory_Read($lTempPtr + 0xF4, "short") Then ContinueLoop ; has PlayerNumber
+			If $aEffect <> 0 And Not BitAND(Memory_Read($lTempPtr + 0x13C, 'dword'), $aEffect) Then ContinueLoop ; has $aEffect
 			; ally Spirits/Minions have Allegiance 0x4/0x5
 			;~ If $aAllegiance = 3 And (IsMinionAgent($lTempPtr) Or IsSpiritAgent($lTempPtr)) Then ContinueLoop
 		EndIf
@@ -137,7 +137,7 @@ Func GetAgentPtrByPlayerNumber($aPlayerNumber, $aRange = 5000)
 	For $i = 1 To $lAgentPtrArray[0]
 		If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
 		If GetDistance($lAgentPtrArray[$i]) > $aRange Then ContinueLoop
-		If Memory_Read($lAgentPtrArray[$i] + 244, 'word') = $aPlayerNumber Then Return $lAgentPtrArray[$i]
+		If Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") = $aPlayerNumber Then Return $lAgentPtrArray[$i]
 	Next
 	Return 0
 EndFunc   ;==>GetAgentPtrByPlayerNumber
@@ -160,7 +160,7 @@ Func GetNearestAgentPtr($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerN
 		If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
 		If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
 		;~ If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
-		If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 244, "word") <> $aPlayerNumber Then ContinueLoop
+		If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
 		$lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
 		If $lDistance < $lNearestDistance Then
 			$lNearestAgentPtr = $lAgentPtrArray[$i]
@@ -190,7 +190,7 @@ Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtrArray, $aAgent = -2, $aPlayerNum
 	Local $lAgent = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr = 0, $lNearestDistance = 100000000, $lDistance
 	For $i = 1 To $aAgentPtrArray[0]
 		If GetIsDead($aAgentPtrArray[$i]) Then ContinueLoop
-		If $aPlayerNumber <> 0 And Memory_Read($aAgentPtrArray[$i] + 244, "word") <> $aPlayerNumber Then ContinueLoop
+		If $aPlayerNumber <> 0 And Memory_Read($aAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
 		$lDistance = GetPseudoDistance($aAgentPtrArray[$i], $lAgent)
 		If $lDistance < $lNearestDistance Then
 			$lNearestDistance = $lDistance
@@ -267,7 +267,7 @@ Func ID($aAgent = Agent_GetAgentPtr(-2))
 		Case $aAgent = -1
 			Return Agent_GetCurrentTarget()
 		Case IsPtr($aAgent)
-			Return Memory_Read($aAgent + 44, 'long')
+			Return Memory_Read($aAgent + 0x2C, 'long')
 		Case IsDllStruct($aAgent)
 			Return DllStructGetData($aAgent, 'ID')
 		Case Else
@@ -298,35 +298,22 @@ EndFunc   ;==>GetAgentExists
 
 ;~ Description: Agents X Location
 Func X($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 116, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x74, 'float')
 EndFunc   ;==>X
 
 ;~ Description: Agents Movevement on the X axis
 Func MoveX($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 160, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0xA0, 'float')
 EndFunc   ;==>MoveX
 
 ;~ Description: Agents Y Location
 Func Y($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 120, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x78, 'float')
 EndFunc   ;==>Y
 
 ;~ Description: Agents Movevement on the Y axis
-; #FUNCTION# ====================================================================================================================
-; Name ..........: MoveY
-; Description ...:
-; Syntax ........: MoveY([$aAgent = -2])
-; Parameters ....: $aAgent              - [optional] Default is -2.
-; Return values .: None
-; Author ........: Your Name
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
 Func MoveY($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 164, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0xA4, 'float')
 EndFunc   ;==>MoveY
 
 ;~ Description: Agents X and Y Location
@@ -341,17 +328,17 @@ EndFunc   ;==>XY
 
 ;~ Description: Agents Z Location
 Func Z($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 48, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x30, 'float')
 EndFunc ;==>Z
 
 ;~ Description: Agents PlayerNumber
 Func GetPlayerNumber($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 EndFunc	;==>GetPlayerNumber
 
-;~ Description: Returns a player's name.
+;~ Description: Returns a player's name. TEST THIS
 Func GetPlayerName($aAgent = -2)
-	Local $lLogin = Memory_Read(Agent_GetAgentPtr($aAgent) + 384, "long")
+	Local $lLogin = Memory_Read(Agent_GetAgentPtr($aAgent) + 0x184, "long")
 	Local $lOffset[6] = [0, 0x18, 0x2C, 0x80C, 76 * $lLogin + 0x28, 0]
 	Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset, 'wchar[30]')
 	Return $lReturn[1]
@@ -377,63 +364,63 @@ EndFunc   ;==>GetPlayerName
 ;~ Description: Returns health of an agent. Returns 0 for NPC's
 Func GetHealth($aAgent = -2)
 	Local $lPtr = Agent_GetAgentPtr($aAgent)
-	Return Memory_Read($lPtr + 304, 'float') * Memory_Read($lPtr + 308, "long")
+	Return Memory_Read($lPtr + 0x134, 'float') * Memory_Read($lPtr + 0x138, "dword")
 EndFunc   ;==>GetHealth
 
 ;~ Description: Returns health of an agent as % of max HP
 Func GetHP($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 304, 'float')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x134, 'float')
 EndFunc   ;==>GetHP
 
 ;~ Description: Returns the level of an agent.
 Func GetLevel($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 268, "byte")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x110, "byte")
 EndFunc   ;==>GetLevel
 
 ;~ Description: Returns the team of an agent.
 Func GetTeam($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 269, "byte")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x111, "byte")
 EndFunc   ;==>GetTeam
 
 ;~ Description: Returns the energy pips of an agent.
 Func GetEnergyPips($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 276, "float")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x118, "float")
 EndFunc   ;==>GetEnergyPips
 
 ;~ Description: Returns energy of an agent. (Only self/heroes)
 Func GetEnergy($aAgent = -2)
 	Local $lPtr = Agent_GetAgentPtr($aAgent)
-	Return Memory_Read($lPtr + 284, 'float') * Memory_Read($lPtr + 288, "long")
+	Return Memory_Read($lPtr + 0x120, 'float') * Memory_Read($lPtr + 0x124, "dword")
 EndFunc   ;==>GetEnergy
 
 ;~ Description: Returns the allegiance of an agent.
 Func GetAllegiance($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 433, 'byte')
-EndFunc   ;==>GetSkillID
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B5, 'byte')
+EndFunc   ;==>GetAllegiance
 
 ;~ Description: Returns the skill currently being cast by an agent.
 Func GetSkillID($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B4, "word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B8, "short")
 EndFunc   ;==>GetSkillID
 
 ;~ Description: Returns the weapon Type of an agent.
 Func GetWeaponType($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 434, "Word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B6, "short")
 EndFunc   ;==>GetWeaponType
 
 ;~ Description: Returns the weapon item ID of an agent.
 Func GetWeaponItemID($aAgent)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 442, "word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1BE, "short")
 EndFunc   ;==>GetWeaponItemID
 
 ;~ Description: Returns the offhand item ID of an agent.
 Func GetOffhandItemID($aAgent)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 444, "word")
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1C0, "short")
 EndFunc   ;==>GetOffhandItemID
 
 ;~ Description: Tests if an agent is casting.
 Func GetIsCasting($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 436, "word") <> 0
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x1B8, "short") <> 0
 EndFunc   ;==>GetIsCasting
 
 ;~ Description: Tests if an agent is moving.
@@ -446,37 +433,47 @@ Func GetIsMoving($aAgent = Agent_GetAgentPtr(-2), $aTimer = 0)
 	Return False
 EndFunc   ;==>GetIsMoving
 
+;~ Description: Returns the primary profession of an agent (heroes and PvP enemies only).
+Func GetPrimaryProfession($aAgent = -2)
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x10E, "byte")
+EndFunc   ;==>GetPrimaryProfession
+
+;~ Description: Returns the secondary profession of an agent (heroes and PvP enemies only).
+Func GetSecondaryProfession($aAgent = -2)
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x10F, "byte")
+EndFunc   ;==>GetSecondaryProfession
+
 ; === Type ===
 ;~ Description: Tests if an agent is living.
 Func GetIsLiving($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 156, 'long') = 0xDB
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x9C, 'long') = 0xDB
 EndFunc   ;==>GetIsLiving
 
 ;~ Description: Tests if an agent is a signpost/chest/etc.
 Func GetIsStatic($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 156, 'long') = 0x200
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x9C, 'long') = 0x200
 EndFunc   ;==>GetIsStatic
 
 ;~ Description: Tests if an agent is an item.
 Func GetIsMovable($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 156, 'long') = 0x400
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x9C, 'long') = 0x400
 EndFunc   ;==>GetIsMovable
 
 ;~ Description: Returns the Type of the Agent. 0xDB/0x200/0x400
 Func GetType($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 156, 'long')
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x9C, 'long')
 EndFunc   ;==>GetType
 
 #Region Model State
 ; NOT reliable with disable render
 ;~ Description: Tests if an agent is knocked down.
 Func GetIsKnocked($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 340, "long") = 0x450
+	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0x158, "dword") = 0x450
 EndFunc   ;==>GetIsKnocked
 
 ;~ Description: Tests if an agent is attacking.
 Func GetIsAttacking($aAgent = -2)
-	Local $lModelState = Memory_Read(Agent_GetAgentPtr($aAgent) + 340, "long")
+	Local $lModelState = Memory_Read(Agent_GetAgentPtr($aAgent) + 0x158, "dword")
 	Switch $lModelState
 		Case 0x60, 0x460, 0x440
 			Return True
@@ -493,70 +490,60 @@ EndFunc   ;==>GetIsAttacking
 ;	=== Effects ====
 ;~ Description: Tests if an agent is dead.
 Func GetIsDead($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0010) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0010) > 0
 EndFunc   ;==>GetIsDead
 
 ;~ Description: Tests if an agent has a condition. Accepts ID, Struct or Ptr
 Func GetHasCondition($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0002) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0002) > 0
 EndFunc   ;==>GetHasCondition
 
 ;~ Description: Tests if an agent is bleeding.
 Func GetIsBleeding($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0001) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0001) > 0
 EndFunc   ;==>GetIsBleeding
 
 ;~ Description: Tests if self or other hero is crippled - cannot use for enemies or other human players
 Func GetIsCrippled($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0008) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0008) > 0 ; check vs GwAu3
 EndFunc   ;==>GetIsCrippled
 
 ;~ Description: Tests if an agent has a deep wound. Accepts ID, Struct or Ptr
 Func GetHasDeepWound($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0020) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0020) > 0
 EndFunc   ;==>GetHasDeepWound
 
 ;~ Description: Tests if an agent is poisoned. Accepts ID, Struct or Ptr
 Func GetIsPoisoned($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, 'long'), 0x0040) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, 'dword'), 0x0040) > 0
 EndFunc   ;==>GetIsPoisoned
 
 ;~ Description: Tests if an agent is enchanted. Accepts ID, Struct or Ptr
 Func GetIsEnchanted($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0080) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0080) > 0
 EndFunc   ;==>GetIsEnchanted
 
 ;~ Description: Tests if an agent has a degen hex. Accepts ID, Struct or Ptr
 Func GetHasDegenHex($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0400) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0400) > 0
 EndFunc   ;==>GetHasDegenHex
 
 ;~ Description: Tests if an agent is hexed. Accepts ID, Struct or Ptr
 Func GetHasHex($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x0800) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0800) > 0
 EndFunc   ;==>GetHasHex
 
 ;~ Description: Tests if an agent has a weapon spell. Accepts ID, Struct or Ptr
 Func GetHasWeaponSpell($aAgent = -2)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 312, "long"), 0x8000) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x8000) > 0
 EndFunc   ;==>GetHasWeaponSpell
 #EndRegion Effects
 
 ;	=== TypeMap ===
 ;~ Description: Tests if an agent is a boss. Accepts ID, Struct or Ptr
 Func GetIsBoss($aAgent)
-	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 344, "long"), 0x0400) > 0
+	Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x15C, "dword"), 0x0400) > 0
 EndFunc   ;==>GetIsBoss
-
-;~ Description: Returns the primary profession of an agent (heroes and PvP enemies only).
-Func GetPrimaryProfession($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 266, "byte")
-EndFunc   ;==>GetPrimaryProfession
-
-;~ Description: Returns the secondary profession of an agent (heroes and PvP enemies only).
-Func GetSecondaryProfession($aAgent = -2)
-	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 267, "byte")
-EndFunc   ;==>GetSecondaryProfession
 
 #Region Interaction
 ;~ Func DropHeroBundle($aHeroNumber)
@@ -631,7 +618,7 @@ EndFunc   ;==>GetIsPointInPolygon
 #Region Special
 ;~Returns whether a player ID corresponds to a ritual
 Func IsSpiritAgent($aAgent)
-	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 	Switch $lPlayerNumber
 		Case 2870 To 2888, 4230 To 4239, 5711 To 5719, 5776 ; nature rituals
 			Return True
@@ -645,7 +632,7 @@ EndFunc   ;==>IsSpiritAgent
 
 ;~Returns whether a player ID corresponds to a minion
 Func IsMinionAgent($aAgent)
-	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 	Switch $lPlayerNumber
 		Case 2226 To 2228 ; bone minions
 			Return True
@@ -659,7 +646,7 @@ EndFunc   ;==>IsMinionAgent
 
 ;~ Checks if Agent is a Sensali. Used for FeatherBot.
 Func IsSensali($aAgent)
-	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 	Switch $lPlayerNumber
 		Case $model_id_sensali_claw, $model_id_sensali_darkfeather, $model_id_sensali_cutter
 			Return True
@@ -668,7 +655,7 @@ Func IsSensali($aAgent)
 EndFunc ;==>IsSensali
 
 Func IsCofEnemy($aAgent)
-	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 	Switch $lPlayerNumber
 		Case $model_id_crypt_ghoul, $model_id_crypt_slasher
 			Return True
@@ -684,7 +671,7 @@ EndFunc ;==>IsCofEnemy
 
 ;~Returns whether a player ID corresponds to a frost worm
 Func IsFrostWorm($aAgent)
-	$lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 244, "word")
+	$lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 	Switch $lPlayerNumber
 		Case 6491 To 6492, 6929 To 6932
 			Return True
@@ -695,7 +682,7 @@ EndFunc   ;==>IsFrostWorm
 
 #Region Minions & Spirits
 ; Returns the an array of spirit and minion allies I control
-Func GetMinionPtrArray()
+Func GetMinionPtrArray() ; Not tested yet
 	Local $lOffset[5] = [0, 0x18, 0x4C, 0x54, 0x3C]
 	Return Memory_ReadPtr($g_p_BasePointer, $lOffset)
 EndFunc   ;==>GetMinionPtrArray
@@ -710,7 +697,7 @@ EndFunc   ;==>GetNumberOfMinionAllies
 Func GetMyMinionCount($aRange = 5000)
 	Local $lCount, $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
 	For $i = 1 To $lAgentPtrArray[0]
-		If Memory_Read($lAgentPtrArray[$i] + 231, "Byte") <> GetMyID() Then ContinueLoop ; minion owner
+		If Memory_Read($lAgentPtrArray[$i] + 0x2C, "long") <> GetMyID() Then ContinueLoop ; minion owner
 		$lCount += 1
 	Next
 	Return $lCount
