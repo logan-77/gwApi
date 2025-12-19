@@ -1097,7 +1097,7 @@ Func IsEventItem($aModelID)
 	; *******************************************************************************************	
 	
 	; Canthan New Year
-	; If $aModelID = $model_id_lunar_token Then Return True
+	If $aModelID = $model_id_lunar_token Then Return True
 	
 	; Lucky Treats Week
 	; If $aModelID = $model_id_clover Then Return True
@@ -1112,7 +1112,7 @@ Func IsEventItem($aModelID)
 	;~ If $aModelID = $model_id_honeycomb Then Return True
 	;~ If $aModelID = $model_id_sugary_blue_drink Then Return True
 	;~ Alcohol
-	If $aModelID = $model_id_hard_apple_cider Then Return True
+	;~ If $aModelID = $model_id_hard_apple_cider Then Return True
 	;~ If $aModelID = $model_id_hunters_ale Then Return True
 	;~ If $aModelID = $model_id_krytan_brandy Then Return True
 	;~ Party Points
@@ -1140,15 +1140,16 @@ Func IsEventItem($aModelID)
 	;~ If $aModelID = $model_id_tot_bag Then Return True
 	
 	; Special Treats Week
-	If $aModelID = $model_id_pumpkin_pie Then Return True ; + Hard Apple Cider, see above
+	;~ If $aModelID = $model_id_pumpkin_pie Then Return True ; + Hard Apple Cider, see above
 	
 	; Wintersday
-	; If $aModelID = $model_id_candy_cane_shard Then Return True
-	; If $aModelID = $model_id_eggnog Then Return True
-	; If $aModelID = $model_id_fruitcake Then Return True
-	; If $aModelID = $model_id_snowman_summoner Then Return True
-	; If $aModelID = $model_id_frosty_tonic Then Return True
-	; If $aModelID = $model_id_mischievous_tonic Then Return True
+	If $aModelID = $model_id_candy_cane_shard Then Return True
+	If $aModelID = $model_id_eggnog Then Return True
+	If $aModelID = $model_id_fruitcake Then Return True
+	If $aModelID = $model_id_snowman_summoner Then Return True
+	If $aModelID = $model_id_frosty_tonic Then Return True
+	If $aModelID = $model_id_mischievous_tonic Then Return True
+	If $aModelID = $model_id_spiked_eggnog Then Return True
 	
 	Return False
 EndFunc ;==>IsEventItem

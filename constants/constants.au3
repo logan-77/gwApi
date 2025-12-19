@@ -3,7 +3,7 @@ Global Enum $normalmode, $hardmode
 Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
 Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, $mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, _
-			$mode_essence, $mode_scrolls, $mode_grail, $mode_armor, $mode_conset
+			$mode_essence, $mode_scrolls, $mode_grail, $mode_armor, $mode_conset, $mode_polar
 Global Enum $state_farm_feather, $state_farm_dust, $state_farm_bones, $state_farm_fiber, $state_farm_iron, $state_craft_cons, $state_next
 
 ; === gold related ==
@@ -500,152 +500,164 @@ Global Const $map_id_jade_quarry_arena = 223
 #Region PlayerNumber
 ;~ === Playernumber ===
 ;~ nature rituals
-Global Const $model_id_winter				= 2874
-Global Const $model_id_winnowing			= 2875
-Global Const $model_id_extinction			= 2876
-Global Const $model_id_greater_conflagration= 2877
-Global Const $model_id_fertile_season		= 2878
-Global Const $model_id_symbiosis			= 2879
-Global Const $model_id_primal_echoes		= 2880
-Global Const $model_id_predatory_season		= 2881
-Global Const $model_id_frozen_soil			= 2882
-Global Const $model_id_favorable_winds		= 2883
-Global Const $model_id_winds				= 2884
-Global Const $model_id_energizing_wind		= 2885
-Global Const $model_id_quickening_zephir	= 2886
-Global Const $model_id_natures_renewal		= 2887
-Global Const $model_id_muddy_terrain		= 2888
-Global Const $model_id_laceration			= 4232
-Global Const $model_id_pestilence			= 4234
-Global Const $model_id_tranquility			= 4235
-Global Const $model_id_equinox				= 4236
-Global Const $model_id_conflagration		= 4237
-Global Const $model_id_famine				= 4238
-Global Const $model_id_brambles				= 4239
-Global Const $model_id_infuriating_heat		= 5715
-Global Const $model_id_roaring_winds		= 5717
-Global Const $model_id_quicksand			= 5718
-Global Const $model_id_toxicity				= 5776
+Global Const $model_id_winter                = 2925 ; 2874
+Global Const $model_id_winnowing             = 2926 ; 2875
+Global Const $model_id_extinction            = 2927 ; 2876
+Global Const $model_id_greater_conflagration = 2928 ; 2877
+Global Const $model_id_fertile_season        = 2929 ; 2878
+Global Const $model_id_symbiosis             = 2930 ; 2879
+Global Const $model_id_primal_echoes         = 2931 ; 2880
+Global Const $model_id_predatory_season      = 2932 ; 2881
+Global Const $model_id_frozen_soil           = 2933 ; 2882
+Global Const $model_id_favorable_winds       = 2934 ; 2883
+Global Const $model_id_winds                 = 2935 ; 2884
+Global Const $model_id_energizing_wind       = 2936 ; 2885
+Global Const $model_id_quickening_zephir     = 2937 ; 2886
+Global Const $model_id_natures_renewal       = 2938 ; 2887
+Global Const $model_id_muddy_terrain         = 2939 ; 2888
+Global Const $model_id_laceration            = 4283 ; 4232
+Global Const $model_id_pestilence            = 4285 ; 4234
+Global Const $model_id_tranquility           = 4286 ; 4235
+Global Const $model_id_equinox               = 4287 ; 4236
+Global Const $model_id_conflagration         = 4288 ; 4237
+Global Const $model_id_famine                = 4289 ; 4238
+Global Const $model_id_brambles              = 4290 ; 4239
+Global Const $model_id_infuriating_heat      = 5766 ; 5715
+Global Const $model_id_roaring_winds         = 5768 ; 5717
+Global Const $model_id_quicksand             = 5769 ; 5718
+Global Const $model_id_toxicity              = 5827 ; 5776
+
 ;~ binding rituals
-Global Const $model_id_anguish			= 5720
-Global Const $model_id_empowerment		= 5721
-Global Const $model_id_vampirism		= 5723
-Global Const $model_id_rejuvenation		= 5853
-Global Const $model_id_agony			= 5854
-Global Const $model_id_shadowsong		= 4213
-Global Const $model_id_pain				= 4214
-Global Const $model_id_destruction		= 4215
-Global Const $model_id_displacement		= 4217
-Global Const $model_id_life				= 4218
-Global Const $model_id_preservation		= 4219
-Global Const $model_id_recuperation		= 4220
-Global Const $model_id_dissonance		= 4221
-Global Const $model_id_earthbind		= 4222
-Global Const $model_id_shelter			= 4223
-Global Const $model_id_union			= 4224
-Global Const $model_id_disenchantment	= 4225
-Global Const $model_id_restoration		= 4226
-Global Const $model_id_bloodsong		= 4227
-Global Const $model_id_wanderlust		= 4228
-Global Const $model_id_anger			= 4229 ;SoS
-Global Const $model_id_hate				= 4230
-Global Const $model_id_suffering		= 4231
+Global Const $model_id_anguish            = 5771 ; 5720
+Global Const $model_id_empowerment        = 5772 ; 5721
+Global Const $model_id_vampirism          = 5774 ; 5723
+Global Const $model_id_rejuvenation       = 5904 ; 5853
+Global Const $model_id_agony              = 5905 ; 5854
+Global Const $model_id_shadowsong         = 4264 ; 4213
+Global Const $model_id_pain               = 4265 ; 4214
+Global Const $model_id_destruction        = 4266 ; 4215
+Global Const $model_id_displacement       = 4268 ; 4217
+Global Const $model_id_life               = 4269 ; 4218
+Global Const $model_id_preservation       = 4270 ; 4219
+Global Const $model_id_recuperation       = 4271 ; 4220
+Global Const $model_id_dissonance         = 4272 ; 4221
+Global Const $model_id_earthbind          = 4273 ; 4222
+Global Const $model_id_shelter            = 4274 ; 4223
+Global Const $model_id_union              = 4275 ; 4224
+Global Const $model_id_disenchantment     = 4276 ; 4225
+Global Const $model_id_restoration        = 4277 ; 4226
+Global Const $model_id_bloodsong          = 4278 ; 4227
+Global Const $model_id_wanderlust         = 4279 ; 4228
+Global Const $model_id_anger              = 4280 ; 4229
+Global Const $model_id_hate               = 4281 ; 4230
+Global Const $model_id_suffering          = 4282 ; 4231
+
 ; Nightfall Pcons farm
-Global Const $model_id_fanged_iboga = 4388 ; all need to be checked!?
-Global Const $model_id_fanged_iboga_lvl_6 = 4386
-Global Const $model_id_stormseed_jacaranda_lvl_6 = 4385
-Global Const $model_id_stormseed_jacaranda_lvl_10 = 4387
-Global Const $model_id_grub_lance_lvl_8 = 4377
-Global Const $model_id_preying_lance_lvl_8 = 4379
-Global Const $model_id_stalking_nephila_lvl_2 = 4342
-Global Const $model_id_stalking_nephila_lvl_15 = 4341
-Global Const $model_id_irontooth_drake_lvl_10 = 4352
-Global Const $model_id_irontooth_drake_lvl_18 = 4353
-Global Const $model_id_steelfang_drake = 4914
+Global Const $model_id_fanged_iboga                   = 4439 ; 4388
+Global Const $model_id_fanged_iboga_lvl_6             = 4437 ; 4386
+Global Const $model_id_stormseed_jacaranda_lvl_6      = 4436 ; 4385
+Global Const $model_id_stormseed_jacaranda_lvl_10     = 4438 ; 4387
+Global Const $model_id_grub_lance_lvl_8               = 4428 ; 4377
+Global Const $model_id_preying_lance_lvl_8            = 4430 ; 4379
+Global Const $model_id_stalking_nephila_lvl_2         = 4393 ; 4342
+Global Const $model_id_stalking_nephila_lvl_15        = 4392 ; 4341
+Global Const $model_id_irontooth_drake_lvl_10         = 4403 ; 4352
+Global Const $model_id_irontooth_drake_lvl_18         = 4404 ; 4353
+Global Const $model_id_steelfang_drake                = 4965 ; 4914
+
 ; Plant Fiber Farm
-Global Const $model_id_dragon_moss = 3722
+Global Const $model_id_dragon_moss            = 3773 ; 3722
 ; Feather Farm
-Global Const $model_id_sensali_claw			= 3944
-Global Const $model_id_sensali_darkfeather	= 3946
-Global Const $model_id_sensali_cutter		= 3948
+Global Const $model_id_sensali_claw           = 3995 ; 3944
+Global Const $model_id_sensali_darkfeather    = 3997 ; 3946
+Global Const $model_id_sensali_cutter         = 3999 ; 3948
 ; CoF Farm
-Global Const $model_id_crypt_ghoul		= 7024
-Global Const $model_id_crypt_slasher	= 7026
-Global Const $model_id_crypt_wraith		= 7028
-Global Const $model_id_crypt_banshee	= 7030
-Global Const $model_id_shock_phantom	= 7032
-Global Const $model_id_ash_phantom		= 7034
-Global Const $model_id_servant_of_murakai = 7018
+Global Const $model_id_crypt_ghoul            = 7075 ; 7024
+Global Const $model_id_crypt_slasher          = 7077 ; 7026
+Global Const $model_id_crypt_wraith           = 7079 ; 7028
+Global Const $model_id_crypt_banshee          = 7081 ; 7030
+Global Const $model_id_shock_phantom          = 7083 ; 7032
+Global Const $model_id_ash_phantom            = 7085 ; 7034
+Global Const $model_id_servant_of_murakai     = 7069 ; 7018
 ; ToA Dust Farm
-Global Const $model_id_fog_nightmare = 1729
+Global Const $model_id_fog_nightmare           = 1732 ; 1729
 ; Moddok Farm
-Global Const $model_id_corsair_cutthroat = 5076
-Global Const $model_id_corsair_raider = 5077
-Global Const $model_id_corsair_captain = 5079
+Global Const $model_id_corsair_cutthroat       = 5127 ; 5076
+Global Const $model_id_corsair_raider          = 5128 ; 5077
+Global Const $model_id_corsair_captain         = 5130 ; 5079
+
 ; FoW and UW
-Global Const $model_id_champion_of_balthazar	= 1947
-Global Const $model_id_avatar_of_grenth			= 1945
-Global Const $model_id_abyssal			= 2810
-Global Const $model_id_shadow_ranger	= 2808
-Global Const $model_id_skeleton_of_dhuum = 2342
+Global Const $model_id_champion_of_balthazar	= 1997 ; 1947
+Global Const $model_id_avatar_of_grenth			= 1995 ; 1945
+Global Const $model_id_abyssal			= 2861 ; 2810
+Global Const $model_id_shadow_ranger	= 2859 ; 2808
+Global Const $model_id_skeleton_of_dhuum = 2392 ; 2342
 ; DoA
-Global Const $model_id_kaya	= 5166
-Global Const $model_id_dabi	= 5167
-Global Const $model_id_su	= 5168
-Global Const $model_id_ki	= 5169
-Global Const $model_id_vu	= 5170
-Global Const $model_id_tuk	= 5171
-Global Const $model_id_ruk	= 5172
-Global Const $model_id_rund	= 5173
-Global Const $model_id_mank	= 5174
-Global Const $model_id_jadoth = 0
-Global Const $model_id_rage_titan = 5201
-Global Const $model_id_despair_titan = 5203
-Global Const $model_id_tortureweb_dryder = 5215
-Global Const $model_id_greater_dream_rider = 5217
+Global Const $model_id_kaya                  = 5217 ; 5166
+Global Const $model_id_dabi                  = 5218 ; 5167
+Global Const $model_id_su                    = 5219 ; 5168
+Global Const $model_id_ki                    = 5220 ; 5169
+Global Const $model_id_vu                    = 5221 ; 5170
+Global Const $model_id_tuk                   = 5222 ; 5171
+Global Const $model_id_ruk                   = 5223 ; 5172
+Global Const $model_id_rund                  = 5224 ; 5173
+Global Const $model_id_mank                  = 5225 ; 5174
+Global Const $model_id_jadoth                = 0   ; 0
+Global Const $model_id_rage_titan             = 5252 ; 5201
+Global Const $model_id_despair_titan          = 5254 ; 5203
+Global Const $model_id_tortureweb_dryder      = 5266 ; 5215
+Global Const $model_id_greater_dream_rider    = 5268 ; 5217
 ; Jade Quarry
-Global Const $model_id_luxon_wizard = 3087 ; mes
-Global Const $model_id_luxon_storm_caller = 3089 ; ele
-Global Const $model_id_luxon_longbow = 3091 ; ranger
-Global Const $model_id_kurzick_illusionist = 3086 ; mes
-Global Const $model_id_kurzick_thunder = 3088 ; ele
-Global Const $model_id_kurzick_far_shot = 3090 ; ranger
-Global Const $model_id_luxon_hauler_turtle = 3585
-Global Const $model_id_kurzick_carrier_juggernaut = 3367
+Global Const $model_id_luxon_wizard           = 3138 ; mes ; 3087
+Global Const $model_id_luxon_storm_caller     = 3140 ; ele ; 3089
+Global Const $model_id_luxon_longbow          = 3142 ; ranger ; 3091
+Global Const $model_id_kurzick_illusionist    = 3137 ; mes ; 3086
+Global Const $model_id_kurzick_thunder        = 3139 ; ele ; 3088
+Global Const $model_id_kurzick_far_shot       = 3141 ; ranger ; 3090
+Global Const $model_id_luxon_hauler_turtle    = 3636 ; 3585
+Global Const $model_id_kurzick_carrier_juggernaut = 3418 ; 3367
+
 ; War Supply Farm
-Global Const $model_id_white_mantle_ritualist_6 = 8237 ; rit/paragon spear
-Global Const $model_id_white_mantle_ritualist_8	= 8238 ; rit/monk (preservation, strong heal, hexremove, spirits) primary
-Global Const $model_id_white_mantle_ritualist	= 8239 ; SoS 
-Global Const $model_id_white_mantle_ritualist_2	= 8240 ; PRIMARY (shadowsong,bloodsong,pain,anguish)
-Global Const $model_id_white_mantle_ritualist_7	= 8241 ; minions 2nd prio; 
-Global Const $model_id_white_mantle_ritualist_9 = 8242 ; weapon of remedy rit(hardrez, prio)
-Global Const $model_id_white_mantle_ritualist_3	= 8192
-Global Const $model_id_white_mantle_ritualist_4	= 8193 ; 
-Global Const $model_id_white_mantle_ritualist_5	= 8194
-Global Const $model_id_white_mantle_savant		= 8200 ; mshower
-Global Const $model_id_white_mantle_savant_2	= 8201 ; savannah heat + rit heal
-Global Const $model_id_white_mantle_adherent	= 8204 ;
-Global Const $model_id_white_mantle_adherent_2	= 8205 ; shatterstone
-Global Const $model_id_white_mantle_adherent_3	= 8206 ; Unsteady Ground
-Global Const $model_id_white_mantle_adherent_4	= 8207 ; Sandstorm
-Global Const $model_id_white_mantle_priest		= 8208 ; WoH
-Global Const $model_id_white_mantle_priest_2	= 8209 ; Healing Burst
-Global Const $model_id_white_mantle_priest_3	= 8210 ; Healers Boon(hexremove)
-Global Const $model_id_white_mantle_priest_4	= 8211 ; mo/ele (smite) RoJ
-Global Const $model_id_white_mantle_abbot		= 8212 ; Prot Mo (Boon Signet, spiritbond)
-Global Const $model_id_white_mantle_abbot_2		= 8213 ; Mantra of Recall
-Global Const $model_id_white_mantle_abbot_3		= 8214 ; 
-Global Const $model_id_white_mantle_abbot_4		= 8215 ; zeal benediction + smite
-Global Const $model_id_white_mantle_sycophant	= 8186 ; degen mes (crippling anguish)
-Global Const $model_id_white_mantle_sycophant_2	= 8187 ; dom mes (clumsiness) 2nd
-Global Const $model_id_white_mantle_sycophant_3	= 8188 ; dom mes (emp+healing signet)
-Global Const $model_id_white_mantle_sycophant_4	= 8189 ; esurge, spirit shackles 2NDARY
-Global Const $model_id_white_mantle_sycophant_5	= 8190 ; condi mes 2nd
-Global Const $model_id_white_mantle_sycophant_6 = 8191 ; WoH isMonk
-Global Const $model_id_white_mantle_fanatic		= 8196
-Global Const $model_id_white_mantle_fanatic_2	= 8197 ; nec (rit heal)
-Global Const $model_id_white_mantle_fanatic_3	= 8198 ; lingering curse
-Global Const $model_id_white_mantle_fanatic_4	= 8199 ; tainted flesh
+Global Const $model_id_white_mantle_ritualist_6 = 8288 ; rit/paragon spear ; 8237
+Global Const $model_id_white_mantle_ritualist_8 = 8289 ; rit/monk (preservation, strong heal, hexremove, spirits) primary ; 8238
+Global Const $model_id_white_mantle_ritualist   = 8290 ; SoS ; 8239
+Global Const $model_id_white_mantle_ritualist_2 = 8291 ; PRIMARY (shadowsong,bloodsong,pain,anguish) ; 8240
+Global Const $model_id_white_mantle_ritualist_7 = 8292 ; minions 2nd prio;  ; 8241
+Global Const $model_id_white_mantle_ritualist_9 = 8293 ; weapon of remedy rit(hardrez, prio) ; 8242
+
+Global Const $model_id_white_mantle_ritualist_3 = 8243 ; 8192
+Global Const $model_id_white_mantle_ritualist_4 = 8244 ;  ; 8193
+Global Const $model_id_white_mantle_ritualist_5 = 8245 ; 8194
+
+Global Const $model_id_white_mantle_savant      = 8251 ; mshower ; 8200
+Global Const $model_id_white_mantle_savant_2    = 8252 ; savannah heat + rit heal ; 8201
+
+Global Const $model_id_white_mantle_adherent    = 8255 ;  ; 8204
+Global Const $model_id_white_mantle_adherent_2  = 8256 ; shatterstone ; 8205
+Global Const $model_id_white_mantle_adherent_3  = 8257 ; Unsteady Ground ; 8206
+Global Const $model_id_white_mantle_adherent_4  = 8258 ; Sandstorm ; 8207
+
+Global Const $model_id_white_mantle_priest      = 8259 ; WoH ; 8208
+Global Const $model_id_white_mantle_priest_2    = 8260 ; Healing Burst ; 8209
+Global Const $model_id_white_mantle_priest_3    = 8261 ; Healers Boon(hexremove) ; 8210
+Global Const $model_id_white_mantle_priest_4    = 8262 ; mo/ele (smite) RoJ ; 8211
+
+Global Const $model_id_white_mantle_abbot        = 8263 ; Prot Mo (Boon Signet, spiritbond) ; 8212
+Global Const $model_id_white_mantle_abbot_2      = 8264 ; Mantra of Recall ; 8213
+Global Const $model_id_white_mantle_abbot_3      = 8265 ;  ; 8214
+Global Const $model_id_white_mantle_abbot_4      = 8266 ; zeal benediction + smite ; 8215
+
+Global Const $model_id_white_mantle_sycophant    = 8237 ; degen mes (crippling anguish) ; 8186
+Global Const $model_id_white_mantle_sycophant_2  = 8238 ; dom mes (clumsiness) 2nd ; 8187
+Global Const $model_id_white_mantle_sycophant_3  = 8239 ; dom mes (emp+healing signet) ; 8188
+Global Const $model_id_white_mantle_sycophant_4  = 8240 ; esurge, spirit shackles 2NDARY ; 8189
+Global Const $model_id_white_mantle_sycophant_5  = 8241 ; condi mes 2nd ; 8190
+Global Const $model_id_white_mantle_sycophant_6  = 8242 ; WoH isMonk ; 8191
+
+Global Const $model_id_white_mantle_fanatic      = 8247 ; 8196
+Global Const $model_id_white_mantle_fanatic_2    = 8248 ; nec (rit heal) ; 8197
+Global Const $model_id_white_mantle_fanatic_3    = 8249 ; lingering curse ; 8198
+Global Const $model_id_white_mantle_fanatic_4    = 8250 ; tainted flesh ; 8199
 ;roj Missing
 #Endregion PlayerNumber
 
