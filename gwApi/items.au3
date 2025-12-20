@@ -52,7 +52,7 @@ EndFunc ;==>GetIsIdentified
 
 ;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
 Func GetCanBeIdentified($aItem)
-	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword;:'), 0x00800000) > 0
+	Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x00800000) > 0
 EndFunc ;==>GetCanBeIdentified
 
 ;~ Description: Tests if an Item can be salvaged into Materials.
