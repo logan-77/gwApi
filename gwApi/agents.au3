@@ -170,6 +170,30 @@ Func GetNearestAgentPtr($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerN
 	Return $lNearestAgentPtr
 EndFunc ;==>GetNearestAgentPtr
 
+Func GetNearestAgentPtr2($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerNumber = 0, $aX = X($aAgent), $aY = Y($aAgent))
+	Local $lAgent = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr = 0, $lNearestDistance = 25000000
+	Local $lAgentPtrArray, $lDistance
+	Switch $aType
+		Case 0xDB
+			$lAgentPtrArray = GetAgentPtrArray(2, $aType, $aAllegiance)
+		Case 0x200, 0x400
+			$lAgentPtrArray = GetAgentPtrArray(1, $aType)
+	EndSwitch
+
+	For $i = 1 To $lAgentPtrArray[0]
+		If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
+		;~ If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
+		;~ If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
+		;~ If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
+		$lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
+		If $lDistance < $lNearestDistance Then
+			$lNearestAgentPtr = $lAgentPtrArray[$i]
+			$lNearestDistance = $lDistance
+		EndIf
+	Next
+	Return $lNearestAgentPtr
+EndFunc ;==>GetNearestAgentPtr
+
 ;~ Returns distance of nearest Agent. param: Allegiance
 Func GetNearestDistance($aAgent = -2, $aAllegiance = 3)
 	Local $lNearestAgentPtr = GetNearestAgentPtr($aAgent, 0xDB, $aAllegiance)
@@ -217,12 +241,12 @@ EndFunc   ;==>GetNearestNPCPtrToXY
 ;~ Description: Returns the pointer variable for the nearest signpost to an agent.
 ;~ GetNearestAgentPtr: Agent, Type, Allegiance, PlayerNumber, X, Y
 Func GetNearestSignpostPtrToAgent($aAgent = -2)
-	Return GetNearestAgentPtr($aAgent, 0x200)
+	Return GetNearestAgentPtr2($aAgent, 0x200)
 EndFunc   ;==>GetNearestSignpostPtrToAgent
 
 ;~ Description: Returns the pointer variable for the nearest signpost to a set of coordinates.
 Func GetNearestSignpostPtrToXY($aX, $aY)
-	Return GetNearestAgentPtr(-2, 0x200, 2, 0, $aX, $aY) ; look up allegiance=2
+	Return GetNearestAgentPtr2(-2, 0x200, 2, 0, $aX, $aY) ; look up allegiance=2
 EndFunc   ;==>GetNearestSignpostPtrToXY
 
 ;~ Description: Returns pointer variable for the nearest ally to an agent.
