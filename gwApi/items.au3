@@ -1145,11 +1145,17 @@ Func IsEventItem($aModelID)
 	; Wintersday
 	If $aModelID = $model_id_candy_cane_shard Then Return True
 	If $aModelID = $model_id_eggnog Then Return True
+	If $aModelID = $model_id_spiked_eggnog Then Return True
 	If $aModelID = $model_id_fruitcake Then Return True
 	If $aModelID = $model_id_snowman_summoner Then Return True
+		
 	If $aModelID = $model_id_frosty_tonic Then Return True
 	If $aModelID = $model_id_mischievous_tonic Then Return True
-	If $aModelID = $model_id_spiked_eggnog Then Return True
+	If $aModelID = $model_id_yuletide_tonic Then Return True
+	
+	If $aModelID = $model_id_wintergreen_candy_cane Then Return True
+	If $aModelID = $model_id_rainbow_candy_cane Then Return True
+	If $aModelID = $model_id_peppermint_candy_cane Then Return True
 	
 	Return False
 EndFunc ;==>IsEventItem
