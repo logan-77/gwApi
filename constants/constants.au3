@@ -676,3 +676,19 @@ Global Const $model_id_runic_axe = 753
 Global Const $model_id_gothic_dual_axe = 749
 Global Const $model_id_gothic_axe = 748
 Global Const $model_id_gothic_sword = 793
+
+
+#Region TraderCoords
+Global Const $aXYBaseEotn = [-2680, 1212]
+Global Const $aXYMerchantEotn = [-2748, 1019] ; same for wintersday
+Global Const $aXYMaterialTraderEotn = [-1867, 803] ; same for wintersday
+Global Const $aXYRareMaterialTraderEotn = [-2079, 1046] ; same for wintersday
+Global Const $aXYRuneTraderEotn = [-3368, 2092]
+Global Const $aXYRuneTraderEotnWintersday = [-3018, 1753]
+
+Global Const $aXYBaseSifhalla = [11800, 23090]
+Global Const $aXYMerchantSifhalla = [11580, 21619]
+Global Const $aXYMaterialTraderSifhalla = [11489, 22240]
+Global Const $aXYRareMaterialTraderSifhalla = [10875, 22596]
+Global Const $aXYRuneTraderSifhalla = [11240, 22573]
+#EndRegion TraderCoords
