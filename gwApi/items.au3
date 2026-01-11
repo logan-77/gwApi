@@ -61,14 +61,14 @@ Func GetIsSalvageable($aItem)
 EndFunc ;==>GetIsSalvageable
 
 Func GetItemPtrBySlot($aBag, $aSlot)
-	Local $lBagPtr = Item_GetBagPtr($aBag)
-	Local $lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
+	Local $pBag = Item_GetBagPtr($aBag)
+	Local $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
 	Return Memory_Read($lItemArrayPtr + 4 * ($aSlot - 1), 'ptr')
 EndFunc   ;==>GetItemPtrBySlot
 
 ; Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
 Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-	Local $lItemPtr, $lBagPtr, $lItemArrayPtr, $lModelID, $lCount = 0
+	Local $pItem, $pBag, $lItemArrayPtr, $lModelID, $lCount = 0
 	
 	If IsArray($aModelID) Then
 		Local $lReturnPtr[UBound($aModelID)]
@@ -84,16 +84,16 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEqu
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				$lModelID = GetItemModelID($lItemPtr)
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				$lModelID = GetItemModelID($pItem)
 				For $i = 0 To UBound($aModelID) - 1
 					If $lReturnPtr[$i] <> 0 Or $lModelID <> $aModelID[$i] Then ContinueLoop
-					$lReturnPtr[$i] = $lItemPtr
+					$lReturnPtr[$i] = $pItem
 					$lCount += 1
 					If $lCount = UBound($aModelID) Then
 						Return $lReturnPtr
@@ -107,14 +107,14 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEqu
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				If GetItemModelID($lItemPtr) = $aModelID Then
-					Return $lItemPtr
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				If GetItemModelID($pItem) = $aModelID Then
+					Return $pItem
 				EndIf
 			Next
 		Next
@@ -133,36 +133,49 @@ Func GetItemInChest($aModelID)
 EndFunc ;==>GetItemInChest
 
 Func GetItemInInventoryByType($aType)
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemType($pItem) = $aType Then Return $pItem
 		Next
 	Next
 	Return 0
 EndFunc ;==>GetItemInInventoryByType
 
 Func GetItemInChestByType($aType)
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) = $aType Then Return $lItemPtr
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemType($pItem) = $aType Then Return $pItem
 		Next
 	Next
 	Return 0
 EndFunc ;==>GetItemInChestByType
 
+;~ Returns the first Item, with a matching ModStruct
+Func GetItemByModStruct($iBagIndex = 1, $sModStruct = "")
+	If $sModStruct = "" Then Return 0
+	Local $pItem, $pBag = Item_GetBagPtr($iBagIndex)
+
+	For $slot = 1 To GetMaxSlots($pBag)
+		$pItem = GetItemPtrBySlot($pBag, $slot)
+		If $pItem = 0 Then ContinueLoop
+		If StringInStr(GetModStruct($pItem), $sModStruct) > 0 Then Return $pItem
+	Next
+	Return 0
+EndFunc ;==>GetItemByModStruct
+
 ;~ Description: Returns amount of items of $aModelID in selected bags.
 Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-	Local $lItemPtr, $lBagPtr, $lItemArrayPtr, $lModelID
+	Local $pItem, $pBag, $lItemArrayPtr, $lModelID
 	If IsArray($aModelID) Then
 		Local $lCount[UBound($aModelID)]
 		For $i = 0 To UBound($aModelID) - 1
@@ -177,19 +190,19 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				$lModelID = GetItemModelID($lItemPtr)
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				$lModelID = GetItemModelID($pItem)
 				For $i = 0 To UBound($aModelID) - 1
 					If $lModelID = $aModelID[$i] Then
 						If $aCountSlotsOnly Then
 							$lCount[$i] += 1
 						Else
-							$lCount[$i] += GetItemQuantity($lItemPtr)
+							$lCount[$i] += GetItemQuantity($pItem)
 						EndIf
 					EndIf
 				Next
@@ -200,17 +213,17 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				If GetItemModelID($lItemPtr) = $aModelID Then
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				If GetItemModelID($pItem) = $aModelID Then
 					If $aCountSlotsOnly Then
 						$lCount += 1
 					Else
-						$lCount += GetItemQuantity($lItemPtr)
+						$lCount += GetItemQuantity($pItem)
 					EndIf
 				EndIf
 			Next
@@ -236,7 +249,7 @@ EndFunc ;==>GetQuantity
 
 ;~ Description: Returns amount of items of $aType in selected bags.
 Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-	Local $lItemPtr, $lBagPtr, $lItemArrayPtr, $lType
+	Local $pItem, $pBag, $lItemArrayPtr, $lType
 	If IsArray($aType) Then
 		Local $lCount[UBound($aType)]
 		For $i = 0 To UBound($aType) - 1
@@ -251,19 +264,19 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				$lType = GetItemType($lItemPtr)
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				$lType = GetItemType($pItem)
 				For $i = 0 To UBound($aType) - 1
 					If $lType = $aType[$i] Then
 						If $aCountSlotsOnly Then
 							$lCount[$i] += 1
 						Else
-							$lCount[$i] += GetItemQuantity($lItemPtr)
+							$lCount[$i] += GetItemQuantity($pItem)
 						EndIf
 					EndIf
 				Next
@@ -274,17 +287,17 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
 			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
 			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
 			If $bag = 7 Then ContinueLoop
-			$lBagPtr = Item_GetBagPtr($bag)
-			If $lBagPtr = 0 Then ContinueLoop
-			$lItemArrayPtr = Memory_Read($lBagPtr + 0x18, 'ptr')
-			For $slot = 0 To GetMaxSlots($lBagPtr) - 1
-				$lItemPtr = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-				If $lItemPtr = 0 Then ContinueLoop
-				If GetItemType($lItemPtr) = $aType Then
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				If GetItemType($pItem) = $aType Then
 					If $aCountSlotsOnly Then
 						$lCount += 1
 					Else
-						$lCount += GetItemQuantity($lItemPtr)
+						$lCount += GetItemQuantity($pItem)
 					EndIf
 				EndIf
 			Next
@@ -310,10 +323,10 @@ EndFunc ;==>GetQuantity
 
 ;~ === Move Items around ===
 Func UseItemByModelID($aModelID)
-	Local $lItemPtr = GetItemInInventory($aModelID)
-	If $lItemPtr = 0 Then Return False
+	Local $pItem = GetItemInInventory($aModelID)
+	If $pItem = 0 Then Return False
 	
-	Item_UseItem($lItemPtr)
+	Item_UseItem($pItem)
 	Other_PingSleep(100)
 	Return True
 EndFunc ;==>UseItemByModelID
@@ -325,14 +338,14 @@ EndFunc ;==>UseItemByModelID
 ;Drops all Items to ground, if in explorable
 Func DropAll()
 	If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			Item_DropItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			Item_DropItem($pItem)
 			Other_PingSleep(100)
 		Next
 	Next
@@ -342,15 +355,15 @@ EndFunc ;==>DropAll
 ;Drops all Items of given Type to ground, if in explorable
 Func DropItemsByType($aType)
 	If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) <> $aType Then ContinueLoop
-			Item_DropItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemType($pItem) <> $aType Then ContinueLoop
+			Item_DropItem($pItem)
 			Other_PingSleep(100)
 		Next
 	Next
@@ -360,16 +373,16 @@ EndFunc ;==>DropItemsByType
 ;Drops all Items of given ModelID to ground, if in explorable
 Func DropItemsByModelID($aModelID, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemModelID($lItemPtr) <> $aModelID Then ContinueLoop
-			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
-			Item_DropItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+			Item_DropItem($pItem)
 			Other_PingSleep(100)
 		Next
 	Next
@@ -393,17 +406,17 @@ Func MoveItemEx($aItem, $aBag, $aSlot, $aAmount = 0)
 EndFunc ;==>MoveItemEx
 
 Func PickUpLootEx($iMaxDist = 2500)
-	Local $lAgentPtr, $lAgentID, $lItemPtr, $lOwner
+	Local $lAgentPtr, $lAgentID, $pItem, $lOwner
 
 	Local $lAgentPtrArray = GetAgentPtrArray(1, 0x400)
 	For $i = 1 To $lAgentPtrArray[0]
 		$lAgentPtr = $lAgentPtrArray[$i]
 		$lAgentID = ID($lAgentPtr)
-		$lItemPtr = GetItemPtrByAgentPtr($lAgentPtr)
-		If $lItemPtr = 0 Then ContinueLoop
+		$pItem = GetItemPtrByAgentPtr($lAgentPtr)
+		If $pItem = 0 Then ContinueLoop
 		$lOwner = Memory_Read($lAgentPtr + 0xC4, 'long')
 		If $lOwner <> 0 And $lOwner <> GetMyID() Then ContinueLoop ; assigned to another player
-		If CanPickUpEx($lItemPtr) And GetDistance($lAgentPtr) < $iMaxDist Then
+		If CanPickUpEx($pItem) And GetDistance($lAgentPtr) < $iMaxDist Then
 			If GetDistanceToXY(X($lAgentPtr), Y($lAgentPtr)) > 250 Then MoveTo(X($lAgentPtr), Y($lAgentPtr))
 			$lDeadlock = TimerInit()
 			Do
@@ -429,19 +442,19 @@ EndFunc   ;==>GetItemPtrByAgentPtr
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ If $aStackItem=True, it will try to stack Items with same ModelID
 Func MoveItemToChest($aItem, $aStackItem = False)
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	Local $lQuantity = 0, $lModelID = 0, $lMoveItem = False
 	For $bag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then
 				$lMoveItem = True
 				ExitLoop 2
 			EndIf
-			If $aStackItem And GetItemModelID($lItemPtr) = GetItemModelID($aItem) Then
-				If (GetItemQuantity($lItemPtr) + GetItemQuantity($aItem)) <= 250 Then
+			If $aStackItem And GetItemModelID($pItem) = GetItemModelID($aItem) Then
+				If (GetItemQuantity($pItem) + GetItemQuantity($aItem)) <= 250 Then
 					$lMoveItem = True
 					ExitLoop 2
 				EndIf
@@ -457,12 +470,12 @@ EndFunc ;==>MoveItemToChest
 
 ;~ Description: Looks for free Slot and moves Item to Inventory
 Func MoveItemToInventory($aItem)
-	Local $lItemPtr, $lBagPtr, $lMoveItem = False
+	Local $pItem, $pBag, $lMoveItem = False
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			If GetItemPtrBySlot($lBagPtr, $slot) = 0 Then
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			If GetItemPtrBySlot($pBag, $slot) = 0 Then
 				$lMoveItem = True
 				ExitLoop 2
 			EndIf
@@ -477,16 +490,16 @@ EndFunc ;==>MoveItemToInventory
 
 Func StoreItemsByModelID($aModelID, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemModelID($lItemPtr) <> $aModelID Then ContinueLoop
-			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
-			If MoveItemToChest($lItemPtr) = False Then Return
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+			If MoveItemToChest($pItem) = False Then Return
 		Next
 	Next
 EndFunc ;==>StoreItemsByModelID
@@ -494,32 +507,32 @@ EndFunc ;==>StoreItemsByModelID
 ;Stores all Items of given Type
 Func StoreItemsByType($aType, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) <> $aType Then ContinueLoop
-			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
-			If MoveItemToChest($lItemPtr) = False Then Return
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemType($pItem) <> $aType Then ContinueLoop
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+			If MoveItemToChest($pItem) = False Then Return
 		Next
 	Next
 EndFunc ;==>StoreItemsByType
 
 Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $lItemPtr, $lBagPtr, $lQuantity = 0
+	Local $pItem, $pBag, $lQuantity = 0
 	For $bag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemModelID($lItemPtr) <> $aModelID Then ContinueLoop
-			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
-			If MoveItemToInventory($lItemPtr) = False Then Return
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+			If MoveItemToInventory($pItem) = False Then Return
 			If $aQuantity > 0 Then
 				$lQuantity += 1
 				If $lQuantity >= $aQuantity Then Return
@@ -531,16 +544,16 @@ EndFunc ;==>WithdrawItemsByModelID
 ;Stores all Items of given Type
 Func WithdrawItemsByType($aType, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If GetItemType($lItemPtr) <> $aType Then ContinueLoop
-			If $aFullStack And GetItemQuantity($lItemPtr) < 250 Then ContinueLoop
-			If MoveItemToInventory($lItemPtr) = False Then Return
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If GetItemType($pItem) <> $aType Then ContinueLoop
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+			If MoveItemToInventory($pItem) = False Then Return
 		Next
 	Next
 EndFunc ;==>WithdrawItemsByType
@@ -568,26 +581,26 @@ EndFunc ;==>IdentifyItem
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
 Func FindIDKit($aCheckUses = False)
-	Local $lItemPtr, $lValue, $lKitPtr = 0, $lUses = 101
+	Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 to GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			$lValue = GetItemValue($lItemPtr)
-			Switch GetItemModelID($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 to GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			$lValue = GetItemValue($pItem)
+			Switch GetItemModelID($pItem)
 				Case 2989
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 2) < $lUses Then
 						$lUses = $lValue / 2
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				Case 5899
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 2.5) < $lUses Then
 						$lUses = $lValue / 2.5
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				Case Else
 					ContinueLoop
@@ -599,20 +612,20 @@ EndFunc   ;==>FindIDKit
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
 Func FindSuperiorIDKit($aCheckUses = False)
-	Local $lItemPtr, $lValue, $lKitPtr = 0, $lUses = 101
+	Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 to GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			$lValue = GetItemValue($lItemPtr)
-			Switch GetItemModelID($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 to GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			$lValue = GetItemValue($pItem)
+			Switch GetItemModelID($pItem)
 				Case 5899
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 2.5) < $lUses Then
 						$lUses = $lValue / 2.5
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				Case Else
 					ContinueLoop
@@ -657,20 +670,20 @@ EndFunc   ;==>SalvageMod
 
 ;~ Description: Returns ItemPtr of cheap Salvage Kit in inventory. Return 0, if no Kit found.
 Func FindCheapSalvageKit($aCheckUses = False)
-	Local $lItemPtr, $lValue, $lKitPtr = 0, $lUses = 101
+	Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 to GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			$lValue = GetItemValue($lItemPtr)
-			Switch GetItemModelID($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 to GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			$lValue = GetItemValue($pItem)
+			Switch GetItemModelID($pItem)
 				Case 2992
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 2) < $lUses Then
 						$lUses = $lValue / 2
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				Case Else
 					ContinueLoop
@@ -682,32 +695,32 @@ EndFunc   ;==>FindCheapSalvageKit
 
 ;~ Description: Returns ItemPtr of any Salvage Kit in inventory. Return 0, if no Kit found.
 Func FindExpertSalvageKit($aCheckUses = False)
-	Local $lItemPtr, $lValue, $lKitPtr = 0, $lUses = 101
+	Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 to GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			$lValue = GetItemValue($lItemPtr)
-			Switch GetItemModelID($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 to GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			$lValue = GetItemValue($pItem)
+			Switch GetItemModelID($pItem)
 				Case 2991
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 8) < $lUses Then
 						$lUses = $lValue / 8
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				; Case 2992
-					; If $aCheckUses = False Then Return $lItemPtr
+					; If $aCheckUses = False Then Return $pItem
 					; If ($lValue / 2) < $lUses Then
 						; $lUses = $lValue / 2
-						; $lKitPtr = $lItemPtr
+						; $lKitPtr = $pItem
 					; EndIf
 				Case 5900
-					If $aCheckUses = False Then Return $lItemPtr
+					If $aCheckUses = False Then Return $pItem
 					If ($lValue / 10) < $lUses Then
 						$lUses = $lValue / 10
-						$lKitPtr = $lItemPtr
+						$lKitPtr = $pItem
 					EndIf
 				Case Else
 					ContinueLoop
@@ -753,43 +766,43 @@ EndFunc
 ;~ === Slots ===
 ;~ Description: Returns amount of slots of bag.
 Func GetMaxSlots($aBag)
-	Local $lBagPtr = Item_GetBagPtr($aBag)
-	If $lBagPtr = 0 Then Return 0
-	Return Memory_Read($lBagPtr + 0x20, 'long')
+	Local $pBag = Item_GetBagPtr($aBag)
+	If $pBag = 0 Then Return 0
+	Return Memory_Read($pBag + 0x20, 'long')
 EndFunc   ;==>GetMaxSlots
 
 ;~ Description: Returns amount of slots available to character.
 Func GetMaxTotalSlots()
-   Local $SlotCount = 0, $lBagPtr
+   Local $SlotCount = 0, $pBag
    For $Bag = 1 to 4
-	  $lBagPtr = Item_GetBagPtr($Bag)
-	  $SlotCount += Memory_Read($lBagPtr + 0x20, 'long')
+	  $pBag = Item_GetBagPtr($Bag)
+	  $SlotCount += Memory_Read($pBag + 0x20, 'long')
    Next
    For $Bag = 8 to 12
-	  $lBagPtr = Item_GetBagPtr($Bag)
-	  $SlotCount += Memory_Read($lBagPtr + 0x20, 'long')
+	  $pBag = Item_GetBagPtr($Bag)
+	  $SlotCount += Memory_Read($pBag + 0x20, 'long')
    Next
    Return $SlotCount
 EndFunc   ;==>GetMaxTotalSlots
 
 ;~ Description: Returns number of free slots in inventory
 Func CountFreeSlots()
-	Local $lCount = 0, $lBagPtr
+	Local $lCount = 0, $pBag
 	For $lBag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($lBag)
-		If $lBagPtr = 0 Then ContinueLoop
-		$lCount += Memory_Read($lBagPtr + 0x20, "long") - Memory_Read($lBagPtr + 0x10, "dword")
+		$pBag = Item_GetBagPtr($lBag)
+		If $pBag = 0 Then ContinueLoop
+		$lCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
 	Next
 	Return $lCount
 EndFunc   ;==>CountFreeSlots
 
 ;~ Description: Retursn number of free slots in storage
 Func CountFreeSlotsStorage()
-	Local $lCount = 0, $lBagPtr
+	Local $lCount = 0, $pBag
 	For $lBag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($lBag)
-		If $lBagPtr = 0 Then ContinueLoop
-		$lCount += Memory_Read($lBagPtr + 0x20, "long") - Memory_Read($lBagPtr + 0x10, "dword")
+		$pBag = Item_GetBagPtr($lBag)
+		If $pBag = 0 Then ContinueLoop
+		$lCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
 	Next
 	Return $lCount
 EndFunc ;==>CountFreeSlotsStorage
@@ -814,9 +827,9 @@ EndFunc   ;==>GetBagPtrByItem
 
 ;~ Description: Returns the Bag Index of an item by ItemID/ItemPtr/ItemStruct
 Func GetBagNumberByItem($aItem)
-	Local $lBagPtr = GetBagPtrByItem($aItem)
-	If $lBagPtr = 0 Then Return 0
-	Return Memory_Read($lBagPtr + 0x4, "dword")
+	Local $pBag = GetBagPtrByItem($aItem)
+	If $pBag = 0 Then Return 0
+	Return Memory_Read($pBag + 0x4, "dword")
 EndFunc   ;==>GetBagNumberByItem
 #EndRegion Bag
 
@@ -955,14 +968,14 @@ EndFunc ;==>IsEliteOrNormalTome
 
 ; Return the amount of Alcohol in Inventory
 Func GetAlcQuantityInventory()
-	Local $lItemPtr, $lBagPtr, $lQuantity = 0
+	Local $pItem, $pBag, $lQuantity = 0
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If CheckIsAlc(GetItemModelID($lItemPtr)) Then $lQuantity += GetItemQuantity($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If CheckIsAlc(GetItemModelID($pItem)) Then $lQuantity += GetItemQuantity($pItem)
 		Next
 	Next
 	Return $lQuantity
@@ -970,18 +983,18 @@ EndFunc ;==>GetAlcQuantityInventory
 
 ; Uses first Alc found in Inventory, Returns 0 if no Alc available
 Func UseAlc($aOneMinAlc = False)
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If $aOneMinAlc And CheckIsOneMinAlc(GetItemModelID($lItemPtr)) Then
-				Item_UseItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If $aOneMinAlc And CheckIsOneMinAlc(GetItemModelID($pItem)) Then
+				Item_UseItem($pItem)
 				Return 1
-			ElseIf CheckIsAlc(GetItemModelID($lItemPtr)) Then
-				Item_UseItem($lItemPtr)
+			ElseIf CheckIsAlc(GetItemModelID($pItem)) Then
+				Item_UseItem($pItem)
 				Return 1
 			EndIf
 		Next
@@ -1035,28 +1048,28 @@ EndFunc ;==>CheckIsCitySpeed
 ; Pops a City Speedboost
 Func MaintainCitySpeed()
 	If GetIsEnchanted(-2) Then Return 1
-	Local $lItemPtr, $lBagPtr
+	Local $pItem, $pBag
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If CheckIsCitySpeed(GetItemModelID($lItemPtr)) Then
-				Item_UseItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If CheckIsCitySpeed(GetItemModelID($pItem)) Then
+				Item_UseItem($pItem)
 				Return 1
 			EndIf
 		Next
 	Next
 	
 	For $bag = 8 To 12
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			If CheckIsCitySpeed(GetItemModelID($lItemPtr)) Then
-				Item_UseItem($lItemPtr)
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			If CheckIsCitySpeed(GetItemModelID($pItem)) Then
+				Item_UseItem($pItem)
 				Return 1
 			EndIf
 		Next
@@ -1067,23 +1080,23 @@ EndFunc ;==>MaintainCitySpeed
 ; Sells all the unneeded Mats to Merchant
 ; Make sure *you are standing at a Merchant!!!*
 Func SellJunk()
-	Local $lItemPtr, $lBagPtr, $lQuantity, $lModelID
+	Local $pItem, $pBag, $lQuantity, $lModelID
 	
 	For $bag = 1 To 4
-		$lBagPtr = Item_GetBagPtr($bag)
-		If $lBagPtr = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($lBagPtr)
-			$lItemPtr = GetItemPtrBySlot($lBagPtr, $slot)
-			If $lItemPtr = 0 Then ContinueLoop
-			$lModelID = GetItemModelID($lItemPtr)
-			$lQuantity = GetItemQuantity($lItemPtr)			
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			$pItem = GetItemPtrBySlot($pBag, $slot)
+			If $pItem = 0 Then ContinueLoop
+			$lModelID = GetItemModelID($pItem)
+			$lQuantity = GetItemQuantity($pItem)			
 			Switch $lModelID
 				Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key
 					ContinueCase
 				Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
 					ContinueCase
 				Case $model_id_cloth, $model_id_tanned_hide
-					Merchant_SellItem($lItemPtr, $lQuantity)
+					Merchant_SellItem($pItem, $lQuantity)
 					Other_PingSleep(500)
 					ContinueLoop
 			EndSwitch
@@ -1143,19 +1156,19 @@ Func IsEventItem($aModelID)
 	;~ If $aModelID = $model_id_pumpkin_pie Then Return True ; + Hard Apple Cider, see above
 	
 	; Wintersday
-	If $aModelID = $model_id_candy_cane_shard Then Return True
-	If $aModelID = $model_id_eggnog Then Return True
-	If $aModelID = $model_id_spiked_eggnog Then Return True
-	If $aModelID = $model_id_fruitcake Then Return True
-	If $aModelID = $model_id_snowman_summoner Then Return True
+	;~ If $aModelID = $model_id_candy_cane_shard Then Return True
+	;~ If $aModelID = $model_id_eggnog Then Return True
+	;~ If $aModelID = $model_id_spiked_eggnog Then Return True
+	;~ If $aModelID = $model_id_fruitcake Then Return True
+	;~ If $aModelID = $model_id_snowman_summoner Then Return True
 		
-	If $aModelID = $model_id_frosty_tonic Then Return True
-	If $aModelID = $model_id_mischievous_tonic Then Return True
-	If $aModelID = $model_id_yuletide_tonic Then Return True
+	;~ If $aModelID = $model_id_frosty_tonic Then Return True
+	;~ If $aModelID = $model_id_mischievous_tonic Then Return True
+	;~ If $aModelID = $model_id_yuletide_tonic Then Return True
 	
-	If $aModelID = $model_id_wintergreen_candy_cane Then Return True
-	If $aModelID = $model_id_rainbow_candy_cane Then Return True
-	If $aModelID = $model_id_peppermint_candy_cane Then Return True
+	;~ If $aModelID = $model_id_wintergreen_candy_cane Then Return True
+	;~ If $aModelID = $model_id_rainbow_candy_cane Then Return True
+	;~ If $aModelID = $model_id_peppermint_candy_cane Then Return True
 	
 	Return False
 EndFunc ;==>IsEventItem
@@ -1211,13 +1224,13 @@ EndFunc ;==>IsRune
 ;~ Description: Returns modstruct of an item.
 Func GetModStruct($aItem)
 	If IsString($aItem) Then Return $aItem
-	Local $lItemPtr = Item_GetItemPtr($aItem)
-	If $lItemPtr = 0 Then Return 0
+	Local $pItem = Item_GetItemPtr($aItem)
+	If $pItem = 0 Then Return 0
 
-	Local $lModStructPtr = Item_GetItemInfoByPtr($lItemPtr, "ModStruct")
+	Local $lModStructPtr = Item_GetItemInfoByPtr($pItem, "ModStruct")
     If $lModStructPtr = 0 Then Return 0
 
-	Local $lModStructSize = Item_GetItemInfoByPtr($lItemPtr, "ModStructSize")
+	Local $lModStructSize = Item_GetItemInfoByPtr($pItem, "ModStructSize")
     If $lModStructSize = 0 Then Return 0
 	
 	Return Memory_Read($lModStructPtr, 'Byte[' & $lModStructSize * 4 & ']')

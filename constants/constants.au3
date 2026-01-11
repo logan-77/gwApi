@@ -2,8 +2,9 @@
 Global Enum $normalmode, $hardmode
 Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
-Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, $mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, _
-			$mode_essence, $mode_scrolls, $mode_grail, $mode_armor, $mode_conset, $mode_polar
+Global Enum $mode_feather, $mode_vaettir, $mode_cof, $mode_fiber, $mode_dust_toa, _
+			$mode_soup, $mode_kabob, $mode_salad, $mode_warsupply, $mode_moddok, _
+			$mode_scrolls, $mode_conset, $mode_polar
 Global Enum $state_farm_feather, $state_farm_dust, $state_farm_bones, $state_farm_fiber, $state_farm_iron, $state_craft_cons, $state_next
 
 ; === gold related ==
@@ -454,11 +455,11 @@ Global Const $map_id_riven_earth = 501
 Global Const $map_id_jaga_moraine = 546
 Global Const $map_id_cathedral_of_flames = 560
 Global Const $map_id_rata_sum = 640
-Global Const $map_id_eye_of_the_north = 821 ; 642 change back after event!
+Global Const $map_id_eye_of_the_north = 642
 Global Const $map_id_eye_of_the_north_wintersday = 821
 Global Const $map_id_doomlore_shrine = 648
 Global Const $map_id_longeyes_ledge = 650
-Global Const $map_id_kamadan = 819 ; 449 change back after event!
+Global Const $map_id_kamadan = 449
 Global Const $map_id_kamadan_wintersday = 819
 Global Const $map_id_rilohn_refuge = 425
 Global Const $map_id_moddok_crevice = 427
@@ -475,7 +476,7 @@ Global Const $map_id_the_fissure_of_woe = 34
 Global Const $map_id_chantry_of_secrets = 393
 Global Const $map_id_temple_of_the_ages = 138
 Global Const $map_id_the_black_curtain = 18
-Global Const $map_id_lions_arch = 809 ; 808 change back after event!
+Global Const $map_id_lions_arch = 808
 Global Const $map_id_lions_arch_wintersday = 809
 Global Const $map_id_snowman_dungeon = 782 ; check name
 Global Const $map_id_gate_of_anguish = 474 ; explorable and outpost
@@ -588,8 +589,8 @@ Global Const $model_id_corsair_raider          = 5128 ; 5077
 Global Const $model_id_corsair_captain         = 5130 ; 5079
 
 ; FoW and UW
-Global Const $model_id_champion_of_balthazar	= 1997 ; 1947
 Global Const $model_id_avatar_of_grenth			= 1995 ; 1945
+Global Const $model_id_champion_of_balthazar	= 1997 ; 1947
 Global Const $model_id_abyssal			= 2861 ; 2810
 Global Const $model_id_shadow_ranger	= 2859 ; 2808
 Global Const $model_id_skeleton_of_dhuum = 2392 ; 2342
