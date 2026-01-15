@@ -301,7 +301,7 @@ Global Const $model_id_elite_tome_dervish		= 21793
 Global Const $model_id_elite_tome_ritualist		= 21794
 Global Const $model_id_elite_tome_paragon		= 21795
 ;~ normal tomes
-global $reguar_tomes[10] = [21796, 21797, 21798, 21799, 21800, 21801, 21802, 21803, 21804, 21805]
+global $regular_tomes[10] = [21796, 21797, 21798, 21799, 21800, 21801, 21802, 21803, 21804, 21805]
 Global Const $model_id_tome_assassin 	= 21796
 Global Const $model_id_tome_mesmer 		= 21797
 Global Const $model_id_tome_necromancer = 21798
@@ -555,17 +555,17 @@ Global Const $model_id_hate               = 4281 ; 4230
 Global Const $model_id_suffering          = 4282 ; 4231
 
 ; Nightfall Pcons farm
-Global Const $model_id_fanged_iboga                   = 4439 ; 4388
-Global Const $model_id_fanged_iboga_lvl_6             = 4437 ; 4386
-Global Const $model_id_stormseed_jacaranda_lvl_6      = 4436 ; 4385
-Global Const $model_id_stormseed_jacaranda_lvl_10     = 4438 ; 4387
-Global Const $model_id_grub_lance_lvl_8               = 4428 ; 4377
-Global Const $model_id_preying_lance_lvl_8            = 4430 ; 4379
-Global Const $model_id_stalking_nephila_lvl_2         = 4393 ; 4342
-Global Const $model_id_stalking_nephila_lvl_15        = 4392 ; 4341
-Global Const $model_id_irontooth_drake_lvl_10         = 4403 ; 4352
-Global Const $model_id_irontooth_drake_lvl_18         = 4404 ; 4353
-Global Const $model_id_steelfang_drake                = 4965 ; 4914
+Global Const $model_id_fanged_iboga					= 4439 ; 4388
+Global Const $model_id_fanged_iboga_lvl_6			= 4437 ; 4386
+Global Const $model_id_stormseed_jacaranda_lvl_6    = 4436 ; 4385
+Global Const $model_id_stormseed_jacaranda_lvl_10   = 4438 ; 4387
+Global Const $model_id_grub_lance_lvl_8             = 4428 ; 4377
+Global Const $model_id_preying_lance_lvl_8          = 4430 ; 4379
+Global Const $model_id_stalking_nephila_lvl_2       = 4393 ; 4342
+Global Const $model_id_stalking_nephila_lvl_15      = 4392 ; 4341
+Global Const $model_id_irontooth_drake_lvl_10       = 4403 ; 4352
+Global Const $model_id_irontooth_drake_lvl_18       = 4404 ; 4353
+Global Const $model_id_steelfang_drake              = 4965 ; 4914
 
 ; Plant Fiber Farm
 Global Const $model_id_dragon_moss            = 3773 ; 3722
@@ -591,9 +591,9 @@ Global Const $model_id_corsair_captain         = 5130 ; 5079
 ; FoW and UW
 Global Const $model_id_avatar_of_grenth			= 1995 ; 1945
 Global Const $model_id_champion_of_balthazar	= 1997 ; 1947
-Global Const $model_id_abyssal			= 2861 ; 2810
-Global Const $model_id_shadow_ranger	= 2859 ; 2808
-Global Const $model_id_skeleton_of_dhuum = 2392 ; 2342
+Global Const $model_id_abyssal					= 2861 ; 2810
+Global Const $model_id_shadow_ranger			= 2859 ; 2808
+Global Const $model_id_skeleton_of_dhuum		= 2392 ; 2342
 ; DoA
 Global Const $model_id_kaya                  = 5217 ; 5166
 Global Const $model_id_dabi                  = 5218 ; 5167
