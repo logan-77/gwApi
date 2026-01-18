@@ -186,13 +186,22 @@ Global Const $model_id_pumpkin_pie		= 28436 ; $pie_induced_ecstasy = 2649
 Global Const $model_id_golden_egg		= 22752	; $golden_egg_skill = 1934
 Global Const $model_id_candy_corn		= 28432	; $candy_corn_skill = 2604
 Global Const $model_id_candy_apple		= 28431	; $candy_apple_skill = 2605
-Global Const $model_id_lunar_fortune	= 21833 ; $lunar_blessing = 1926
-Global Const $model_id_lunar_fortune_2	= 29434 ; $lunar_blessing = 1926
 Global Const $model_id_war_supplies		= 35121 ; $well_supplied = 3174
 Global Const $model_id_blue_rock		= 31151	; $blue_rock_candy_rush = 2971
 Global Const $model_id_green_rock		= 31152	; $green_rock_candy_rush = 2972
 Global Const $model_id_red_rock			= 31153	; $red_rock_candy_rush = 2973
-Global Const $model_id_lunar_fortune_snake	= 29430
+Global Const $model_id_lunar_fortune_pig = 29424
+Global Const $model_id_lunar_fortune_rat = 29425
+Global Const $model_id_lunar_fortune_ox = 29426
+Global Const $model_id_lunar_fortune_tiger = 29427
+Global Const $model_id_lunar_fortune_rabbit = 29428
+Global Const $model_id_lunar_fortune_dragon = 29429
+Global Const $model_id_lunar_fortune_snake = 29430
+Global Const $model_id_lunar_fortune_horse = 29431
+Global Const $model_id_lunar_fortune_sheep = 29432
+Global Const $model_id_lunar_fortune_monkey = 29433
+Global Const $model_id_lunar_fortune_rooster = 29434
+Global Const $model_id_lunar_fortune_dog = 29435
 
 ;DP Removal ModelID's
 Global Const $dp_removal[4]						= [22191, 22191, 28433]
