@@ -68,6 +68,9 @@ Global Const $item_type_costume_body		= 44
 Global Const $item_type_costume_headpice	= 45
 Global Const $item_type_not_equipped		= 46
 
+Global Const $g_aWeaponType[] = [$item_type_axe, $item_type_bow, $item_type_offhand, $item_type_hammer, $item_type_wand, $item_type_shield, _
+								 $item_type_staff, $item_type_sword, $item_type_daggers, $item_type_scythe, $item_type_spear]
+
 ; === Material ===
 Global Const $model_id_bones		= 921
 Global Const $model_id_cloth		= 925
