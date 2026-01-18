@@ -488,9 +488,9 @@ Func MoveItemToInventory($aItem)
 	Return True
 EndFunc ;==>MoveItemToInventory
 
-Func StoreItemsByModelID($aModelID, $aFullStack = False)
+Func StoreItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $pItem, $pBag
+	Local $pItem, $pBag, $lQuantity = 0
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
@@ -499,7 +499,11 @@ Func StoreItemsByModelID($aModelID, $aFullStack = False)
 			If $pItem = 0 Then ContinueLoop
 			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
 			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
-			If MoveItemToChest($pItem) = False Then Return
+			If MoveItemToChest($pItem) = False Then Return False
+			If $aQuantity > 0 Then
+				$lQuantity += 1
+				If $lQuantity >= $aQuantity Then Return True
+			EndIf
 		Next
 	Next
 EndFunc ;==>StoreItemsByModelID
@@ -532,10 +536,10 @@ Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 			If $pItem = 0 Then ContinueLoop
 			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
 			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
-			If MoveItemToInventory($pItem) = False Then Return
+			If MoveItemToInventory($pItem) = False Then Return False
 			If $aQuantity > 0 Then
 				$lQuantity += 1
-				If $lQuantity >= $aQuantity Then Return
+				If $lQuantity >= $aQuantity Then Return True
 			EndIf
 		Next
 	Next
@@ -1111,6 +1115,7 @@ Func IsEventItem($aModelID)
 	
 	; Canthan New Year
 	If $aModelID = $model_id_lunar_token Then Return True
+	If $aModelID = $model_id_lunar_fortune_horse Then Return True
 	
 	; Lucky Treats Week
 	; If $aModelID = $model_id_clover Then Return True
