@@ -122,6 +122,62 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aIncludeEqu
 	Return $lReturnPtr
 EndFunc ;==>GetItemPtrByModelID
 
+; Return first ItemPtr by Type in specified bags. Zero if no Item is found.
+Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
+	Local $pItem, $pBag, $lItemArrayPtr, $lType, $lCount = 0
+	
+	If IsArray($aType) Then
+		Local $lReturnPtr[UBound($aType)]
+		For $i = 0 To UBound($aType) - 1
+			$lReturnPtr[$i] = 0
+		Next
+	Else
+		Local $lReturnPtr = 0
+	EndIf
+	
+	If IsArray($aType) Then
+		For $bag = $aFirstBag To $aLastBag
+			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
+			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
+			If $bag = 7 Then ContinueLoop
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				$lType = GetItemType($pItem)
+				For $i = 0 To UBound($aType) - 1
+					If $lReturnPtr[$i] <> 0 Or $lType <> $aType[$i] Then ContinueLoop
+					$lReturnPtr[$i] = $pItem
+					$lCount += 1
+					If $lCount = UBound($aType) Then
+						Return $lReturnPtr
+					EndIf
+					ExitLoop
+				Next				
+			Next
+		Next	
+	Else
+		For $bag = $aFirstBag To $aLastBag
+			If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
+			If $bag = 6 And Not $aIncludeMats Then ContinueLoop
+			If $bag = 7 Then ContinueLoop
+			$pBag = Item_GetBagPtr($bag)
+			If $pBag = 0 Then ContinueLoop
+			$lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
+			For $slot = 0 To GetMaxSlots($pBag) - 1
+				$pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
+				If $pItem = 0 Then ContinueLoop
+				If GetItemType($pItem) = $aType Then
+					Return $pItem
+				EndIf
+			Next
+		Next
+	EndIf
+	Return $lReturnPtr
+EndFunc ;==>GetItemPtrByType
+
 ; Returns the first Item by ModelID found in Inventory; If no Item is found Returns Zero
 Func GetItemInInventory($aModelID)
 	Return GetItemPtrByModelID($aModelID, 1, 4)
@@ -133,31 +189,11 @@ Func GetItemInChest($aModelID)
 EndFunc ;==>GetItemInChest
 
 Func GetItemInInventoryByType($aType)
-	Local $pItem, $pBag
-	For $bag = 1 To 4
-		$pBag = Item_GetBagPtr($bag)
-		If $pBag = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($pBag)
-			$pItem = GetItemPtrBySlot($pBag, $slot)
-			If $pItem = 0 Then ContinueLoop
-			If GetItemType($pItem) = $aType Then Return $pItem
-		Next
-	Next
-	Return 0
+	Return GetItemPtrByType($aType, 1, 4)
 EndFunc ;==>GetItemInInventoryByType
 
 Func GetItemInChestByType($aType)
-	Local $pItem, $pBag
-	For $bag = 8 To 12
-		$pBag = Item_GetBagPtr($bag)
-		If $pBag = 0 Then ContinueLoop
-		For $slot = 1 To GetMaxSlots($pBag)
-			$pItem = GetItemPtrBySlot($pBag, $slot)
-			If $pItem = 0 Then ContinueLoop
-			If GetItemType($pItem) = $aType Then Return $pItem
-		Next
-	Next
-	Return 0
+	Return GetItemPtrByType($aType, 8, 12)
 EndFunc ;==>GetItemInChestByType
 
 ;~ Returns the first Item, with a matching ModStruct
