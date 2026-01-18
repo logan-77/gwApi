@@ -1399,6 +1399,16 @@ Func IsWeaponByType($aType)
 	EndSwitch
 	Return False
 EndFunc ;==>IsWeaponByType
+
+;~ Checks if any Weapon is in Inventory
+Func HasWeaponsInInventory()
+	Local $aWeapons = GetItemInInventoryByType($g_aWeaponType)
+
+	For $i = 0 To UBound($aWeapons) - 1
+		If $aWeapons[$i] <> 0 Then Return 1
+	Next
+	Return 0
+EndFunc ;==>HasWeaponsInInventory
 #Region Weapons
 
 #Region Weapon Mods
