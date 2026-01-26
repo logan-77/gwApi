@@ -360,11 +360,11 @@ Func GetPlayerNumber($aAgent = -2)
 	Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
 EndFunc	;==>GetPlayerNumber
 
-;~ Description: Returns a player's name. TEST THIS
+;~ Description: Returns a player's name.
 Func GetPlayerName($aAgent = -2)
-	Local $lLogin = Memory_Read(Agent_GetAgentPtr($aAgent) + 0x184, "long")
-	Local $lOffset[6] = [0, 0x18, 0x2C, 0x80C, 76 * $lLogin + 0x28, 0]
-	Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset, 'wchar[30]')
+	Local $lLogin = Memory_Read(Agent_GetAgentPtr($aAgent) + 0x184, "dword")
+	Local $lOffset[6] = [0, 0x18, 0x2C, 0x80C, 0x50 * $lLogin + 0x28, 0]
+	Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset, 'wchar[20]')
 	Return $lReturn[1]
 EndFunc   ;==>GetPlayerName
 
