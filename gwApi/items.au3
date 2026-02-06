@@ -426,19 +426,23 @@ EndFunc ;==>DropItemsByModelID
 
 ;Description: Destroys an Item
 Func DestroyItem($aItem)
-	Core_SendPacket(0x8, $GC_I_HEADER_ITEM_DESTROY, Item_ItemID($aItem))
+	Item_DestroyItem($aItem)
 	Other_PingSleep(100)
 EndFunc   ;==>DestroyItem
 
 ;~ Description: Moves an Item and can split up a Stack
 Func MoveItemEx($aItem, $aBag, $aSlot, $aAmount = 0)
-	Local $lQuantity = GetItemQuantity($aItem)
-	If $aAmount = 0 Or $aAmount > $lQuantity Then $aAmount = $lQuantity
-	If $aAmount >= $lQuantity Then
+	Local $pItem = Item_GetItemPtr($aItem)
+	If $pItem = 0 Then Return 0
+
+	Local $iQuantity = GetItemQuantity($aItem)
+	If $aAmount = 0 Or $aAmount > $iQuantity Then $aAmount = $iQuantity
+	If $aAmount >= $iQuantity Then
 		Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($aItem), BagID($aBag), $aSlot - 1)
 	Else
 		Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($aItem), $aAmount, BagID($aBag), $aSlot - 1)
 	EndIf
+	Return 1
 EndFunc ;==>MoveItemEx
 
 Func PickUpLootEx($iMaxDist = 2500)
@@ -478,27 +482,33 @@ EndFunc   ;==>GetItemPtrByAgentPtr
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ If $aStackItem=True, it will try to stack Items with same ModelID
 Func MoveItemToChest($aItem, $aStackItem = False)
-	Local $pItem, $pBag
-	Local $lQuantity = 0, $lModelID = 0, $lMoveItem = False
+	Local $pItem, $pBag, $iModelID = GetItemModelID($aItem)
+	Local $bMoveItem = False
 	For $bag = 8 To 12
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
 		For $slot = 1 To GetMaxSlots($pBag)
 			$pItem = GetItemPtrBySlot($pBag, $slot)
 			If $pItem = 0 Then
-				$lMoveItem = True
+				$bMoveItem = True
 				ExitLoop 2
 			EndIf
-			If $aStackItem And GetItemModelID($pItem) = GetItemModelID($aItem) Then
-				If (GetItemQuantity($pItem) + GetItemQuantity($aItem)) <= 250 Then
-					$lMoveItem = True
+			If $aStackItem And (GetItemModelID($pItem) = $iModelID) Then
+				Local $iQuantitySource = GetItemQuantity($aItem)
+				Local $iQuantityDest = GetItemQuantity($pItem)
+				If ($iQuantitySource + $iQuantityDest) <= 250 Then
+					$bMoveItem = True
 					ExitLoop 2
+				Else
+					$iQuantitySource = 250 - $iQuantityDest
+					MoveItemEx($aItem, $bag, $slot, $iQuantitySource)
+					Other_PingSleep(250)
 				EndIf
 			EndIf
 		Next
 	Next
 	
-	If $lMoveItem = False Then Return False
+	If $bMoveItem = False Then Return False
 	Item_MoveItem($aItem, $bag, $slot)
 	Other_PingSleep(250)
 	Return True
@@ -506,19 +516,19 @@ EndFunc ;==>MoveItemToChest
 
 ;~ Description: Looks for free Slot and moves Item to Inventory
 Func MoveItemToInventory($aItem)
-	Local $pItem, $pBag, $lMoveItem = False
+	Local $pItem, $pBag, $bMoveItem = False
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
 		For $slot = 1 To GetMaxSlots($pBag)
 			If GetItemPtrBySlot($pBag, $slot) = 0 Then
-				$lMoveItem = True
+				$bMoveItem = True
 				ExitLoop 2
 			EndIf
 		Next
 	Next
 	
-	If $lMoveItem = False Then Return False
+	If $bMoveItem = False Then Return False
 	Item_MoveItem($aItem, $bag, $slot)
 	Other_PingSleep(250)
 	Return True
@@ -526,7 +536,7 @@ EndFunc ;==>MoveItemToInventory
 
 Func StoreItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $pItem, $pBag, $lQuantity = 0
+	Local $pItem, $pBag, $iQuantity = 0
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
@@ -537,8 +547,8 @@ Func StoreItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
 			If MoveItemToChest($pItem) = False Then Return False
 			If $aQuantity > 0 Then
-				$lQuantity += 1
-				If $lQuantity >= $aQuantity Then Return True
+				$iQuantity += 1
+				If $iQuantity >= $aQuantity Then Return True
 			EndIf
 		Next
 	Next
@@ -563,7 +573,7 @@ EndFunc ;==>StoreItemsByType
 
 Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
-	Local $pItem, $pBag, $lQuantity = 0
+	Local $pItem, $pBag, $iQuantity = 0
 	For $bag = 8 To 12
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
@@ -574,8 +584,8 @@ Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
 			If MoveItemToInventory($pItem) = False Then Return False
 			If $aQuantity > 0 Then
-				$lQuantity += 1
-				If $lQuantity >= $aQuantity Then Return True
+				$iQuantity += 1
+				If $iQuantity >= $aQuantity Then Return True
 			EndIf
 		Next
 	Next
@@ -836,7 +846,7 @@ Func CountFreeSlots()
 	Return $lCount
 EndFunc   ;==>CountFreeSlots
 
-;~ Description: Retursn number of free slots in storage
+;~ Description: Returns number of free slots in storage
 Func CountFreeSlotsStorage()
 	Local $lCount = 0, $pBag
 	For $lBag = 8 To 12
@@ -846,6 +856,48 @@ Func CountFreeSlotsStorage()
 	Next
 	Return $lCount
 EndFunc ;==>CountFreeSlotsStorage
+
+Func GetFreeSlotsInventory()
+	Local $aFreeSlots[60][2]
+	Local $pItem, $pBag, $iCount = 0
+	For $bag = 1 To 4
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			If GetItemPtrBySlot($pBag, $slot) = 0 Then
+				$aFreeSlots[$iCount][0] = $bag
+				$aFreeSlots[$iCount][1] = $slot
+				$iCount += 1
+			EndIf
+		Next
+	Next
+	
+	If $iCount = 0 Then Return 0
+	
+	Redim $aFreeSlots[$iCount][2]
+	Return $aFreeSlots
+EndFunc ;==>GetFreeSlotsInventory
+
+Func GetFreeSlotsStorage()
+	Local $aFreeSlots[125][2]
+	Local $pItem, $pBag, $iCount = 0
+	For $bag = 8 To 12
+		$pBag = Item_GetBagPtr($bag)
+		If $pBag = 0 Then ContinueLoop
+		For $slot = 1 To GetMaxSlots($pBag)
+			If GetItemPtrBySlot($pBag, $slot) = 0 Then
+				$aFreeSlots[$iCount][0] = $bag
+				$aFreeSlots[$iCount][1] = $slot
+				$iCount += 1
+			EndIf
+		Next
+	Next
+	
+	If $iCount = 0 Then Return 0
+	
+	Redim $aFreeSlots[$iCount][2]
+	Return $aFreeSlots
+EndFunc ;==>GetFreeSlotsStorage
 #EndRegion Items
 
 #Region Bag
@@ -1008,17 +1060,17 @@ EndFunc ;==>IsEliteOrNormalTome
 
 ; Return the amount of Alcohol in Inventory
 Func GetAlcQuantityInventory()
-	Local $pItem, $pBag, $lQuantity = 0
+	Local $pItem, $pBag, $iQuantity = 0
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
 		If $pBag = 0 Then ContinueLoop
 		For $slot = 1 To GetMaxSlots($pBag)
 			$pItem = GetItemPtrBySlot($pBag, $slot)
 			If $pItem = 0 Then ContinueLoop
-			If CheckIsAlc(GetItemModelID($pItem)) Then $lQuantity += GetItemQuantity($pItem)
+			If CheckIsAlc(GetItemModelID($pItem)) Then $iQuantity += GetItemQuantity($pItem)
 		Next
 	Next
-	Return $lQuantity
+	Return $iQuantity
 EndFunc ;==>GetAlcQuantityInventory
 
 ; Uses first Alc found in Inventory, Returns 0 if no Alc available
@@ -1120,7 +1172,7 @@ EndFunc ;==>MaintainCitySpeed
 ; Sells all the unneeded Mats to Merchant
 ; Make sure *you are standing at a Merchant!!!*
 Func SellJunk()
-	Local $pItem, $pBag, $lQuantity, $lModelID
+	Local $pItem, $pBag, $iQuantity, $lModelID
 	
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
@@ -1129,14 +1181,14 @@ Func SellJunk()
 			$pItem = GetItemPtrBySlot($pBag, $slot)
 			If $pItem = 0 Then ContinueLoop
 			$lModelID = GetItemModelID($pItem)
-			$lQuantity = GetItemQuantity($pItem)			
+			$iQuantity = GetItemQuantity($pItem)			
 			Switch $lModelID
 				Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key
 					ContinueCase
 				Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
 					ContinueCase
 				Case $model_id_cloth, $model_id_tanned_hide
-					Merchant_SellItem($pItem, $lQuantity)
+					Merchant_SellItem($pItem, $iQuantity)
 					Other_PingSleep(500)
 					ContinueLoop
 			EndSwitch
