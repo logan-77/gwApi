@@ -535,7 +535,10 @@ Func MoveItemToInventory($aItem)
 EndFunc ;==>MoveItemToInventory
 
 Func StoreItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
-	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
+	If Not Map_GetInstanceInfo("IsOutpost") Then Return False
+	
+	Local $aFreeSlots = GetFreeSlotsStorage()
+	Local $iFreeSlotsMax = UBound($aFreeSlots), $iCount = 0
 	Local $pItem, $pBag, $iQuantity = 0
 	For $bag = 1 To 4
 		$pBag = Item_GetBagPtr($bag)
@@ -544,14 +547,19 @@ Func StoreItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 			$pItem = GetItemPtrBySlot($pBag, $slot)
 			If $pItem = 0 Then ContinueLoop
 			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
-			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
-			If MoveItemToChest($pItem) = False Then Return False
+			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop			
+			If $iCount >= $iFreeSlotsMax Then Return True
+			Item_MoveItem($aItem, $aFreeSlots[$iCount][0], $aFreeSlots[$iCount][1])
+			Sleep(50)
+			$iCount += 1
+			;~ If MoveItemToChest($pItem) = False Then Return False
 			If $aQuantity > 0 Then
 				$iQuantity += 1
 				If $iQuantity >= $aQuantity Then Return True
 			EndIf
 		Next
 	Next
+	Return True
 EndFunc ;==>StoreItemsByModelID
 
 ;Stores all Items of given Type
@@ -572,7 +580,10 @@ Func StoreItemsByType($aType, $aFullStack = False)
 EndFunc ;==>StoreItemsByType
 
 Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
-	If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
+	If Not Map_GetInstanceInfo("IsOutpost") Then Return False
+
+	Local $aFreeSlots = GetFreeSlotsInventory()
+	Local $iFreeSlotsMax = UBound($aFreeSlots), $iCount = 0	
 	Local $pItem, $pBag, $iQuantity = 0
 	For $bag = 8 To 12
 		$pBag = Item_GetBagPtr($bag)
@@ -582,13 +593,18 @@ Func WithdrawItemsByModelID($aModelID, $aQuantity = 0, $aFullStack = False)
 			If $pItem = 0 Then ContinueLoop
 			If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
 			If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
-			If MoveItemToInventory($pItem) = False Then Return False
+			If $iCount >= $iFreeSlotsMax Then Return True
+			Item_MoveItem($aItem, $aFreeSlots[$iCount][0], $aFreeSlots[$iCount][1])
+			Sleep(50)
+			$iCount += 1
+			;~ If MoveItemToInventory($pItem) = False Then Return False
 			If $aQuantity > 0 Then
 				$iQuantity += 1
 				If $iQuantity >= $aQuantity Then Return True
 			EndIf
 		Next
 	Next
+	Return True
 EndFunc ;==>WithdrawItemsByModelID
 
 ;Stores all Items of given Type
