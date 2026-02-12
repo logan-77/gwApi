@@ -1,5 +1,6 @@
 Func CheckDisconnected()
 	If Core_GetStatusError() Then Return True
+	If Not Core_IsIngame() Then Return True
 	If GetInstanceType() <> 2 And GetAgentExists(-2) Then Return False
 	Return True
 EndFunc ;==>CheckDisconnected
