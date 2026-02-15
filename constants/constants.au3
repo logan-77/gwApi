@@ -629,47 +629,46 @@ Global Const $model_id_luxon_hauler_turtle    = 3636 ; 3585
 Global Const $model_id_kurzick_carrier_juggernaut = 3418 ; 3367
 
 ; War Supply Farm
-Global Const $model_id_white_mantle_ritualist_6 = 8288 ; rit/paragon spear ; 8237
-Global Const $model_id_white_mantle_ritualist_8 = 8289 ; rit/monk (preservation, strong heal, hexremove, spirits) primary ; 8238
-Global Const $model_id_white_mantle_ritualist   = 8290 ; SoS ; 8239
-Global Const $model_id_white_mantle_ritualist_2 = 8291 ; PRIMARY (shadowsong,bloodsong,pain,anguish) ; 8240
-Global Const $model_id_white_mantle_ritualist_7 = 8292 ; minions 2nd prio;  ; 8241
-Global Const $model_id_white_mantle_ritualist_9 = 8293 ; weapon of remedy rit(hardrez, prio) ; 8242
+Global Const $model_id_white_mantle_ritualist_6 = 8298 ; rit/paragon spear
+Global Const $model_id_white_mantle_ritualist_8 = 8299 ; rit/monk (preservation, strong heal, hexremove, spirits)
+Global Const $model_id_white_mantle_ritualist   = 8300 ; SoS
+Global Const $model_id_white_mantle_ritualist_2 = 8301 ; PRIMARY (shadowsong,bloodsong,pain,anguish)
+Global Const $model_id_white_mantle_ritualist_7 = 8302 ; minions 2nd prio
+Global Const $model_id_white_mantle_ritualist_9 = 8303 ; weapon of remedy rit(hardrez, prio)
 
-Global Const $model_id_white_mantle_ritualist_3 = 8243 ; 8192
-Global Const $model_id_white_mantle_ritualist_4 = 8244 ;  ; 8193
-Global Const $model_id_white_mantle_ritualist_5 = 8245 ; 8194
+Global Const $model_id_white_mantle_ritualist_3 = 8253
+Global Const $model_id_white_mantle_ritualist_4 = 8254
+Global Const $model_id_white_mantle_ritualist_5 = 8255 
 
-Global Const $model_id_white_mantle_savant      = 8251 ; mshower ; 8200
-Global Const $model_id_white_mantle_savant_2    = 8252 ; savannah heat + rit heal ; 8201
+Global Const $model_id_white_mantle_savant      = 8261 ; mshower
+Global Const $model_id_white_mantle_savant_2    = 8262 ; savannah heat + rit heal
 
-Global Const $model_id_white_mantle_adherent    = 8255 ;  ; 8204
-Global Const $model_id_white_mantle_adherent_2  = 8256 ; shatterstone ; 8205
-Global Const $model_id_white_mantle_adherent_3  = 8257 ; Unsteady Ground ; 8206
-Global Const $model_id_white_mantle_adherent_4  = 8258 ; Sandstorm ; 8207
+Global Const $model_id_white_mantle_adherent    = 8265
+Global Const $model_id_white_mantle_adherent_2  = 8266 ; shatterstone
+Global Const $model_id_white_mantle_adherent_3  = 8267 ; Unsteady Ground
+Global Const $model_id_white_mantle_adherent_4  = 8268 ; Sandstorm
 
-Global Const $model_id_white_mantle_priest      = 8259 ; WoH ; 8208
-Global Const $model_id_white_mantle_priest_2    = 8260 ; Healing Burst ; 8209
-Global Const $model_id_white_mantle_priest_3    = 8261 ; Healers Boon(hexremove) ; 8210
-Global Const $model_id_white_mantle_priest_4    = 8262 ; mo/ele (smite) RoJ ; 8211
+Global Const $model_id_white_mantle_priest      = 8269 ; WoH
+Global Const $model_id_white_mantle_priest_2    = 8270 ; Healing Burst
+Global Const $model_id_white_mantle_priest_3    = 8271 ; Healers Boon(hexremove)
+Global Const $model_id_white_mantle_priest_4    = 8272 ; mo/ele (smite) RoJ
 
-Global Const $model_id_white_mantle_abbot        = 8263 ; Prot Mo (Boon Signet, spiritbond) ; 8212
-Global Const $model_id_white_mantle_abbot_2      = 8264 ; Mantra of Recall ; 8213
-Global Const $model_id_white_mantle_abbot_3      = 8265 ;  ; 8214
-Global Const $model_id_white_mantle_abbot_4      = 8266 ; zeal benediction + smite ; 8215
+Global Const $model_id_white_mantle_abbot        = 8273 ; Prot Mo (Boon Signet, spiritbond)
+Global Const $model_id_white_mantle_abbot_2      = 8274 ; Mantra of Recall
+Global Const $model_id_white_mantle_abbot_3      = 8275 ;  
+Global Const $model_id_white_mantle_abbot_4      = 8276 ; zeal benediction + smite
 
-Global Const $model_id_white_mantle_sycophant    = 8237 ; degen mes (crippling anguish) ; 8186
-Global Const $model_id_white_mantle_sycophant_2  = 8238 ; dom mes (clumsiness) 2nd ; 8187
-Global Const $model_id_white_mantle_sycophant_3  = 8239 ; dom mes (emp+healing signet) ; 8188
-Global Const $model_id_white_mantle_sycophant_4  = 8240 ; esurge, spirit shackles 2NDARY ; 8189
-Global Const $model_id_white_mantle_sycophant_5  = 8241 ; condi mes 2nd ; 8190
-Global Const $model_id_white_mantle_sycophant_6  = 8242 ; WoH isMonk ; 8191
+Global Const $model_id_white_mantle_sycophant    = 8247 ; degen mes (crippling anguish)
+Global Const $model_id_white_mantle_sycophant_2  = 8248 ; dom mes (clumsiness) 2nd
+Global Const $model_id_white_mantle_sycophant_3  = 8249 ; dom mes (emp+healing signet)
+Global Const $model_id_white_mantle_sycophant_4  = 8250 ; esurge, spirit shackles 2NDARY
+Global Const $model_id_white_mantle_sycophant_5  = 8251 ; condi mes 2nd
+Global Const $model_id_white_mantle_sycophant_6  = 8252 ; WoH isMonk
 
-Global Const $model_id_white_mantle_fanatic      = 8247 ; 8196
-Global Const $model_id_white_mantle_fanatic_2    = 8248 ; nec (rit heal) ; 8197
-Global Const $model_id_white_mantle_fanatic_3    = 8249 ; lingering curse ; 8198
-Global Const $model_id_white_mantle_fanatic_4    = 8250 ; tainted flesh ; 8199
-;roj Missing
+Global Const $model_id_white_mantle_fanatic      = 8257 ; 
+Global Const $model_id_white_mantle_fanatic_2    = 8258 ; nec (rit heal)
+Global Const $model_id_white_mantle_fanatic_3    = 8259 ; lingering curse
+Global Const $model_id_white_mantle_fanatic_4    = 8260 ; tainted flesh
 #Endregion PlayerNumber
 
 ; === Specific ItemID's ===
