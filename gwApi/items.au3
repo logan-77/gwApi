@@ -660,6 +660,9 @@ Func MergeItemToInventory($pItemSource, $pItemDest = 0)
     Return 0
 EndFunc ;==>MergeItemToInventory
 
+;~ stores and merges all items by ModelID
+;~ $aModelID: singular ModelID or array of ModelIDs
+;~ $iAmount: counts stacks only
 Func StoreItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
     If Not Map_GetInstanceInfo("IsOutpost") Then Return False
 
