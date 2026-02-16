@@ -285,6 +285,14 @@ Global Const $model_id_lunar_token		= 21833
 Global Const $model_id_wayfarers_mark	= 37765
 Global Const $model_id_tot_bag			= 28434
 
+;~ WoC
+Global Const $model_id_imperial_guard_lockbox = 30212
+Global Const $model_id_imperial_guard_requisition_order = 29108
+Global Const $model_id_ministerial_commendation = 36985
+Global Const $model_id_imperial_guard_reinforcement_order = 30210
+Global Const $model_id_tengu_support_flare = 30209
+Global Const $model_id_seal_of_the_dragon_empire = 30211
+
 ;Hero IDs
 Global Enum $hero_id_norgu = 1, $hero_id_goren, $hero_id_tahlkora, $hero_id_master, $hero_id_jin, $hero_id_koss, $hero_id_dunkoro, $hero_id_sousuke, $hero_id_melonni, $hero_id_zhed, $hero_id_morgahn, $hero_id_margrid, $hero_id_zenmai, $hero_id_olias, $hero_id_razah, $hero_id_mox, $hero_id_keiran, $hero_id_jora, $hero_id_pyre, $hero_id_anton, $hero_id_livia, $hero_id_hayda, $hero_id_kahmu, $hero_id_gwen, $hero_id_xandra, $hero_id_vekk, $hero_id_ogden, $hero_id_mercenary_1, $hero_id_mercenary_2, $hero_id_mercenary_3, $hero_id_mercenary_4, $hero_id_mercenary_5, $hero_id_mercenary_6, $hero_id_mercenary_7, $hero_id_mercenary_8, $hero_id_miku , $hero_id_zei_ri
 Global Enum $Backpack = 1, $BeltPouch, $Bag1, $Bag2, $EquipmentPack, $UnclaimedItems = 7, $Storage1, $Storage2, $Storage3, $Storage4, $Storage5, $Storage6, $Storage7, $Storage8, $Storage9, $Storage10, $Storage11, $Storage12, $Storage13, $StorageAnniversary
