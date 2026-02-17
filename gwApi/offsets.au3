@@ -5,8 +5,8 @@ Global $g_mOffset
 ;~ Build offsets map from struct template
 Func BuildOffsetMap($sStructTemplate)
     Local $mOffset[]
-    Local $iOffset, $sType, $sName, $sParts
-    Local $iCount
+    Local $iOffset, $sType, $sName
+    Local $sParts, $iCount
 
     Local $tStruct = DllStructCreate($sStructTemplate)
     Local $iBaseAddress = DllStructGetPtr($tStruct), $iFieldAddress
