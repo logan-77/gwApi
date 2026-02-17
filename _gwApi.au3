@@ -30,6 +30,7 @@
 #include "GwAu3\API\_GwAu3.au3"
 
 ; gwApi includes
+#include "gwApi\offsets.au3"
 #include "gwApi\agents.au3"
 #include "gwApi\chat.au3"
 #include "gwApi\hero.au3"

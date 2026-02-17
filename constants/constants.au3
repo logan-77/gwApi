@@ -721,6 +721,7 @@ Global Const $model_id_runic_axe = 753
 Global Const $model_id_gothic_dual_axe = 749
 Global Const $model_id_gothic_axe = 748
 Global Const $model_id_gothic_sword = 793
+Global Const $model_id_jug = 1023
 
 
 #Region TraderCoords
