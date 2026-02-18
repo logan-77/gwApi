@@ -210,7 +210,7 @@ Func GetNearestEnemyPtrToAgent($aAgent = -2, $aPlayerNumber = 0)
 EndFunc ;==>GetNearestEnemyPtrToAgent
 
 ;~ Description: Returns pointer variable for the nearest enemy to an agent.
-Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtrArray, $aAgent = -2, $aPlayerNumber = 0)	
+Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtrArray, $aAgent = -2, $aPlayerNumber = 0) 
     Local $lAgent = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr = 0, $lNearestDistance = 100000000, $lDistance
     For $i = 1 To $aAgentPtrArray[0]
         If GetIsDead($aAgentPtrArray[$i]) Then ContinueLoop
@@ -301,18 +301,18 @@ EndFunc ;==>ID
 
 ;~ Description: Returns current target Ptr.
 ;~ Func GetCurrentTargetPtr()
-;~ 	Local $lCurrentTargetID = Memory_Read($mCurrentTarget)
-;~ 	If $lCurrentTargetID = 0 Then Return
-;~ 	Return Memory_Read(Memory_Read($g_p_AgentBase, 'ptr') + 4 * $lCurrentTargetID, 'ptr')
+;~  Local $lCurrentTargetID = Memory_Read($mCurrentTarget)
+;~  If $lCurrentTargetID = 0 Then Return
+;~  Return Memory_Read(Memory_Read($g_p_AgentBase, 'ptr') + 4 * $lCurrentTargetID, 'ptr')
 ;~ EndFunc   ;==>GetCurrentTargetPtr
 
 ;~ Description: Internal use for GetAgentByID()
 ;~ Func Agent_GetAgentPtr($aAgent = GetMyID())
-;~ 	If IsPtr($aAgent) Then Return $aAgent
-;~ 	Return Memory_Read(Memory_Read($g_p_AgentBase, 'ptr') + 4 * ID($aAgent), 'ptr')
-;~ 	; Local $lOffset[3] = [0, 4 * ID($aAgent), 0]
-;~ 	; Local $lAgentStructAddress = Memory_ReadPtr($g_p_AgentBase, $lOffset, 'ptr')
-;~ 	; Return $lAgentStructAddress[0]
+;~  If IsPtr($aAgent) Then Return $aAgent
+;~  Return Memory_Read(Memory_Read($g_p_AgentBase, 'ptr') + 4 * ID($aAgent), 'ptr')
+;~  ; Local $lOffset[3] = [0, 4 * ID($aAgent), 0]
+;~  ; Local $lAgentStructAddress = Memory_ReadPtr($g_p_AgentBase, $lOffset, 'ptr')
+;~  ; Return $lAgentStructAddress[0]
 ;~ EndFunc   ;==>Agent_GetAgentPtr
 
 ;~ Description: Test if an agent exists.
@@ -342,7 +342,7 @@ EndFunc ;==>MoveX
 Func GetAgentMoveX($aAgent = -2)
     ;~ Return Memory_Read(Agent_GetAgentPtr($aAgent) + 0xA0, 'float')
     Return Memory_Read(Agent_GetAgentPtr($aAgent) + $GC_I_OFFSET_AGENT_MOVE_X[0], $GC_I_OFFSET_AGENT_MOVE_X[1])
-EndFunc	;==>GetAgentMoveX
+EndFunc ;==>GetAgentMoveX
 
 ;~ Description: Agents Y Location
 Func Y($aAgent = -2)
@@ -386,12 +386,12 @@ EndFunc ;==>Z
 ;~ Description: Returns Agents PlayerNumber/ModelID
 Func GetPlayerNumber($aAgent = -2)
     Return Memory_Read(Agent_GetAgentPtr($aAgent) + $GC_I_OFFSET_AGENT_MODEL_ID[0], $GC_I_OFFSET_AGENT_MODEL_ID[1])
-EndFunc	;==>GetPlayerNumber
+EndFunc ;==>GetPlayerNumber
 
 ;~ Description: Returns Agents PlayerNumber/ModelID
 Func GetAgentModelID($aAgent = -2)
     Return Memory_Read(Agent_GetAgentPtr($aAgent) + $GC_I_OFFSET_AGENT_MODEL_ID[0], $GC_I_OFFSET_AGENT_MODEL_ID[1])
-EndFunc	;==>GetAgentModelID
+EndFunc ;==>GetAgentModelID
 
 ;~ Description: Returns a player's name.
 Func GetPlayerName($aAgent = -2)
@@ -403,19 +403,19 @@ EndFunc   ;==>GetPlayerName
 
 ;~ Description: Returns the name of an agent.
 ;~ Func GetAgentName($aAgent = -2)
-;~ 	If $mUseStringLog = False Then Return
-;~ 	Local $lAgentID = ID($aAgent)
-;~ 	If $lAgentID = GetMyID() Then Return GetCharname()
-;~ 	Local $lAddress = $mAgentNameLogBase + 256 * $lAgentID
-;~ 	Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
-;~ 	If $lName = '' Then
-;~ 		DisplayAll(True)
-;~ 		Sleep(100)
-;~ 		DisplayAll(False)
-;~ 	EndIf
-;~ 	Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
-;~ 	$lName = StringRegExpReplace($lName, '[<]{1}([^>]+)[>]{1}', '')
-;~ 	Return $lName
+;~  If $mUseStringLog = False Then Return
+;~  Local $lAgentID = ID($aAgent)
+;~  If $lAgentID = GetMyID() Then Return GetCharname()
+;~  Local $lAddress = $mAgentNameLogBase + 256 * $lAgentID
+;~  Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
+;~  If $lName = '' Then
+;~   DisplayAll(True)
+;~   Sleep(100)
+;~   DisplayAll(False)
+;~  EndIf
+;~  Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
+;~  $lName = StringRegExpReplace($lName, '[<]{1}([^>]+)[>]{1}', '')
+;~  Return $lName
 ;~ EndFunc   ;==>GetAgentName
 
 ;~ Description: Returns health of an agent as % of max HP
@@ -621,7 +621,7 @@ EndFunc   ;==>GetIsAttacking
 #EndRegion AgentInfo
 
 #Region Effects
-;	=== Effects ====
+; === Effects ====
 ;~ Description: Tests if an agent is dead.
 Func GetIsDead($aAgent = -2)
     Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x13C, "dword"), 0x0010) > 0
@@ -673,7 +673,7 @@ Func GetHasWeaponSpell($aAgent = -2)
 EndFunc   ;==>GetHasWeaponSpell
 #EndRegion Effects
 
-;	=== TypeMap ===
+; === TypeMap ===
 ;~ Description: Tests if an agent is a boss. Accepts ID, Struct or Ptr
 Func GetIsBoss($aAgent)
     Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x15C, "dword"), 0x0400) > 0
@@ -869,31 +869,31 @@ EndFunc   ;==>GetMySpiritCount_
 
 ; Returns the number of offensive and/or defensive ritualist spirits in range of an agent
 ;~ Func GetNumberOfSpirits($aRange = 5000, $Offensive = True, $Defensive = True)
-;~ 	Local $lCount = 0
-;~ 	Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $aRange)
+;~  Local $lCount = 0
+;~  Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $aRange)
 
-;~ 	For $i = 1 To $lAgentPtrArray[0]
-;~ 		Switch Memory_Read($lAgentPtrArray[$i] + 244, 'word')    ; check on player number
-;~ 			Case $model_id_Empowerment, $model_id_Rejuvenation, $model_id_Displacement, $model_id_Life, $model_id_Preservation _
-;~ 					, $model_id_Recuperation, $model_id_Shelter, $model_id_Union, $model_id_Restoration
-;~ 				If $Defensive Then $lCount += 1
-;~ 			Case $model_id_Agony, $model_id_Anger, $model_id_Anguish, $model_id_Bloodsong, $model_id_Destruction _
-;~ 					, $model_id_Earthbind, $model_id_Hate, $model_id_Pain, $model_id_Suffering, $model_id_Vampirism
-;~ 				If $Offensive Then $lCount += 1
-;~ 			Case $model_id_Dissonance, $model_id_Disenchantment, $model_id_Shadowsong, $model_id_Wanderlust
-;~ 				$lCount += 1
-;~ 		EndSwitch
-;~ 	Next
-;~ 	Return $lCount
+;~  For $i = 1 To $lAgentPtrArray[0]
+;~   Switch Memory_Read($lAgentPtrArray[$i] + 244, 'word')    ; check on player number
+;~    Case $model_id_Empowerment, $model_id_Rejuvenation, $model_id_Displacement, $model_id_Life, $model_id_Preservation _
+;~      , $model_id_Recuperation, $model_id_Shelter, $model_id_Union, $model_id_Restoration
+;~     If $Defensive Then $lCount += 1
+;~    Case $model_id_Agony, $model_id_Anger, $model_id_Anguish, $model_id_Bloodsong, $model_id_Destruction _
+;~      , $model_id_Earthbind, $model_id_Hate, $model_id_Pain, $model_id_Suffering, $model_id_Vampirism
+;~     If $Offensive Then $lCount += 1
+;~    Case $model_id_Dissonance, $model_id_Disenchantment, $model_id_Shadowsong, $model_id_Wanderlust
+;~     $lCount += 1
+;~   EndSwitch
+;~  Next
+;~  Return $lCount
 ;~ EndFunc   ;==>GetNumberOfSpirits
 
 ; Returns the number of ritualist pressure spirits in range of an agent
 ;~ Func NumberOfPressureSpirits($aRange = 5000)
-;~ 	Return GetNumberOfSpirits($aRange, True, False)
+;~  Return GetNumberOfSpirits($aRange, True, False)
 ;~ EndFunc   ;==>NumberOfPressureSpirits
 
 ;~ ; Returns the number of ritualist survival spirits in range of an agent
 ;~ Func NumberOfSurvivalSpirits($aRange = 5000)
-;~ 	Return GetNumberOfSpirits($aRange, False, True)
+;~  Return GetNumberOfSpirits($aRange, False, True)
 ;~ EndFunc   ;==>NumberOfSurvivalSpirits
 #EndRegion Minions & Spirits

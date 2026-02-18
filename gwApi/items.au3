@@ -104,9 +104,9 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialSta
                         Return $lReturnPtr
                     EndIf
                     ExitLoop
-                Next				
+                Next    
             Next
-        Next	
+        Next 
     Else
         For $bag = $aFirstBag To $aLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
@@ -160,9 +160,9 @@ Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipment
                         Return $lReturnPtr
                     EndIf
                     ExitLoop
-                Next				
+                Next    
             Next
-        Next	
+        Next 
     Else
         For $bag = $aFirstBag To $aLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
@@ -248,7 +248,7 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
                     EndIf
                 Next
             Next
-        Next	
+        Next 
     Else
         For $bag = $aFirstBag To $aLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
@@ -268,7 +268,7 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
                     EndIf
                 EndIf
             Next
-        Next	
+        Next 
     EndIf
     Return $lCount
 EndFunc ;==>CountItemByModelID
@@ -322,7 +322,7 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
                     EndIf
                 Next
             Next
-        Next	
+        Next 
     Else
         For $bag = $aFirstBag To $aLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
@@ -342,7 +342,7 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
                     EndIf
                 EndIf
             Next
-        Next	
+        Next 
     EndIf
     Return $lCount
 EndFunc ;==>CountItemByType
@@ -373,7 +373,7 @@ Func UseItemByModelID($aModelID)
 EndFunc ;==>UseItemByModelID
 
 ;~ Func PickUpItem($aItem)
-;~ 	Return Core_SendPacket(0xC, $HEADER_INTERACT_ITEM, Item_ItemID($aItem), 0)
+;~  Return Core_SendPacket(0xC, $HEADER_INTERACT_ITEM, Item_ItemID($aItem), 0)
 ;~ EndFunc   ;==>PickUpItem
 
 ;Drops all Items to ground, if in explorable
@@ -503,7 +503,7 @@ Func MoveItemToChest($aItem, $bStackItem = False)
             If $bStackItem And (GetItemModelID($pItem) = $iModelID) Then
                 Local $iQuantityDest = GetItemQuantity($pItem)
                 If $iQuantityDest >= 250 Then ContinueLoop
-                Local $iQuantitySource = GetItemQuantity($aItem)				
+                Local $iQuantitySource = GetItemQuantity($aItem)    
                 If ($iQuantitySource + $iQuantityDest) <= 250 Then
                     $bMoveItem = True
                     ExitLoop 2
@@ -591,7 +591,7 @@ Func MoveItemToInventory($aItem, $bStackItem = False)
             If $bStackItem And (GetItemModelID($pItem) = $iModelID) Then
                 Local $iQuantityDest = GetItemQuantity($pItem)
                 If $iQuantityDest >= 250 Then ContinueLoop
-                Local $iQuantitySource = GetItemQuantity($aItem)				
+                Local $iQuantitySource = GetItemQuantity($aItem)    
                 If ($iQuantitySource + $iQuantityDest) <= 250 Then
                     $bMoveItem = True
                     ExitLoop 2
@@ -871,7 +871,7 @@ Func WaitForItemMove($iBag, $iSlot)
 EndFunc ;==>WaitForItemMove
 
 #Region Identify And Salvage
-Func IdentifyItem($aItem, $aIdKit = FindIDKit())	
+Func IdentifyItem($aItem, $aIdKit = FindIDKit()) 
     If GetIsIDed($aItem) Then Return 1
     
     Local $lIdKit = 0
@@ -1198,8 +1198,8 @@ EndFunc   ;==>GetBagNumberByItem
 
 #Region Equipment
 ;~ Description: Unequips item to $abag, $aslot (1-based).
-;~ Equipmentslots:	1 -> Mainhand/Two-hand	2 -> Offhand	3 -> Chestpiece	4 -> Leggings
-;~					5 -> Headpiece			6 -> Boots		7 -> Gloves
+;~ Equipmentslots: 1 -> Mainhand/Two-hand 2 -> Offhand 3 -> Chestpiece 4 -> Leggings
+;~     5 -> Headpiece   6 -> Boots  7 -> Gloves
 Func UnequipItem($aEquipmentSlot, $aBag, $aSlot)
     Return Core_SendPacket(0x10, $GC_I_HEADER_ITEM_UNEQUIP, $aEquipmentSlot - 1, BagID($aBag), $aSlot - 1)
 EndFunc   ;==>UnequipItem
@@ -1313,7 +1313,7 @@ Func GetMaterialName($aModelID)
         Case $model_id_amber_chunk
             Return "Amber Chunk"
         Case $model_id_jadeite_shard
-            Return "Jadeite Shard"		
+            Return "Jadeite Shard"  
         Case Else
             Return "Not a Material!"
     EndSwitch
@@ -1452,7 +1452,7 @@ Func SellJunk()
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
             $lModelID = GetItemModelID($pItem)
-            $iQuantity = GetItemQuantity($pItem)			
+            $iQuantity = GetItemQuantity($pItem)   
             Switch $lModelID
                 Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key
                     ContinueCase
@@ -1470,7 +1470,7 @@ EndFunc ;==>SellJunk
 Func IsEventItem($aModelID)
     ; *******************************************************************************************
     ; Pick up EVENT ITEMS, put semicolon(;) infront of the line, if you DON'T want do pick it up
-    ; *******************************************************************************************	
+    ; ******************************************************************************************* 
     
     ; Canthan New Year
     If $aModelID = $model_id_lunar_token Then Return True
@@ -1505,7 +1505,7 @@ Func IsEventItem($aModelID)
     ; If $aModelID = $model_id_victory_token Then Return True ; also anniversary
     
     ; Wintersday in July
-    ;	-->see Wintersday
+    ; -->see Wintersday
     
     ; Wayfarer's Reverie
     ; If $aModelID = $model_id_wayfarers_mark Then Return True ; this ID is WRONG in constants.au3
@@ -1544,7 +1544,7 @@ Func IsInsignia($aItem)
     For $i = 0 To UBound($array_insignia) - 1
         If $array_insignia[$i][$insig_value] = 0 Then ContinueLoop
         If StringInStr($lModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then
-            Out($array_insignia[$i][$insig_name])	
+            Out($array_insignia[$i][$insig_name]) 
             Return $array_insignia[$i][$insig_value]
         EndIf
     Next
@@ -1955,7 +1955,7 @@ Func IsPerfectShield($aItem)
         If $PlusSkeletons > 0 Then
             Return True
         ;~ ElseIf $Plus60Hex > 0 Then
-        ;~ 	Return True
+        ;~  Return True
         EndIf
     EndIf
     If $VsBlind > 0 Then

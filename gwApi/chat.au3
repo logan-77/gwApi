@@ -1,36 +1,36 @@
 #include-once
 ;~ Description: Resign.
 Func Resign()
-	Chat_SendChat('resign', '/')
+ Chat_SendChat('resign', '/')
 EndFunc   ;==>Resign
 
 ;~ Description: Stuck.
 Func Stuck()
-	Return Chat_SendChat('stuck', '/')
+ Return Chat_SendChat('stuck', '/')
 EndFunc   ;==>Stuck
 
 ;~ Description: Kneel.
 Func Kneel()
-	Return Chat_SendChat('kneel', '/')
+ Return Chat_SendChat('kneel', '/')
 EndFunc ;==>Kneel
 
 #Region Emotes
 ;~ Description: Randomly emotes 6 different emotes (dance, clap, excited, drum, flute and violin)
 Func Emoting()
    Switch (Random(1, 6, 1))
-	  Case 1
-		 Dance()
-	  Case 2
-		 Clap()
-	  Case 3
-		 Excited()
-	  Case 4
-		 Drum()
-	  Case 5
-		 Flute()
-	  Case 6
-		 Violin()
-	EndSwitch
+   Case 1
+   Dance()
+   Case 2
+   Clap()
+   Case 3
+   Excited()
+   Case 4
+   Drum()
+   Case 5
+   Flute()
+   Case 6
+   Violin()
+ EndSwitch
 EndFunc   ;==>Emoting
 
 ;~ Description: Dance emote.

@@ -101,7 +101,7 @@ EndFunc   ;==>ResignAndReturn
 
 ;~ Param: According to the Enum in constants.au3
 Func SetAnchorDistrict($iTargetDistrict)
-	If IsInTargetDistrict($iTargetDistrict) Then Return 1
+    If IsInTargetDistrict($iTargetDistrict) Then Return 1
 
     Out("Traveling to GtoB.")
     RndTravel($map_id_great_temple_of_balthazar, $iTargetDistrict)
@@ -109,9 +109,9 @@ Func SetAnchorDistrict($iTargetDistrict)
 
     Out("Going to Charselect.")
     ControlSend(Scanner_GetWindowHandle(), "", "", "{F12}")
-	Sleep(2000)
-	ControlSend(Scanner_GetWindowHandle(), "", "", "{c}")
-	
+    Sleep(2000)
+    ControlSend(Scanner_GetWindowHandle(), "", "", "{c}")
+ 
     Local $hDeadlock = TimerInit(), $iTimeLimit = 2000
     Do
         Sleep(250)
