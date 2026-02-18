@@ -679,41 +679,47 @@ Func GetIsBoss($aAgent)
     Return BitAND(Memory_Read(Agent_GetAgentPtr($aAgent) + 0x15C, "dword"), 0x0400) > 0
 EndFunc   ;==>GetIsBoss
 
-#Region Interaction
-;~ Func DropHeroBundle($aHeroNumber)
-;~ 	Core_SendPacket(0x8, 0x19, GetHeroID($aHeroNumber)) ; Drop bundle
-;~ EndFunc   ;==>DropHeroBundle
-#EndRegion Interaction
-
 #Region Distance
 ;~ Description: Returns the distance between two coordinate pairs.
-Func ComputeDistance($aX1, $aY1, $aX2, $aY2)
-    Return Sqrt(($aX1 - $aX2) ^ 2 + ($aY1 - $aY2) ^ 2)
+Func ComputeDistance($nX1, $nY1, $nX2, $nY2)
+    Local $dx = $nX1 - $nX2
+    Local $dy = $nY1 - $nY2
+    Return Sqrt(($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>ComputeDistance
 
 ;~ Description: Returns the square of the distance between two coordinate pairs.
-Func ComputePseudoDistance($aX1, $aY1, $aX2, $aY2)
-    Return ($aX1 - $aX2) ^ 2 + ($aY1 - $aY2) ^ 2
+Func ComputePseudoDistance($nX1, $nY1, $nX2, $nY2)
+    Local $dx = $nX1 - $nX2
+    Local $dy = $nY1 - $nY2
+    Return (($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>ComputePseudoDistance
 
 ;~ Description: Returns the distance between two agents.
-Func GetDistance($aAgent1 = GetNearestAgentPtr(-2), $aAgent2 = Agent_GetAgentPtr(-2))
-    Return Sqrt((X($aAgent1) - X($aAgent2)) ^ 2 + (Y($aAgent1) - Y($aAgent2)) ^ 2)
+Func GetDistance($pAgent1 = GetNearestAgentPtr(-2), $pAgent2 = Agent_GetAgentPtr(-2))
+    Local $dx = X($pAgent1) - X($pAgent2)
+    Local $dy = Y($pAgent1) - Y($pAgent2)
+    Return Sqrt(($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>GetDistance
 
 ;~ Description: Return the square of the distance between two agents.
-Func GetPseudoDistance($aAgent1 = GetNearestAgentPtr(-2), $aAgent2 = Agent_GetAgentPtr(-2))
-    Return (X($aAgent1) - X($aAgent2)) ^ 2 + (Y($aAgent1) - Y($aAgent2)) ^ 2
+Func GetPseudoDistance($pAgent1 = GetNearestAgentPtr(-2), $pAgent2 = Agent_GetAgentPtr(-2))
+    Local $dx = X($pAgent1) - X($pAgent2)
+    Local $dy = Y($pAgent1) - Y($pAgent2)
+    Return (($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>GetPseudoDistance
 
 ;~ Description: Returns the distance of agent from a waypoint.
-Func GetDistanceToXY($aX, $aY, $aAgent = Agent_GetAgentPtr(-2))
-    Return Sqrt(($aX - X($aAgent)) ^ 2 + ($aY - Y($aAgent)) ^ 2)
+Func GetDistanceToXY($nX, $nY, $pAgent = Agent_GetAgentPtr(-2))
+    Local $dx = $nX - X($pAgent)
+    Local $dy = $nY - Y($pAgent)
+    Return Sqrt(($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>GetDistanceToXY
 
 ;~ Description: Returns the square of the distance of agent from a waypoint.
-Func GetPseudoDistanceToXY($aX, $aY, $aAgent = Agent_GetAgentPtr(-2))
-    Return ($aX - X($aAgent)) ^ 2 + ($aY - Y($aAgent)) ^ 2
+Func GetPseudoDistanceToXY($nX, $nY, $pAgent = Agent_GetAgentPtr(-2))
+    Local $dx = $nX - X($pAgent)
+    Local $dy = $nY - Y($pAgent)
+    Return (($dx * $dx) + ($dy * $dy))
 EndFunc   ;==>GetPseudoDistanceToXY
 
 ; Description: returns whether an Agent is moving away from a waypoint
