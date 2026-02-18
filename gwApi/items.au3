@@ -491,7 +491,7 @@ Func MoveItemToChest($aItem, $bStackItem = False)
     Local $pItem, $pBag, $iModelID = GetItemModelID($aItem)
     Local $bMoveItem = False
     Local $aBagSlotSource[2] = [0, 0]
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
@@ -550,7 +550,7 @@ Func MergeItemToChest($pItemSource, $pItemDest = 0)
 
     Local $pItem, $pBag, $iModelID = GetItemModelID($pItemSource)
     Local $iQuantitySource = GetItemQuantity($pItemSource), $iQuantityDest
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
@@ -774,7 +774,7 @@ Func WithdrawItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
     Local $iBagSource, $iSlotSource, $aBagSlotLast[2] = [0, 0]
     Local $iAmountCount = 0
 
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
@@ -843,7 +843,7 @@ EndFunc ;==>WithdrawItemsByModelID
 Func WithdrawItemsByType($aType, $aFullStack = False)
     If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
     Local $pItem, $pBag
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
@@ -1090,7 +1090,7 @@ Func GetMaxTotalSlots()
       $pBag = Item_GetBagPtr($Bag)
       $SlotCount += Memory_Read($pBag + 0x20, 'long')
    Next
-   For $Bag = 8 to 12
+   For $Bag = 8 To 11
       $pBag = Item_GetBagPtr($Bag)
       $SlotCount += Memory_Read($pBag + 0x20, 'long')
    Next
@@ -1111,7 +1111,7 @@ EndFunc   ;==>CountFreeSlots
 ;~ Description: Returns number of free slots in storage
 Func CountFreeSlotsStorage()
     Local $lCount = 0, $pBag
-    For $lBag = 8 To 12
+    For $lBag = 8 To 11
         $pBag = Item_GetBagPtr($lBag)
         If $pBag = 0 Then ContinueLoop
         $lCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
@@ -1151,7 +1151,7 @@ Func GetFreeSlotsStorage()
 
     Local $aFreeSlots[125][2]
     Local $pItem, $pBag, $iCount = 0
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
@@ -1425,7 +1425,7 @@ Func MaintainCitySpeed()
         Next
     Next
     
-    For $bag = 8 To 12
+    For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
