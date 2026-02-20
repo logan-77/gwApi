@@ -371,7 +371,7 @@ Func UseItemByModelID($aModelID)
 
     Local $aItem = GetItemInInventory($aModelID)
 
-    For $i = 0 To UBound($aModelID) = 1
+    For $i = 0 To UBound($aModelID) - 1
         If $aItem[$i] = 0 Then ContinueLoop
         Item_UseItem($aItem[$i])
     Next
