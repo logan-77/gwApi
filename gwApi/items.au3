@@ -362,23 +362,25 @@ Func GetQuantityByType($aType, $aCountSlotsOnly = False)
     Return CountItemByType($aType, 1, 12, $aCountSlotsOnly)
 EndFunc ;==>GetQuantity
 
-;~ === Move Items around ===
+;~ Use Item in Inventory
 Func UseItemByModelID($aModelID)
-    Local $pItem = GetItemInInventory($aModelID)
-    If $pItem = 0 Then Return False
-    
-    Item_UseItem($pItem)
-    Other_PingSleep(100)
-    Return True
-EndFunc ;==>UseItemByModelID
+    If Not IsArray($aModelID) Then
+        Local $aTmp[1] = [$aModelID]
+        $aModelID = $aTmp
+    EndIf
 
-;~ Func PickUpItem($aItem)
-;~  Return Core_SendPacket(0xC, $HEADER_INTERACT_ITEM, Item_ItemID($aItem), 0)
-;~ EndFunc   ;==>PickUpItem
+    Local $aItem = GetItemInInventory($aModelID)
+
+    For $i = 0 To UBound($aModelID) = 1
+        If $aItem[$i] = 0 Then ContinueLoop
+        Item_UseItem($aItem[$i])
+    Next
+    Other_PingSleep(100)
+EndFunc ;==>UseItemByModelID
 
 ;Drops all Items to ground, if in explorable
 Func DropAll()
-    If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
+    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
     Local $pItem, $pBag
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
@@ -395,7 +397,7 @@ EndFunc ;==>DropAll
 
 ;Drops all Items of given Type to ground, if in explorable
 Func DropItemsByType($aType)
-    If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
+    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
     Local $pItem, $pBag
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
@@ -413,7 +415,7 @@ EndFunc ;==>DropItemsByType
 
 ;Drops all Items of given ModelID to ground, if in explorable
 Func DropItemsByModelID($aModelID, $aFullStack = False)
-    If Map_GetInstanceInfo("Type") <> $instancetype_explorable Then Return 0
+    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
     Local $pItem, $pBag
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
