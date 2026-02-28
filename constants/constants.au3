@@ -644,74 +644,74 @@ Global Const $model_id_luxon_hauler_turtle    = 3636 ; 3585
 Global Const $model_id_kurzick_carrier_juggernaut = 3418 ; 3367
 
 ; War Supply Farm
-Global Const $model_id_white_mantle_enforcer = 8242
-Global Const $model_id_white_mantle_enforcer_2 = 8243
-Global Const $model_id_white_mantle_enforcer_3 = 8244
-Global Const $model_id_white_mantle_enforcer_4 = 8245 ; ranger/assa
-Global Const $model_id_white_mantle_enforcer_5 = 8246 ; assa
+Global Const $model_id_white_mantle_enforcer = 8255
+Global Const $model_id_white_mantle_enforcer_2 = 8256
+Global Const $model_id_white_mantle_enforcer_3 = 8257
+Global Const $model_id_white_mantle_enforcer_4 = 8258 ; ranger/assa
+Global Const $model_id_white_mantle_enforcer_5 = 8259 ; assa
 
-Global Const $model_id_white_mantle_sycophant    = 8247 ; degen mes (crippling anguish)
-Global Const $model_id_white_mantle_sycophant_2  = 8248 ; dom mes (clumsiness) 2nd
-Global Const $model_id_white_mantle_sycophant_3  = 8249 ; dom mes (emp+healing signet)
-Global Const $model_id_white_mantle_sycophant_4  = 8250 ; esurge, spirit shackles 2NDARY
-Global Const $model_id_white_mantle_sycophant_5  = 8251 ; condi mes 2nd
-Global Const $model_id_white_mantle_sycophant_6  = 8252 ; WoH isMonk
+Global Const $model_id_white_mantle_sycophant    = 8260 ; degen mes (crippling anguish)
+Global Const $model_id_white_mantle_sycophant_2  = 8261 ; dom mes (clumsiness) 2nd
+Global Const $model_id_white_mantle_sycophant_3  = 8262 ; dom mes (emp+healing signet)
+Global Const $model_id_white_mantle_sycophant_4  = 8263 ; esurge, spirit shackles 2NDARY
+Global Const $model_id_white_mantle_sycophant_5  = 8264 ; condi mes 2nd
+Global Const $model_id_white_mantle_sycophant_6  = 8265 ; WoH isMonk
 
-Global Const $model_id_white_mantle_ritualist_3 = 8253 ; Discord, condi nec
-Global Const $model_id_white_mantle_ritualist_4 = 8254
-Global Const $model_id_white_mantle_ritualist_5 = 8255 ; Life Siphon, nec
+Global Const $model_id_white_mantle_ritualist_3 = 8266 ; Discord, condi nec
+Global Const $model_id_white_mantle_ritualist_4 = 8267
+Global Const $model_id_white_mantle_ritualist_5 = 8268 ; Life Siphon, nec
 
-Global Const $model_id_white_mantle_fanatic      = 8257 ; Icy Veins
-Global Const $model_id_white_mantle_fanatic_2    = 8258 ; nec (rit heal)
-Global Const $model_id_white_mantle_fanatic_3    = 8259 ; lingering curse
-Global Const $model_id_white_mantle_fanatic_4    = 8260 ; tainted flesh
+Global Const $model_id_white_mantle_fanatic      = 8270 ; Icy Veins
+Global Const $model_id_white_mantle_fanatic_2    = 8271 ; nec (rit heal)
+Global Const $model_id_white_mantle_fanatic_3    = 8272 ; lingering curse
+Global Const $model_id_white_mantle_fanatic_4    = 8273 ; tainted flesh
 
-Global Const $model_id_white_mantle_savant      = 8261 ; mshower
-Global Const $model_id_white_mantle_savant_2    = 8262 ; savannah heat + rit heal
+Global Const $model_id_white_mantle_savant      = 8274 ; mshower
+Global Const $model_id_white_mantle_savant_2    = 8275 ; savannah heat + rit heal
 
-Global Const $model_id_white_mantle_adherent    = 8265 ; water ele
-Global Const $model_id_white_mantle_adherent_2  = 8266 ; shatterstone, water ele
-Global Const $model_id_white_mantle_adherent_3  = 8267 ; Unsteady Ground, earth ele
-Global Const $model_id_white_mantle_adherent_4  = 8268 ; Sandstorm, earth ele
+Global Const $model_id_white_mantle_adherent    = 8278 ; water ele
+Global Const $model_id_white_mantle_adherent_2  = 8279 ; shatterstone, water ele
+Global Const $model_id_white_mantle_adherent_3  = 8280 ; Unsteady Ground, earth ele
+Global Const $model_id_white_mantle_adherent_4  = 8281 ; Sandstorm, earth ele
 
-Global Const $model_id_white_mantle_priest      = 8269 ; WoH
-Global Const $model_id_white_mantle_priest_2    = 8270 ; Healing Burst
-Global Const $model_id_white_mantle_priest_3    = 8271 ; Healers Boon(hexremove)
-Global Const $model_id_white_mantle_priest_4    = 8272 ; mo/ele (smite) RoJ
+Global Const $model_id_white_mantle_priest      = 8282 ; WoH
+Global Const $model_id_white_mantle_priest_2    = 8283 ; Healing Burst
+Global Const $model_id_white_mantle_priest_3    = 8284 ; Healers Boon(hexremove)
+Global Const $model_id_white_mantle_priest_4    = 8285 ; mo/ele (smite) RoJ
 
-Global Const $model_id_white_mantle_abbot        = 8273 ; Prot Mo (Boon Signet, spiritbond)
-Global Const $model_id_white_mantle_abbot_2      = 8274 ; Mantra of Recall
-Global Const $model_id_white_mantle_abbot_3      = 8275 ; RC, prot spirit (strong heal)
-Global Const $model_id_white_mantle_abbot_4      = 8276 ; zeal benediction + smite
+Global Const $model_id_white_mantle_abbot        = 8286 ; Prot Mo (Boon Signet, spiritbond)
+Global Const $model_id_white_mantle_abbot_2      = 8287 ; Mantra of Recall
+Global Const $model_id_white_mantle_abbot_3      = 8288 ; RC, prot spirit (strong heal)
+Global Const $model_id_white_mantle_abbot_4      = 8289 ; zeal benediction + smite
 
-Global Const $model_id_white_mantle_zealot   = 8277 ; axe war, signet of return
-Global Const $model_id_white_mantle_zealot_2  = 8278 ; war/monk
-Global Const $model_id_white_mantle_zealot_3  = 8279 ; Triple Chop, axe war
-Global Const $model_id_white_mantle_zealot_4  = 8280 ; bane signet, smite skills
+Global Const $model_id_white_mantle_zealot   = 8290 ; axe war, signet of return
+Global Const $model_id_white_mantle_zealot_2  = 8291 ; war/monk
+Global Const $model_id_white_mantle_zealot_3  = 8292 ; Triple Chop, axe war
+Global Const $model_id_white_mantle_zealot_4  = 8293 ; bane signet, smite skills
 
-Global Const $model_id_white_mantle_knight   = 8281 ; sword war
-Global Const $model_id_white_mantle_knight_2  = 8282 ; sword war, smite
-Global Const $model_id_white_mantle_knight_3  = 8283 ; sword war, conjure frost, water skills
-Global Const $model_id_white_mantle_knight_4  = 8284 ; res signet
+Global Const $model_id_white_mantle_knight   = 8294 ; sword war
+Global Const $model_id_white_mantle_knight_2  = 8295 ; sword war, smite
+Global Const $model_id_white_mantle_knight_3  = 8296 ; sword war, conjure frost, water skills
+Global Const $model_id_white_mantle_knight_4  = 8297 ; res signet
 
-Global Const $model_id_white_mantle_scout   = 8285 ; ranger
-Global Const $model_id_white_mantle_scout_2    = 8286 ; 
-Global Const $model_id_white_mantle_scout_3    = 8287 ;
-Global Const $model_id_white_mantle_scout_4   = 8288 ;
-Global Const $model_id_white_mantle_scout_5   = 8289 ; 
+Global Const $model_id_white_mantle_scout   = 8298 ; ranger
+Global Const $model_id_white_mantle_scout_2    = 8299 ; 
+Global Const $model_id_white_mantle_scout_3    = 8300 ;
+Global Const $model_id_white_mantle_scout_4   = 8301 ;
+Global Const $model_id_white_mantle_scout_5   = 8302 ; 
 
-Global Const $model_id_white_mantle_ritualist_6  = 8298 ; rit/paragon spear
-Global Const $model_id_white_mantle_ritualist_8  = 8299 ; rit/monk (preservation, strong heal, hexremove, spirits)
-Global Const $model_id_white_mantle_ritualist    = 8300 ; SoS
-Global Const $model_id_white_mantle_ritualist_2  = 8301 ; PRIMARY (shadowsong,bloodsong,pain,anguish)
-Global Const $model_id_white_mantle_ritualist_7  = 8302 ; minions 2nd prio
-Global Const $model_id_white_mantle_ritualist_9  = 8303 ; weapon of remedy rit(hardrez, prio)
+Global Const $model_id_white_mantle_ritualist_6  = 8311 ; rit/paragon spear
+Global Const $model_id_white_mantle_ritualist_8  = 8312 ; rit/monk (preservation, strong heal, hexremove, spirits)
+Global Const $model_id_white_mantle_ritualist    = 8313 ; SoS
+Global Const $model_id_white_mantle_ritualist_2  = 8314 ; PRIMARY (shadowsong,bloodsong,pain,anguish)
+Global Const $model_id_white_mantle_ritualist_7  = 8315 ; minions 2nd prio
+Global Const $model_id_white_mantle_ritualist_9  = 8316 ; weapon of remedy rit(hardrez, prio)
 
-Global Const $model_id_white_mantle_champion  = 8204 ; para/rit (splinter, signet return)
-Global Const $model_id_white_mantle_champion_2  = 8206 ; para/ranger
-Global Const $model_id_white_mantle_champion_3  = 8207 ; para/war
+Global Const $model_id_white_mantle_champion  = 8217 ; para/rit (splinter, signet return)
+Global Const $model_id_white_mantle_champion_2  = 8219 ; para/ranger
+Global Const $model_id_white_mantle_champion_3  = 8220 ; para/war
 
-Global Const $model_id_white_mantle_zealot_5  = 8402 ; war/monk
+Global Const $model_id_white_mantle_zealot_5  = 8415 ; war/monk
 #Endregion PlayerNumber
 
 ; === Specific ItemID's ===
