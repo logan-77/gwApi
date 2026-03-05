@@ -159,7 +159,7 @@ Func GetNearestAgentPtr($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerN
     For $i = 1 To $lAgentPtrArray[0]
         If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
         If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
-        ;~ If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
+        If $aAllegiance = 0x03 And (IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
         If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
         $lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
         If $lDistance < $lNearestDistance Then
@@ -760,12 +760,12 @@ EndFunc   ;==>GetIsPointInPolygon
 Func IsSpiritAgent($aAgent)
     Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
     Switch $lPlayerNumber
-        Case 2870 To 2888, 4230 To 4239, 5711 To 5719, 5776 ; nature rituals
+        Case 2925 To 2939, 4283 To 4290, 5766 To 5769, 5827 ; nature rituals
             Return True
-        Case 4209 To 4231, 5720, 5721, 5723, 5853, 5854 ; binding rituals
-            Return True
-        Case 5848 To 5850 ; EVA, spirits
-            Return True
+        ;~ Case 4209 To 4231, 5720, 5721, 5723, 5853, 5854 ; binding rituals
+        ;~     Return True
+        ;~ Case 5848 To 5850 ; EVA, spirits
+        ;~     Return True
     EndSwitch
     Return False
 EndFunc   ;==>IsSpiritAgent
