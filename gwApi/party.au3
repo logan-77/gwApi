@@ -1,34 +1,47 @@
 #include-once
 
-;~ Description: Returns an array of pointer variables for allies who are party members.
-Func GetPartyPtrArray($aAgentPtrArray = 0)
-    Local $lReturnPtrArray[1] = [0]
-    If $aAgentPtrArray = 0 Then $aAgentPtrArray = GetAgentPtrArray(2, 0xDB, $allegiance_ally)
-    For $i = 1 To $aAgentPtrArray[0]
-        If BitAND(Memory_Read($aAgentPtrArray[$i] + 0x15C, "dword"), 131072) Or BitAND(Memory_Read($aAgentPtrArray[$i] + 0x15C, "dword"), 131584) Then ; 131584 = Mercenary Heroes
-        $lReturnPtrArray[0] += 1
-        ReDim $lReturnPtrArray[$lReturnPtrArray[0] + 1]
-        $lReturnPtrArray[$lReturnPtrArray[0]] = $aAgentPtrArray[$i]
-        EndIf
-    Next
-    Return $lReturnPtrArray
-EndFunc   ;==>GetPartyPtrArray
+;~ Only works for Players!
+Func GetPartyPtrArray()
+    Local $aAgentID = GetPartyIDArray()
+    Local $aAgentPtr[Ubound($aAgentID)]
+    $aAgentPtr[0] = $aAgentID[0]
 
-Func GetPartyLeaderPtr($aPartyPtrArray = 0)
-    Local $lPartyLeader, $lPlayerNumber, $lLowestPlayerNumber = 1000
-    If $aPartyPtrArray = 0 Then $aPartyPtrArray = GetPartyPtrArray()
-    
-    If GetIsPartyLeader() Then Return Agent_GetAgentPtr(-2)
-    
-    For $i = 1 To $aPartyPtrArray[0]
-        $lPlayerNumber = GetPlayerNumber($aPartyPtrArray[$i])
-        If $lPlayerNumber < $lLowestPlayerNumber Then
-            $lLowestPlayerNumber = $lPlayerNumber
-            $lPartyLeader = $aPartyPtrArray[$i]
-        EndIf
+    For $i = 1 To $aAgentID[0]
+        $aAgentPtr[$i] = Agent_GetAgentPtr($aAgentID[$i])
     Next
-    ; Out("Party Leader PlayerNo: " & $lLowestPlayerNumber)
-    Return $lPartyLeader
+    Return $aAgentPtr
+EndFunc ;==>GetPartyPtrArray
+
+;~ Only works for Players!
+Func GetPartyIDArray()
+    Local $iPlayerCount = Party_GetMyPartyInfo("ArrayPlayerPartyMemberSize")
+    Local $aPartyID[$iPlayerCount + 1]
+    $aPartyID[0] = $iPlayerCount
+
+    Local $aAgentPtr = GetAgentPtrArray(2, 0xDB, $allegiance_ally)
+    Local $iLoginNumber, $iMyLoginNumber = Agent_GetAgentInfo(-2, "LoginNumber")
+
+    For $i = 1 To $iPlayerCount
+        $iLoginNumber = Party_GetMyPartyPlayerMemberInfo($i, "LoginNumber")
+
+        If $iLoginNumber = $iMyLoginNumber Then
+            $aPartyID[$i] = Agent_GetMyID()
+            ContinueLoop
+        EndIf
+
+        For $j = 1 To $aAgentPtr[0]
+            If Agent_GetAgentInfo($aAgentPtr[$j], "LoginNumber") = $iLoginNumber Then
+                $aPartyID[$i] = Agent_GetAgentInfo($aAgentPtr[$j], "ID")
+                ExitLoop
+            EndIf
+        Next
+    Next
+    Return $aPartyID
+EndFunc ;==>GetPartyIDArray
+
+Func GetPartyLeaderPtr()
+    Local $aPartyPtr = GetPartyPtrArray()
+    Return $aPartyPtr[1]
 EndFunc ;==>GetPartyLeaderPtr
 
 ;~  Description: Returns different States about Party. Check with BitAND.
@@ -61,79 +74,59 @@ Func GetIsPartyLeader()
 EndFunc ;==>GetIsPartyLeader
 
 Func GetPartySize()
-    Local $lOffset0[5] = [0, 0x18, 0x4C, 0x54, 0xC]
-    Local $lplayersPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset0)
-
-    Local $lOffset1[5] = [0, 0x18, 0x4C, 0x54, 0x1C]
-    Local $lhenchmenPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset1)
-
-    Local $lOffset2[5] = [0, 0x18, 0x4C, 0x54, 0x2C]
-    Local $lheroesPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset2)
-
-    Local $Party1 = Memory_Read($lplayersPtr[0], 'long') ; players
-    Local $Party2 = Memory_Read($lhenchmenPtr[0], 'long') ; henchmen
-    Local $Party3 = Memory_Read($lheroesPtr[0], 'long') ; heroes
-
-    Local $lReturn = $Party1 + $Party2 + $Party3
-    ;~    If $lReturn > 12 or $lReturn < 1 Then $lReturn = 8
-    Return $lReturn
+    Return Party_GetPartyContextInfo("TotalPartySize")
 EndFunc   ;==>GetPartySize
 
 ;~ Returns how many real players are in the party
 Func GetPlayerPartySize()
-    Local $lOffset0[5] = [0, 0x18, 0x4C, 0x54, 0xC]
-    Local $lplayersPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset0)
-    Return Memory_Read($lplayersPtr[0], 'long') ; players
+    ;~ Local $lOffset0[5] = [0, 0x18, 0x4C, 0x54, 0xC]
+    ;~ Local $lplayersPtr = Memory_ReadPtr($g_p_BasePointer, $lOffset0)
+    ;~ Return Memory_Read($lplayersPtr[0], 'long') ; players
+    Return Party_GetMyPartyInfo("ArrayPlayerPartyMemberSize")
 EndFunc   ;==>GetPlayerPartySize
 
-; Memory_Read($lplayersPtr[0] + 4, 'long')
-; Memory_Read($lplayersPtr[0] + 8, 'long')
-
 ;~ Returns if all Partymembers are connected
-Func GetPartyConnected($PartyNumber)
-    Local $aParty = GetPartyPtrArray()
+;~ Only works with players
+Func GetPartyConnected($iPartySize)
+    Local $iPlayerCount = Party_GetMyPartyInfo("ArrayPlayerPartyMemberSize")
 
-    If $aParty[0] < $PartyNumber Then
-        Out("Everyone not connected")
+    If $iPlayerCount < $iPartySize Then
+        Out("Players are missing.")
         Return False
     EndIf
 
-    If $aParty[0] = $PartyNumber Then
-        Out("Everyone is connected")
+    If $iPlayerCount = $iPartySize Then
+        Out("Everyone is connected.")
         Return True
     EndIf
 
-    If $aParty[0] > $PartyNumber Then
+    If $iPlayerCount > $iPartySize Then
         Out("Wtf ??")
         Return True
     EndIf
 EndFunc
 
-;Returns all Player names of the current party
+; Returns all Player names of the current party
 Func GetPartyPlayerNames()
-    Local $aPartyPtrArray = GetPartyPtrArray()
-    If $aPartyPtrArray[0] = 0 Then Return ''
+    Local $aPartiID = GetPartyIDArray()
+    Local $sPlayerNames = ""
 
-    Local $ret = GetPlayerName(ID($aPartyPtrArray[1]))
-    Out(GetPlayerName(ID($aPartyPtrArray[1])))
-    If $aPartyPtrArray[0] = 1 Then Return $ret
+    For $i = 1 To $aPartiID[0]
+        Local $sName = Agent_GetAgentInfo($aPartiID[$i], "Name")
 
-    For $i = 2 To $aPartyPtrArray[0]
-        ; If Memory_Read($aPartyPtrArray[$i] + 344, "long") = 0x20200 Then ContinueLoop ; excludes players in outpost who are not in our part
-        $playerName = GetPlayerName(ID($aPartyPtrArray[$i]))
-        If Not $playerName = 0 Then
-            $ret &= "|"
-            $ret &= $playerName
-            Out($playerName)
-        EndIf
+        $sPlayerNames &= $sName
+        If $i < $aPartiID[0] Then $sPlayerNames &= "|"
+
+        Out($sName)
     Next
-    Return $ret
+
+    Return $sPlayerNames
 EndFunc   ;==>GetPartyPlayerNames
 
 ; maybe usefull for Healparty/LoD
 Func GetPartyHealth($aPartyPtrArray = 0)
     Local $aTotalTeamHP
-    $PartyPtrArray = GetPartyPtrArray($aPartyPtrArray)
+    $PartyPtrArray = GetPartyPtrArray()
     For $i = 1 To $PartyPtrArray[0]
         If GetIsDead($PartyPtrArray[$i]) Then ContinueLoop
         $aAgent = $PartyPtrArray[$i]
