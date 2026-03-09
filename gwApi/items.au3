@@ -190,7 +190,7 @@ EndFunc ;==>GetItemInInventory
 
 ; Returns the first Item by ModelID found in Storage; If no Item is found Returns Zero
 Func GetItemInChest($aModelID, $bPartialStacksOnly = False)
-    Return GetItemPtrByModelID($aModelID, 8, 12, $bPartialStacksOnly)
+    Return GetItemPtrByModelID($aModelID, 8, 11, $bPartialStacksOnly)
 EndFunc ;==>GetItemInChest
 
 Func GetItemInInventoryByType($aType)
@@ -198,7 +198,7 @@ Func GetItemInInventoryByType($aType)
 EndFunc ;==>GetItemInInventoryByType
 
 Func GetItemInChestByType($aType)
-    Return GetItemPtrByType($aType, 8, 12)
+    Return GetItemPtrByType($aType, 8, 11)
 EndFunc ;==>GetItemInChestByType
 
 ;~ Returns the first Item, with a matching ModStruct
