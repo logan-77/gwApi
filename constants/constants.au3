@@ -477,6 +477,7 @@ Global Const $map_id_maatu_keep = 283
 Global Const $map_id_the_marketplace = 303
 Global Const $map_id_saoshang_trail = 313
 Global Const $map_id_saint_anjekas_shrine = 349
+Global Const $map_id_yohlon_haven = 381
 Global Const $map_id_the_floodplain_of_mahnkelon = 384
 Global Const $map_id_chantry_of_secrets = 393
 Global Const $map_id_rilohn_refuge = 425
