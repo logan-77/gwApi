@@ -207,49 +207,55 @@ EndFunc ;==>GetIsBurning
 ;~ Functions work for Player and Hero's
 
 ;~ Description: Returns current number of buffs being maintained.
-Func GetBuffCount($iAgent = -2)
-    Return Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-EndFunc ;==>GetBuffCount
+Func GetBondCount($iAgent = -2)
+    Return Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
+EndFunc ;==>GetBondCount
 
 ;~ Description: Tests if you are currently maintaining buff on target.
-Func GetIsTargetBuffed($iSkillID, $iTargetID, $iAgent = -2)
+Func GetIsTargetBonded($iSkillID, $iTargetID, $iAgent = -2)
     $iTargetID = Agent_ConvertID($iTargetID)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
-    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArray")
+    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
+    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent 
 
     For $i = 0 To $iBuffCount - 1
         $pCurrent = $pBuffArray + ($i * 0x10)
-        $iCurrentSkillID = Memory_Read($pCurrent, "long")
-        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
 
-        If $iSkillID = $iCurrentSkillID And $iTargetID = $iCurrentTargetID Then Return True
+        $iCurrentSkillID = Memory_Read($pCurrent, "long")
+        If $iSkillID <> $iCurrentSkillID Then ContinueLoop
+
+        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
+        If $iTargetID <> $iCurrentTargetID Then ContinueLoop
+        
+        Return True
     Next
 
     Return False
-EndFunc ;==>GetIsTargetBuffed
+EndFunc ;==>GetIsTargetBonded
 
 ;~ Description: Stop maintaining enchantment on target.
 Func DropBuff($iSkillID, $iTargetID, $iAgent = -2)
     $iTargetID = Agent_ConvertID($iTargetID)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
-    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArray")
+    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
+    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent 
 
     For $i = 0 To $iBuffCount - 1
         $pCurrent = $pBuffArray + ($i * 0x10)
-        $iCurrentSkillID = Memory_Read($pCurrent, "long")
-        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
 
-        If $iSkillID = $iCurrentSkillID And $iTargetID = $iCurrentTargetID Then
-            Local $iBuffID = Memory_Read($pCurrent + 0x8, "long")
-            Core_SendPacket(0x8, $GC_I_HEADER_BUFF_DROP, $iBuffID)
-            Return True
-        EndIf
+        $iCurrentSkillID = Memory_Read($pCurrent, "long")
+        If $iSkillID <> $iCurrentSkillID Then ContinueLoop
+
+        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
+        If $iTargetID <> $iCurrentTargetID Then ContinueLoop
+
+        Local $iBuffID = Memory_Read($pCurrent + 0x8, "long")
+        Core_SendPacket(0x8, $GC_I_HEADER_BOND_DROP, $iBuffID)
+        Return True
     Next
     Return False
 EndFunc ;==>DropBuff
@@ -263,12 +269,12 @@ Func DropAllBondsBySkillID($iSkillID, $iAgent = -2)
 
     For $i = 0 To $iBuffCount - 1
         $pCurrent = $pBuffArray + ($i * 0x10)
-        $iCurrentSkillID = Memory_Read($pCurrent, "long")
 
-        If $iSkillID = $iCurrentSkillID Then
-            $iBuffID = Memory_Read($pCurrent + 0x8, "long")
-            Core_SendPacket(0x8, $GC_I_HEADER_BUFF_DROP, $iBuffID)
-        EndIf
+        $iCurrentSkillID = Memory_Read($pCurrent, "long")
+        If $iSkillID <> $iCurrentSkillID Then ContinueLoop
+
+        $iBuffID = Memory_Read($pCurrent + 0x8, "long")
+        Core_SendPacket(0x8, $GC_I_HEADER_BOND_DROP, $iBuffID)
     Next
 EndFunc ;==>DropAllBondsBySkillID
 
@@ -282,12 +288,12 @@ Func DropAllBondsOnTargetID($iTargetID, $iAgent = -2)
 
     For $i = 0 To $iBuffCount - 1
         $pCurrent = $pBuffArray + ($i * 0x10)
-        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
 
-        If $iTargetID = $iCurrentTargetID Then
-            $iBuffID = Memory_Read($pCurrent + 0x8, "long")
-            Core_SendPacket(0x8, $GC_I_HEADER_BUFF_DROP, $iBuffID)
-        EndIf
+        $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
+        If $iTargetID <> $iCurrentTargetID Then ContinueLoop
+
+        $iBuffID = Memory_Read($pCurrent + 0x8, "long")
+        Core_SendPacket(0x8, $GC_I_HEADER_BOND_DROP, $iBuffID)
     Next
 EndFunc ;==>DropAllBondsOnTargetID
 #EndRegion Buffs
