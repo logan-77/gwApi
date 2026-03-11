@@ -44,8 +44,8 @@ EndFunc ;==>GetAgentPtrArray
 #Region AgentControls
 ; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
 Func GetNumberOfEnemiesNearAgent($aAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $aAgent, $aPlayerNumber)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $aAgent, $aPlayerNumber)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfEnemiesNearAgent
 
 ; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
@@ -63,8 +63,8 @@ EndFunc   ;==>GetNumberOfEnemiesNearAgent
 
 ; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
 Func GetNumberOfEnemiesNearXY($aX, $aY, $aRange = 1250, $aPlayerNumber = 0)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, -2, $aPlayerNumber, 0, $aX, $aY)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, -2, $aPlayerNumber, 0, $aX, $aY)
+    Return UBound($aAgentPtr) - 1
 EndFunc ;==>GetNumberOfEnemiesNearXY
 
 ; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
@@ -82,62 +82,62 @@ EndFunc   ;==>GetNumberOfEnemiesNearXY
 
 ; Returns the number of living allies in range of an agent
 Func GetNumberOfDeadAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0010)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0010)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfDeadAllies
 
 ;~ Returns the number of living allies in range of an agent. (include npc, pet, spirit)
 Func GetNumberOfAlliesInRangeOfAgent($aAgent = -2, $aRange = 1250)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, $aAgent)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, $aAgent)
+    Return UBound($aAgentPtr) - 1
 EndFunc ;==>GetNumberOfAlliesInRangeOfAgent
 
 ; Returns the number of allies with a condition
 Func GetNumberOfConditionedAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0002)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0002)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfConditionedAllies
 
 ; Returns the number of bleeding allies
 Func GetNumberOfBleedingAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0001)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0001)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfBleedingAllies
 
 ; Returns the number of poisoned allies
 Func GetNumberOfPoisonedAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0040)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0040)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfPoisonedAllies
 
 ; Returns the number of deep-wounded allies
 Func GetNumberOfDeepWoundedAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0020)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0020)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfDeepWoundedAllies
 
 ;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
 ;~ Description: Returns Highest HP Enemy in Range. optional: PlayerNumber
 Func GetHighestHPEnemyPtrToAgent($aAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $aAgent, $aPlayerNumber)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $aAgent, $aPlayerNumber)
     Local $lHighestHP = 0, $lHighestHPAgentPtr = 0, $lHP
     
-    For $i = 1 To $lAgentPtrArray[0]
-        $lHP = GetHP($lAgentPtrArray[$i])
+    For $i = 1 To $aAgentPtr[0]
+        $lHP = GetHP($aAgentPtr[$i])
         If $lHP > $lHighestHP Then
             $lHighestHP = $lHP
-            $lHighestHPAgentPtr = $lAgentPtrArray[$i]
+            $lHighestHPAgentPtr = $aAgentPtr[$i]
         EndIf
     Next
     Return $lHighestHPAgentPtr
 EndFunc ;==>GetHighestHPEnemyPtr
 
 Func GetAgentPtrByPlayerNumber($aPlayerNumber, $aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(1, 0xDB)
-    For $i = 1 To $lAgentPtrArray[0]
-        If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
-        If GetDistance($lAgentPtrArray[$i]) > $aRange Then ContinueLoop
-        If Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") = $aPlayerNumber Then Return $lAgentPtrArray[$i]
+    Local $aAgentPtr = GetAgentPtrArray(1, 0xDB)
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetDistance($aAgentPtr[$i]) > $aRange Then ContinueLoop
+        If Memory_Read($aAgentPtr[$i] + 0xF4, "short") = $aPlayerNumber Then Return $aAgentPtr[$i]
     Next
     Return 0
 EndFunc   ;==>GetAgentPtrByPlayerNumber
@@ -148,22 +148,23 @@ EndFunc   ;==>GetAgentPtrByPlayerNumber
 ;~ GetNearestAgentPtr: Agent, Type, Allegiance, PlayerNumber, X, Y
 Func GetNearestAgentPtr($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerNumber = 0, $aX = X($aAgent), $aY = Y($aAgent))
     Local $lAgent = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr = 0, $lNearestDistance = 25000000
-    Local $lAgentPtrArray, $lDistance
+    Local $aAgentPtr, $lDistance, $iPlayerNumber
     Switch $aType
         Case 0xDB
-            $lAgentPtrArray = GetAgentPtrArray(2, $aType, $aAllegiance)
+            $aAgentPtr = GetAgentPtrArray(2, $aType, $aAllegiance)
         Case 0x200, 0x400
-            $lAgentPtrArray = GetAgentPtrArray(1, $aType)
+            $aAgentPtr = GetAgentPtrArray(1, $aType)
     EndSwitch
 
-    For $i = 1 To $lAgentPtrArray[0]
-        If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
-        If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
-        If $aAllegiance = 0x03 And (IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
-        If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
-        $lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
+    For $i = 1 To $aAgentPtr[0]
+        If $aAgentPtr[$i] = $lAgent Then ContinueLoop
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        $iPlayerNumber = GetPlayerNumber($aAgentPtr[$i])
+        If $aAllegiance = 0x03 And (IsSpiritAgent($iPlayerNumber)) Then ContinueLoop
+        If $aPlayerNumber <> 0 And $iPlayerNumber <> $aPlayerNumber Then ContinueLoop
+        $lDistance = GetPseudoDistanceToXY($aX, $aY, $aAgentPtr[$i])
         If $lDistance < $lNearestDistance Then
-            $lNearestAgentPtr = $lAgentPtrArray[$i]
+            $lNearestAgentPtr = $aAgentPtr[$i]
             $lNearestDistance = $lDistance
         EndIf
     Next
@@ -172,22 +173,22 @@ EndFunc ;==>GetNearestAgentPtr
 
 Func GetNearestAgentPtr2($aAgent = -2, $aType = 0xDB, $aAllegiance = 0, $aPlayerNumber = 0, $aX = X($aAgent), $aY = Y($aAgent))
     Local $lAgent = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr = 0, $lNearestDistance = 25000000
-    Local $lAgentPtrArray, $lDistance
+    Local $aAgentPtr, $lDistance
     Switch $aType
         Case 0xDB
-            $lAgentPtrArray = GetAgentPtrArray(2, $aType, $aAllegiance)
+            $aAgentPtr = GetAgentPtrArray(2, $aType, $aAllegiance)
         Case 0x200, 0x400
-            $lAgentPtrArray = GetAgentPtrArray(1, $aType)
+            $aAgentPtr = GetAgentPtrArray(1, $aType)
     EndSwitch
 
-    For $i = 1 To $lAgentPtrArray[0]
-        If $lAgentPtrArray[$i] = $lAgent Then ContinueLoop
-        ;~ If GetIsDead($lAgentPtrArray[$i]) Then ContinueLoop
-        ;~ If $aAllegiance = 0x03 And (IsMinionAgent($lAgentPtrArray[$i]) Or IsSpiritAgent($lAgentPtrArray[$i])) Then ContinueLoop
-        ;~ If $aPlayerNumber <> 0 And Memory_Read($lAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
-        $lDistance = GetPseudoDistanceToXY($aX, $aY, $lAgentPtrArray[$i])
+    For $i = 1 To $aAgentPtr[0]
+        If $aAgentPtr[$i] = $lAgent Then ContinueLoop
+        ;~ If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        ;~ If $aAllegiance = 0x03 And (IsMinionAgent($aAgentPtr[$i]) Or IsSpiritAgent($aAgentPtr[$i])) Then ContinueLoop
+        ;~ If $aPlayerNumber <> 0 And Memory_Read($aAgentPtr[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
+        $lDistance = GetPseudoDistanceToXY($aX, $aY, $aAgentPtr[$i])
         If $lDistance < $lNearestDistance Then
-            $lNearestAgentPtr = $lAgentPtrArray[$i]
+            $lNearestAgentPtr = $aAgentPtr[$i]
             $lNearestDistance = $lDistance
         EndIf
     Next
@@ -258,13 +259,13 @@ EndFunc   ;==>GetNearestAllyPtrToAgent
 ;CHECK THIS FUNC, this deffo needs changing!
 Func GetNearestDeadAllyPtrToAgent($aAgent = -2)
     Local $lPtr = Agent_GetAgentPtr($aAgent), $lNearestAgentPtr, $lDistance, $lNearestDistance = 25000000
-    Local $lAgentPtrArray = GetAgentPtrArray(4, 0xDB, 1, 1320, Agent_GetAgentPtr(-2), 0x0010)
+    Local $aAgentPtr = GetAgentPtrArray(4, 0xDB, 1, 1320, Agent_GetAgentPtr(-2), 0x0010)
 
-    For $i = 1 To $lAgentPtrArray[0]
-        If $lAgentPtrArray[$i] == $lPtr Then ContinueLoop
-        $lDistance = GetDistance($lAgentPtrArray[$i], $lPtr)
+    For $i = 1 To $aAgentPtr[0]
+        If $aAgentPtr[$i] == $lPtr Then ContinueLoop
+        $lDistance = GetDistance($aAgentPtr[$i], $lPtr)
         If $lDistance < $lNearestDistance Then
-            $lNearestAgentPtr = $lAgentPtrArray[$i]
+            $lNearestAgentPtr = $aAgentPtr[$i]
             $lNearestDistance = $lDistance
         EndIf
     Next
@@ -400,23 +401,6 @@ Func GetPlayerName($aAgent = -2)
     Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset, 'wchar[20]')
     Return $lReturn[1]
 EndFunc   ;==>GetPlayerName
-
-;~ Description: Returns the name of an agent.
-;~ Func GetAgentName($aAgent = -2)
-;~  If $mUseStringLog = False Then Return
-;~  Local $lAgentID = ID($aAgent)
-;~  If $lAgentID = GetMyID() Then Return GetCharname()
-;~  Local $lAddress = $mAgentNameLogBase + 256 * $lAgentID
-;~  Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
-;~  If $lName = '' Then
-;~   DisplayAll(True)
-;~   Sleep(100)
-;~   DisplayAll(False)
-;~  EndIf
-;~  Local $lName = Memory_Read($lAddress + 0x2, 'wchar [126]')
-;~  $lName = StringRegExpReplace($lName, '[<]{1}([^>]+)[>]{1}', '')
-;~  Return $lName
-;~ EndFunc   ;==>GetAgentName
 
 ;~ Description: Returns health of an agent as % of max HP
 Func GetHP($aAgent = -2)
@@ -757,9 +741,8 @@ EndFunc   ;==>GetIsPointInPolygon
 
 #Region Special
 ;~Returns whether a player ID corresponds to a ritual
-Func IsSpiritAgent($aAgent)
-    Local $lPlayerNumber = Memory_Read(Agent_GetAgentPtr($aAgent) + 0xF4, "short")
-    Switch $lPlayerNumber
+Func IsSpiritAgent($iModelID)
+    Switch $iModelID
         Case 2925 To 2939, 4283 To 4290, 5766 To 5769, 5827 ; nature rituals
             Return True
         ;~ Case 4209 To 4231, 5720, 5721, 5723, 5853, 5854 ; binding rituals
@@ -829,15 +812,15 @@ EndFunc   ;==>GetMinionPtrArray
 
 ; Returns the number of minions in range of an agent
 Func GetNumberOfMinionAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfMinionAllies
 
 ; Returns the number of minions I control in range of an agent
 Func GetMyMinionCount($aRange = 5000)
-    Local $lCount, $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
-    For $i = 1 To $lAgentPtrArray[0]
-        If Memory_Read($lAgentPtrArray[$i] + 0x2C, "long") <> GetMyID() Then ContinueLoop ; minion owner
+    Local $lCount, $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
+    For $i = 1 To $aAgentPtr[0]
+        If Memory_Read($aAgentPtr[$i] + 0x2C, "long") <> GetMyID() Then ContinueLoop ; minion owner
         $lCount += 1
     Next
     Return $lCount
@@ -845,8 +828,8 @@ EndFunc   ;==>GetMyMinionCount
 
 ; Returns the number of spirits in range of an agent
 Func GetNumberOfSpiritAllies($aRange = 5000)
-    Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, 0x04, $aRange)
-    Return UBound($lAgentPtrArray) - 1
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x04, $aRange)
+    Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfSpiritAllies
 
 ; Returns the number of spirits I control
@@ -870,10 +853,10 @@ EndFunc   ;==>GetMySpiritCount_
 ; Returns the number of offensive and/or defensive ritualist spirits in range of an agent
 ;~ Func GetNumberOfSpirits($aRange = 5000, $Offensive = True, $Defensive = True)
 ;~  Local $lCount = 0
-;~  Local $lAgentPtrArray = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $aRange)
+;~  Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $aRange)
 
-;~  For $i = 1 To $lAgentPtrArray[0]
-;~   Switch Memory_Read($lAgentPtrArray[$i] + 244, 'word')    ; check on player number
+;~  For $i = 1 To $aAgentPtr[0]
+;~   Switch Memory_Read($aAgentPtr[$i] + 244, 'word')    ; check on player number
 ;~    Case $model_id_Empowerment, $model_id_Rejuvenation, $model_id_Displacement, $model_id_Life, $model_id_Preservation _
 ;~      , $model_id_Recuperation, $model_id_Shelter, $model_id_Union, $model_id_Restoration
 ;~     If $Defensive Then $lCount += 1
