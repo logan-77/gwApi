@@ -208,10 +208,8 @@ EndFunc ;==>GetIsBurning
 
 ;~ Description: Returns current number of buffs being maintained.
 Func GetBuffCount($iAgent = -2)
-    $iAgent = Agent_GetAgentPtr($iAgent)
-
     Return Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-EndFunc   ;==>GetBuffCount
+EndFunc ;==>GetBuffCount
 
 ;~ Description: Tests if you are currently maintaining buff on target.
 Func GetIsTargetBuffed($iSkillID, $iTargetID, $iAgent = -2)
