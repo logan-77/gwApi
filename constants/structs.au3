@@ -5,7 +5,7 @@
 #ce
 
 ;~ complete agent struct
-Global Const $GC_AGENT_STRUCT_TEMPLATE = _
+Global Const $AGENT_STRUCT_TEMPLATE = _
 'ptr vtable;                    dword h0004[4];         dword Timer;            dword Timer2;'              & _
 'ptr NextAgent;                 dword h0020[3];         long ID;                float Z;'                   & _
 'float Width1;                  float Height1;          float Width2;           float Height2;'             & _
@@ -32,3 +32,36 @@ Global Const $GC_AGENT_STRUCT_TEMPLATE = _
 'dword AnimationCode;           dword AnimationID;      byte h0194[32];         byte LastStrike;'           & _
 'byte Allegiance;               short WeaponType;       short Skill;            short h01BA;'               & _
 'byte WeaponItemType;           byte OffhandItemType;   short WeaponItemID;     short OffhandItemID;'
+
+Global $g_tAgentStruct = DllStructCreate($AGENT_STRUCT_TEMPLATE)
+Global $g_iAgentStructSize = DllStructGetSize($g_tAgentStruct)
+
+Global Const $EFFECT_STRUCT_TEMPLATE = _
+'long SkillID;      dword AttributeLevel;' & _
+'long EffectID;     dword CasterID;' & _
+'float Duration;    dword Timestamp'
+
+Global Const $GC_EFFECT_STRUCT_SIZE = 0x18
+
+Global $g_tEffectStruct = DllStructCreate($EFFECT_STRUCT_TEMPLATE)
+Global $g_iEffectStructSize = DllStructGetSize($g_tEffectStruct)
+
+;~ effect count and pointer to the effect array of player or hero
+Global $g_tEffectArray = DllStructCreate( _
+    "ptr EffectArray; dword _padding; long EffectArraySize")
+Global $g_iEffectArrayStructSize = DllStructGetSize($g_tEffectArray)
+
+Global Const $SKILLBAR_STRUCT_TEMPLATE = _
+'long AgentID;' & _
+'dword AdrenalineA1; dword AdrenalineB1; dword Recharge1; dword SkillID1; dword Event1;' & _
+'dword AdrenalineA2; dword AdrenalineB2; dword Recharge2; dword SkillID2; dword Event2;' & _
+'dword AdrenalineA3; dword AdrenalineB3; dword Recharge3; dword SkillID3; dword Event3;' & _
+'dword AdrenalineA4; dword AdrenalineB4; dword Recharge4; dword SkillID4; dword Event4;' & _
+'dword AdrenalineA5; dword AdrenalineB5; dword Recharge5; dword SkillID5; dword Event5;' & _
+'dword AdrenalineA6; dword AdrenalineB6; dword Recharge6; dword SkillID6; dword Event6;' & _
+'dword AdrenalineA7; dword AdrenalineB7; dword Recharge7; dword SkillID7; dword Event7;' & _
+'dword AdrenalineA8; dword AdrenalineB8; dword Recharge8; dword SkillID8; dword Event8;' & _
+'dword Disabled;     dword h00A8[2];     dword Casting;   dword h00B4;    dword Queued;'
+
+Global $g_tSkillbarStruct = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
+Global $g_iSkillbarStructSize = DllStructGetSize($g_tSkillbarStruct)
