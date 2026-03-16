@@ -37,7 +37,7 @@ Func BuildOffsetMap($sStructTemplate)
     Return $mOffset
 EndFunc ;==>BuildOffsetMap
 
-$g_mOffset = BuildOffsetMap($GC_AGENT_STRUCT_TEMPLATE)
+$g_mOffset = BuildOffsetMap($AGENT_STRUCT_TEMPLATE)
 
 Global Const $GC_I_OFFSET_AGENT_VTABLE[]               = [$g_mOffset.vtable["offset"], $g_mOffset.vtable["type"]]
 Global Const $GC_I_OFFSET_AGENT_H0004[]                = [$g_mOffset.h0004["offset"], $g_mOffset.h0004["type"]]
