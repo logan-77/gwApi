@@ -1,45 +1,42 @@
 #include-once
 
-;~ Description: Returns the pointer variable to a skillbar for specified hero number.
-Func GetSkillbarPtr($aHeroNumber = 0)
-    Local $lOffset[5] = [0, 0x18, 0x4C, 0x54, 0x2C]
-    Local $lHeroCount = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-    Local $lOffset[5] = [0, 0x18, 0x2C, 0x6F0]
-    Local $lSkillbarStructAddress
+;~ Returns the pointer to the skillbar of player or hero
+;~ Param is AgentID! (not hero number or hero ID)
+Func GetSkillbarPtr($iAgentID = -2)
+    Local $pWorldContext = World_GetWorldContextPtr()
+    If $pWorldContext = 0 Then Return SetError(1, 0, 0)
 
-    For $i = 0 To $lHeroCount[1]
-        $lOffset[4] = $i * 0xBC
-        $lSkillbarStructAddress = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-        If $lSkillbarStructAddress[1] = GetHeroID($aHeroNumber) Then Return $lSkillbarStructAddress[0]
-    Next
-EndFunc   ;==>GetSkillbarPtr
+    Local $pSkillbarArray = Memory_Read($pWorldContext + 0x6F0, "ptr")
+    If $iAgentID = -2 Then Return $pSkillbarArray ; player skillbar, fast return
 
-;~ Description: Returns the pointer variable to a skillbar for specified hero ID.
-Func GetSkillbarPtrByHeroID($aHeroId)
-    ;~ Local $lOffset[5] = [0, 24, 76, 84, 44]
-    Local $lOffset[5] = [0, 0x18, 0x4C, 0x54, 0x2C]
-    Local $lHeroCount = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-    Local $lOffset[5] = [0, 0x18, 0x2C, 0x6F0]
-    For $i = 0 To $lHeroCount[1]
-        $lOffset[4] = $i * 0xBC
-        Local $lSkillbarStructAddress = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-        If $lSkillbarStructAddress[1] = $aHeroId Then Return $lSkillbarStructAddress[0]
+    Local $iSkillbarArraySize = Memory_Read($pWorldContext + 0x6F0 + 0x8, "long")
+
+    Local $pSkillbar
+    $iAgentID = Agent_ConvertID($iAgentID)
+
+    For $i = 0 To $iSkillbarArraySize - 1
+        $pSkillbar = $pSkillbarArray + ($i * 0xBC)
+        If Memory_Read($pSkillbar, "long") = $iAgentID Then
+            Return $pSkillbar
+        EndIf
     Next
-EndFunc   ;==>GetSkillbarPtrByHeroID
+
+    Return SetError(2, 0, 0)
+EndFunc ;==>GetSkillbarPtr
 
 #Region Skills
-Func UseSkillEx($aSkillSlot, $aTarget = -2, $aTimeout = 3000, $aCallTarget = False, $aSkillbarPtr = GetSkillbarPtr())
+Func UseSkillEx($iSkillSlot, $aTarget = -2, $aTimeout = 3000, $aCallTarget = False, $pSkillbar = GetSkillbarPtr())
     Local $lDeadlock = TimerInit(), $lAgentID = ID($aTarget), $lMe = Agent_GetAgentPtr(-2)
-    Local $lSkill = Skill_GetSkillPtr(GetSkillbarSkillID($aSkillSlot, 0, $aSkillbarPtr))
-    If $lAgentID = 0 Or GetIsDead($lMe) Or Not IsRecharged($aSkillSlot, $aSkillbarPtr) Then Return
+    Local $lSkill = Skill_GetSkillPtr(GetSkillbarSkillID($iSkillSlot, 0, $pSkillbar))
+    If $lAgentID = 0 Or GetIsDead($lMe) Or Not IsRecharged($iSkillSlot, $pSkillbar) Then Return
     If GetEnergy($lMe) < GetEnergyReq($lSkill) Then Return
 
     If $lAgentID <> GetMyID() Then Agent_ChangeTarget($lAgentID)
-    Skill_UseSkill($aSkillSlot, $lAgentID, $aCallTarget)
+    Skill_UseSkill($iSkillSlot, $lAgentID, $aCallTarget)
     Do
         Sleep(50)
         If GetIsDead($lAgentID) Or GetIsDead($lMe) Then Return  
-    Until Not IsRecharged($aSkillSlot, $aSkillbarPtr) Or TimerDiff($lDeadlock) > $aTimeout
+    Until Not IsRecharged($iSkillSlot, $pSkillbar) Or TimerDiff($lDeadlock) > $aTimeout
     Sleep(Memory_Read($lSkill + 0x40, "float") * 1000) ; Aftercast
     Return True
 EndFunc   ;==>UseskillEX
@@ -53,32 +50,34 @@ Func GetEnergyReq($aSkillID)
 EndFunc   ;==>GetEnergyReq
 
 ;~ Description: Checks SkillRecharge by SkillSlot; True=Recharged
-Func IsRechargedHero($aSkillSlot, $aHeroNumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
-    Return GetSkillbarSkillRecharge($aSkillSlot, $aHeroNumber, $aSkillbarPtr) = 0
+Func IsRechargedHero($iSkillSlot, $iAgentID = -2, $pSkillbar = GetSkillbarPtr($iAgentID))
+    Return GetSkillbarSkillRecharge($iSkillSlot, $iAgentID, $pSkillbar) = 0
 EndFunc   ;==>IsRechargedHero
 
-Func IsRecharged($aSkillSlot, $aSkillbarPtr = GetSkillbarPtr())
-    Return GetSkillbarSkillRecharge($aSkillSlot, 0, $aSkillbarPtr) = 0
+Func IsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr(-2))
+    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), "dword")
+    Return ($iTimestamp = 0)
 EndFunc ;==>IsRecharged
 
 ;~ Description: Returns the recharge time remaining of an equipped skill in milliseconds.
-Func GetSkillbarSkillRecharge($aSkillSlot, $aHeroNumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
-    $aSkillSlot -= 1
-    Local $lTimestamp = Memory_Read($aSkillbarPtr + 0xC + ($aSkillSlot * 0x14), "dword")
-    If $lTimestamp = 0 Then Return 0
-    Return $lTimestamp - Skill_GetSkillTimer()
+Func GetSkillbarSkillRecharge($iSkillSlot, $iAgentID = -2, $pSkillbar = GetSkillbarPtr($iAgentID))
+    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), "dword")
+    If $iTimestamp = 0 Then Return 0
+    
+    Local $iTimestampSigned = Utils_MakeInt32($iTimestamp)
+    Local $iSkillTimerSigned = Utils_MakeInt32(Skill_GetSkillTimer())
+    Local $iTimeRemaining = $iTimestampSigned - $iSkillTimerSigned
+    Return ($iTimeRemaining <= 0) ? 0 : $iTimeRemaining
 EndFunc ;==>GetSkillbarSkillRecharge
 
 ;~ Description: Returns the skill ID of an equipped skill.
-Func GetSkillbarSkillID($askillslot, $aHeronumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
-    $askillslot -= 1
-    Return Memory_Read($aSkillbarPtr + 0x10 + ($aSkillslot * 0x14), "dword")
+Func GetSkillbarSkillID($iSkillSlot, $iAgentID = -2, $pSkillbar = GetSkillbarPtr($iAgentID))
+    Return Memory_Read($pSkillbar + 0x10 + (($iSkillSlot - 1) * 0x14), "dword")
 EndFunc ;==>GetSkillbarSkillID
 
 ;~ Description: Returns the adrenaline charge of an equipped skill.
-Func GetSkillbarSkillAdrenaline($aSkillSlot, $aHeroNumber = 0, $aSkillbarPtr = GetSkillbarPtr($aHeroNumber))
-    $aSkillSlot -= 1
-    Return Memory_Read($aSkillbarPtr + 0x4 + ($aSkillSlot * 0x14), "dword")
+Func GetSkillbarSkillAdrenaline($iSkillSlot, $iAgentID = -2, $pSkillbar = GetSkillbarPtr($iAgentID))
+    Return Memory_Read($pSkillbar + 0x4 + (($iSkillSlot - 1) * 0x14), "dword")
 EndFunc   ;==>GetSkillbarSkillAdrenaline
 #EndRegion Skills
 
@@ -105,6 +104,7 @@ Func HasEffect($aSkillID, $iAgentID = -2)
 
     Local $pAgent = 0
 
+    ;~ check effects from which agent? player or a hero
     For $i = 0 To $iSize - 1
         Local $pAgentEffects = $pPtr + ($i * 0x24)
         If Memory_Read($pAgentEffects, "dword") = $iAgentID Then
@@ -117,13 +117,38 @@ Func HasEffect($aSkillID, $iAgentID = -2)
         Return $bSingle ? SetError(1, 0, False) : SetError(1, 0, $bEffects)
     EndIf
 
-    Local $pEffectArray = Memory_Read($pAgent + 0x14, "ptr")
-    Local $iEffectCount = Memory_Read($pAgent + 0x14 + 0x8, "long")
-    Local $pCurrent, $iSkillID, $iCount = 0
+    ;~ get EffectArray Ptr and Size
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pAgent + 0x14, _
+                    "struct*", $g_tEffectArray, _
+                    "ulong_ptr", $g_iEffectArrayStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, $bEffects)
+
+    Local $pEffectArray = DllStructGetData($g_tEffectArray, "EffectArray")
+    Local $iEffectCount = DllStructGetData($g_tEffectArray, "EffectArraySize")
+
+    Local $iBufferSize = $iEffectCount * $GC_EFFECT_STRUCT_SIZE
+    Local $tEffectBuffer = DllStructCreate("byte[" & $iBufferSize & "]")
+    Local $pBuffer = DllStructGetPtr($tEffectBuffer)
+
+    ;~ get snapshot of all active effects
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pEffectArray, _
+                    "struct*", $tEffectBuffer, _
+                    "ulong_ptr", $iBufferSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, -1)
+
+    Local $pEffect, $tEffect, $iSkillID, $iCount = 0
 
     For $i = 0 To $iEffectCount - 1
-        $pCurrent = $pEffectArray + ($i * 0x18)
-        $iSkillID = Memory_Read($pCurrent, "long")
+        $pEffect = $pBuffer + ($i * $GC_EFFECT_STRUCT_SIZE)
+
+        $tEffect = DllStructCreate($EFFECT_STRUCT_TEMPLATE, $pEffect)
+        $iSkillID = DllStructGetData($tEffect, "SkillID")
 
         If MapExists($mSkillID, $iSkillID) Then
             Local $idx = $mSkillID[$iSkillID]
@@ -140,7 +165,7 @@ Func HasEffect($aSkillID, $iAgentID = -2)
 EndFunc ;==>HasEffect
 
 ;~ Description: Returns time remaining before an effect expires, in milliseconds.
-Func GetEffectTimeRemaining($aSkillID, $iAgentID = -2)
+Func GetEffectTimeRemaining2($aSkillID, $iAgentID = -2)
     Local $bSingle = Not IsArray($aSkillID)
     If $bSingle Then
         Local $aTmp[1] = [$aSkillID]
@@ -184,8 +209,96 @@ Func GetEffectTimeRemaining($aSkillID, $iAgentID = -2)
         If MapExists($mSkillID, $iSkillID) Then
             Local $idx = $mSkillID[$iSkillID]
             Local $iTimestamp = Memory_Read($pCurrent + 0x14, "dword")
-            Local $iDuration = Memory_Read($pCurrent + 0x10, "float")
-            Local $iTimeRemaining = $iDuration * 1000 - BitAND(Skill_GetSkillTimer() - $iTimestamp, 0xFFFFFFFF)
+            Local $fDuration = Memory_Read($pCurrent + 0x10, "float")
+            Local $iTimeRemaining = $fDuration * 1000 - BitAND(Skill_GetSkillTimer() - $iTimestamp, 0xFFFFFFFF)
+            If $iTimeRemaining < 0 Then $iTimeRemaining = 0
+
+            If $aTimeRemaining[$idx] < $iTimeRemaining Then
+                $aTimeRemaining[$idx] = $iTimeRemaining
+            EndIf
+        EndIf
+    Next
+
+    Return $bSingle ? $aTimeRemaining[0] : $aTimeRemaining
+EndFunc ;==>GetEffectTimeRemaining
+
+;~ Description: Returns time remaining before an effect expires, in milliseconds.
+Func GetEffectTimeRemaining($aSkillID, $iAgentID = -2)
+    Local $bSingle = Not IsArray($aSkillID)
+    If $bSingle Then
+        Local $aTmp[1] = [$aSkillID]
+        $aSkillID = $aTmp
+    EndIf
+
+    Local $iSizeEffects = UBound($aSkillID)
+    Local $aTimeRemaining[$iSizeEffects]
+    Local $mSkillID[]
+    For $i = 0 To $iSizeEffects - 1
+        $aTimeRemaining[$i] = 0
+        $mSkillID[$aSkillID[$i]] = $i
+    Next
+
+    Local $pPtr = World_GetWorldInfo("AgentEffectsArray")
+    Local $iSize = World_GetWorldInfo("AgentEffectsArraySize")
+    $iAgentID = Agent_ConvertID($iAgentID)
+
+    Local $pAgentEffects, $pAgent = 0
+
+    ;~ check effects from which agent? player or a hero
+    For $i = 0 To $iSize - 1
+        $pAgentEffects = $pPtr + ($i * 0x24)
+        If Memory_Read($pAgentEffects, "dword") = $iAgentID Then
+            $pAgent = $pAgentEffects
+            ExitLoop
+        EndIf
+    Next
+
+    If $pAgent = 0 Then
+        Return $bSingle ? SetError(1, 0, 0) : SetError(1, 0, $aTimeRemaining)
+    EndIf
+
+    ;~ get EffectArray Ptr and Size
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pAgent + 0x14, _
+                    "struct*", $g_tEffectArray, _
+                    "ulong_ptr", $g_iEffectArrayStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, $aTimeRemaining)
+
+    Local $pEffectArray = DllStructGetData($g_tEffectArray, "EffectArray")
+    Local $iEffectCount = DllStructGetData($g_tEffectArray, "EffectArraySize")
+
+    Local $iBufferSize = $iEffectCount * $GC_EFFECT_STRUCT_SIZE
+    Local $tEffectBuffer = DllStructCreate("byte[" & $iBufferSize & "]")
+    Local $pBuffer = DllStructGetPtr($tEffectBuffer)
+
+    ;~ get snapshot of all active effects
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pEffectArray, _
+                    "struct*", $tEffectBuffer, _
+                    "ulong_ptr", $iBufferSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, -1)
+
+    Local $pEffect, $tEffect, $iSkillID, $fDuration, $iTimestamp, $iTimeRemaining
+    Local $iSkillTimer = Skill_GetSkillTimer()
+
+    ;~ loop through Effects and return time remaining
+    For $i = 0 To $iEffectCount - 1
+        $pEffect = $pBuffer + ($i * $GC_EFFECT_STRUCT_SIZE)
+
+        $tEffect = DllStructCreate($EFFECT_STRUCT_TEMPLATE, $pEffect)
+        $iSkillID = DllStructGetData($tEffect, "SkillID")
+
+        If MapExists($mSkillID, $iSkillID) Then
+            Local $idx = $mSkillID[$iSkillID]
+
+            $iTimestamp = DllStructGetData($tEffect, "Timestamp")
+            $fDuration = DllStructGetData($tEffect, "Duration")
+
+            Local $iTimeRemaining = $fDuration * 1000 - BitAND($iSkillTimer - $iTimestamp, 0xFFFFFFFF)
             If $iTimeRemaining < 0 Then $iTimeRemaining = 0
 
             If $aTimeRemaining[$idx] < $iTimeRemaining Then
@@ -297,41 +410,3 @@ Func DropAllBondsOnTargetID($iTargetID, $iAgent = -2)
     Next
 EndFunc ;==>DropAllBondsOnTargetID
 #EndRegion Buffs
-
-
-#Region Template: Skill & Attribute
-;~ Description: Returns level of an attribute.
-Func GetAttributeByID($aAttributeID, $aWithRunes = False, $aHeroNumber = 0)
-    Local $lAgentID = GetHeroID($aHeroNumber)
-    Local $lBuffer
-    Local $lOffset[5]
-    $lOffset[0] = 0
-    $lOffset[1] = 0x18
-    $lOffset[2] = 0x2C
-    $lOffset[3] = 0xAC
-    For $i = 0 To GetHeroCount()
-        $lOffset[4] = 0x43C * $i
-        $lBuffer = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-        If $lBuffer[1] == $lAgentID Then
-            If $aWithRunes Then
-                $lOffset[4] = 0x43C * $i + 0x14 * $aAttributeID + 0xC
-            Else
-                $lOffset[4] = 0x43C * $i + 0x14 * $aAttributeID + 0x8
-            EndIf
-            $lBuffer = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-            Return $lBuffer[1]
-        EndIf
-    Next
-EndFunc   ;==>GetAttributeByID
-
-; Returns the attribute of a skill
-Func SkillAttribute($aSkill)
-    If IsPtr($aSkill) <> 0 Then
-        Return Memory_Read($aSkill + 41, "byte")
-    ElseIf IsDllStruct($aSkill) <> 0 Then
-        Return DllStructGetData($aSkill, "Attribute")
-    Else
-        Return Memory_Read(Skill_GetSkillPtr($aSkill) + 41, "byte")
-    EndIf
-EndFunc   ;==>SkillAttribute
-#EndRegion Template: Skill & Attribute
