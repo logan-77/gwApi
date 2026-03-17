@@ -330,11 +330,11 @@ Func GetIsTargetBonded($iSkillID, $iTargetID, $iAgent = -2)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
     Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
+    Local $pBondArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent 
 
     For $i = 0 To $iBuffCount - 1
-        $pCurrent = $pBuffArray + ($i * 0x10)
+        $pCurrent = $pBondArray + ($i * 0x10)
 
         $iCurrentSkillID = Memory_Read($pCurrent, "long")
         If $iSkillID <> $iCurrentSkillID Then ContinueLoop
@@ -354,11 +354,11 @@ Func DropBuff($iSkillID, $iTargetID, $iAgent = -2)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
     Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
+    Local $pBondArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent 
 
     For $i = 0 To $iBuffCount - 1
-        $pCurrent = $pBuffArray + ($i * 0x10)
+        $pCurrent = $pBondArray + ($i * 0x10)
 
         $iCurrentSkillID = Memory_Read($pCurrent, "long")
         If $iSkillID <> $iCurrentSkillID Then ContinueLoop
@@ -376,12 +376,12 @@ EndFunc ;==>DropBuff
 Func DropAllBondsBySkillID($iSkillID, $iAgent = -2)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
-    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArray")
+    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
+    Local $pBondArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent, $iBuffID
 
     For $i = 0 To $iBuffCount - 1
-        $pCurrent = $pBuffArray + ($i * 0x10)
+        $pCurrent = $pBondArray + ($i * 0x10)
 
         $iCurrentSkillID = Memory_Read($pCurrent, "long")
         If $iSkillID <> $iCurrentSkillID Then ContinueLoop
@@ -395,12 +395,12 @@ Func DropAllBondsOnTargetID($iTargetID, $iAgent = -2)
     $iTargetID = Agent_ConvertID($iTargetID)
     $iAgent = Agent_GetAgentPtr($iAgent)
 
-    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArraySize")
-    Local $pBuffArray = Agent_GetAgentEffectArrayInfo($iAgent, "BuffArray")
+    Local $iBuffCount = Agent_GetAgentEffectArrayInfo($iAgent, "BondArraySize")
+    Local $pBondArray = Agent_GetAgentEffectArrayInfo($iAgent, "BondArray")
     Local $iCurrentSkillID, $iCurrentTargetID, $pCurrent, $iBuffID
 
     For $i = 0 To $iBuffCount - 1
-        $pCurrent = $pBuffArray + ($i * 0x10)
+        $pCurrent = $pBondArray + ($i * 0x10)
 
         $iCurrentTargetID = Memory_Read($pCurrent + 0xC, "dword")
         If $iTargetID <> $iCurrentTargetID Then ContinueLoop
