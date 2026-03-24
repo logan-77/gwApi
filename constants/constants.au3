@@ -413,15 +413,15 @@ Global $Mysticism = 44;
 Global $AttrID_None = 0xFF
 
 ; === Range ===
-Global Enum $range_adjacent=156, $range_nearby=240, $range_area=312, $range_earshot=1000, $range_spellcast=1085, $range_spirit=2500, $range_compass=5000
-Global Enum $range_adjacent_2=156^2, $range_nearby_2=240^2, $range_area_2=312^2, $range_earshot_2=1000^2, $range_spellcast_2=1085^2, $range_spirit_2=2500^2, $range_compass_2=5000^2
+Global Enum $range_adjacent   = 156,       $range_nearby    = 240,       $range_area    = 312,       $range_earshot   = 1000,        $range_spellcast   = 1085,        $range_spirit   = 2500,        $range_nature_ritual   = 3500,        $range_compass   = 5000
+Global Enum $range_adjacent_2 = 156 * 156, $range_nearby_2  = 240 * 240, $range_area_2  = 312 * 312, $range_earshot_2 = 1000 * 1000, $range_spellcast_2 = 1085 * 1085, $range_spirit_2 = 2500 * 2500, $range_nature_ritual_2 = 3500 * 3500, $range_compass_2 = 5000 * 5000
 
 ;Allegiance
-Global Const $allegiance_ally    = 0x01   ; ally/non-attackable
-Global Const $allegiance_enemy   = 0x03  ; enemy
-Global Const $allegiance_spirit   = 0x04  ; spirit or pet or summon stone
-Global Const $allegiance_minion   = 0x05  ; minion
-Global Const $allegiance_npc   = 0x06   ; npc/minipet
+Global Const $allegiance_ally   = 0x01  ; ally/non-attackable
+Global Const $allegiance_enemy  = 0x03  ; enemy
+Global Const $allegiance_spirit = 0x04  ; spirit or pet or summon stone (not all summons)
+Global Const $allegiance_minion = 0x05  ; minion
+Global Const $allegiance_npc    = 0x06  ; npc/minipet
 
 ;TypeMap
 Global Const $typemap_boss    = 3072  ; 0xC00  Boss
@@ -630,21 +630,109 @@ Global Const $model_id_champion_of_balthazar = 1997 ; 1947
 Global Const $model_id_abyssal     = 2861 ; 2810
 Global Const $model_id_shadow_ranger   = 2859 ; 2808
 Global Const $model_id_skeleton_of_dhuum  = 2392 ; 2342
+
 ; DoA
-Global Const $model_id_kaya                  = 5217 ; 5166
-Global Const $model_id_dabi                  = 5218 ; 5167
-Global Const $model_id_su                    = 5219 ; 5168
-Global Const $model_id_ki                    = 5220 ; 5169
-Global Const $model_id_vu                    = 5221 ; 5170
-Global Const $model_id_tuk                   = 5222 ; 5171
-Global Const $model_id_ruk                   = 5223 ; 5172
-Global Const $model_id_rund                  = 5224 ; 5173
-Global Const $model_id_mank                  = 5225 ; 5174
-Global Const $model_id_jadoth                = 0   ; 0
-Global Const $model_id_rage_titan             = 5252 ; 5201
-Global Const $model_id_despair_titan          = 5254 ; 5203
-Global Const $model_id_tortureweb_dryder      = 5266 ; 5215
-Global Const $model_id_greater_dream_rider    = 5268 ; 5217
+Global Const $model_id_spirit_of_truth_city = 5036 ; city, foundry, exchange gemstones
+Global Const $model_id_spirit_of_truth_veil = 5037 ; veil, gloom, exchange gemstones
+Global Const $model_id_captain_jerazh = 5053 ; first quest foundry
+Global Const $model_id_tekliss = 5053 ; first quest foundry reward, second quest foundry
+Global Const $model_id_captain_sulahresh = 5053 ; first quest city
+
+Global Const $model_id_jadoth   = 5195
+
+Global Const $model_id_stygian_lord_necro = 5196
+Global Const $model_id_stygian_lord_mesmer = 5197
+Global Const $model_id_stygian_lord_ele = 5198
+Global Const $model_id_stygian_lord_monk = 5199
+
+Global Const $model_id_the_fury = 5200
+Global Const $model_id_the_black_beast_of_arggh = 5201
+Global Const $model_id_the_greater_darkness = 5202
+Global Const $model_id_the_darkness = 5203 ; first spawn
+Global Const $model_id_5204 = 5204 ; ???
+Global Const $model_id_chill_of_darkness_2 = 5205
+Global Const $model_id_curse_of_darkness_2 = 5206
+Global Const $model_id_flesh_tormentor_2 = 5207
+Global Const $model_id_earth_tormentor_3 = 5208
+Global Const $model_id_big_fury_titan = 5209
+Global Const $model_id_shaunur = 5210 ; Shaunur the Divine
+Global Const $model_id_turep = 5211 ; Turep, Maker of Orphans
+Global Const $model_id_guardian_of_komalie_ele = 5212
+Global Const $model_id_guardian_of_komalie_mesmer = 5213
+Global Const $model_id_stygian_underlord_dervish = 5214
+Global Const $model_id_stygian_underlord_ranger = 5215
+Global Const $model_id_5216 = 5216 ; ???
+
+Global Const $model_id_kaya     = 5217 ; city+foundry
+Global Const $model_id_dabi     = 5218
+Global Const $model_id_su       = 5219
+Global Const $model_id_ki       = 5220
+Global Const $model_id_vu       = 5221
+Global Const $model_id_tuk      = 5222
+Global Const $model_id_ruk      = 5223
+Global Const $model_id_rund     = 5224
+Global Const $model_id_mank     = 5225
+
+Global Const $model_id_stygian_hunger = 5226 ; veil
+Global Const $model_id_stygian_brute = 5227
+Global Const $model_id_stygian_golem = 5228
+Global Const $model_id_stygian_horror = 5229
+Global Const $model_id_stygian_fiend = 5230
+
+Global Const $model_id_mind_tormentor_veil = 5231 ; veil
+Global Const $model_id_soul_tormentor_veil = 5232
+Global Const $model_id_water_tormentor_veil = 5233
+Global Const $model_id_heart_tormentor_veil = 5234
+Global Const $model_id_flesh_tormentor_veil = 5235
+Global Const $model_id_spirit_tormentor_veil = 5236
+Global Const $model_id_earth_tormentor_veil = 5237
+Global Const $model_id_sanity_tormentor_veil = 5238
+
+Global Const $model_id_thought_of_darkness = 5239 ; gloom+veil
+Global Const $model_id_chill_of_darkness = 5240
+Global Const $model_id_scourge_of_darkness = 5241
+Global Const $model_id_claw_of_darkness = 5242
+Global Const $model_id_wind_of_darkness = 5243
+Global Const $model_id_curse_of_darkness = 5244
+Global Const $model_id_abyssal_doa = 5245
+
+Global Const $model_id_misery_titan     = 5246 ; foundry
+Global Const $model_id_rage_titan_2     = 5247 ; spawned from misery
+Global Const $model_id_dementia_titan_2 = 5248 ; spawned from rage
+Global Const $model_id_anguish_titan    = 5249 ; original
+Global Const $model_id_despair_titan_2  = 5250 ; spawned from anguish
+Global Const $model_id_fury_titan       = 5251 ; spawned from despair 
+Global Const $model_id_rage_titan       = 5252 ; original
+Global Const $model_id_dementia_titan   = 5253 ; original
+Global Const $model_id_despair_titan    = 5254 ; original
+
+Global Const $model_id_mind_tormentor = 5255 ; gloom
+Global Const $model_id_soul_tormentor = 5256
+Global Const $model_id_water_tormentor = 5257
+Global Const $model_id_heart_tormentor = 5258
+Global Const $model_id_flesh_tormentor = 5259
+Global Const $model_id_spirit_tormentor = 5260
+Global Const $model_id_earth_tormentor = 5261
+Global Const $model_id_earth_tormentor_2 = 5262 ; spawned by the darkness, gloom endfight
+Global Const $model_id_sanity_tormentor = 5263
+
+Global Const $model_id_torment_claw = 5264 ; veil+gloom
+Global Const $model_id_smothering_tendrils = 5265
+
+Global Const $model_id_tortureweb_dryder    = 5266
+Global Const $model_id_greater_dream_rider  = 5267 ; r4 foundry
+Global Const $model_id_greater_dream_rider_2= 5268 ; spawned
+
+Global Const $model_id_adept_of_whispers  = 5269 ; second quest gloom
+Global Const $model_id_voice_of_whispers  = 5269 ; first quest gloom, second quest gloom reward, third quest gloom + reward
+Global Const $model_id_warden_of_whispers = 5745 ; first quest gloom reward, second quest gloom
+Global Const $model_id_adept_of_whispers  = 5745 ; quests veil
+Global Const $model_id_whispers_informant = 5269 ; foundry, gloom, veil, city
+Global Const $model_id_silzesh            = 5272 ; quest snakes
+Global Const $model_id_captain_valkyss    = 5272
+Global Const $model_id_general_yendzarsh  = 5272 ; second quest froundry reward
+
+
 ; Jade Quarry
 Global Const $model_id_luxon_wizard           = 3138 ; mes ; 3087
 Global Const $model_id_luxon_storm_caller     = 3140 ; ele ; 3089
