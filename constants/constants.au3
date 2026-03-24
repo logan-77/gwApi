@@ -723,14 +723,15 @@ Global Const $model_id_tortureweb_dryder    = 5266
 Global Const $model_id_greater_dream_rider  = 5267 ; r4 foundry
 Global Const $model_id_greater_dream_rider_2= 5268 ; spawned
 
-Global Const $model_id_adept_of_whispers  = 5269 ; second quest gloom
-Global Const $model_id_voice_of_whispers  = 5269 ; first quest gloom, second quest gloom reward, third quest gloom + reward
-Global Const $model_id_warden_of_whispers = 5745 ; first quest gloom reward, second quest gloom
-Global Const $model_id_adept_of_whispers  = 5745 ; quests veil
-Global Const $model_id_whispers_informant = 5269 ; foundry, gloom, veil, city
-Global Const $model_id_silzesh            = 5272 ; quest snakes
-Global Const $model_id_captain_valkyss    = 5272
-Global Const $model_id_general_yendzarsh  = 5272 ; second quest froundry reward
+Global Const $model_id_voice_of_whispers   = 5269 ; first quest gloom, second quest gloom reward, third quest gloom + reward
+Global Const $model_id_whispers_informant  = 5269 ; foundry, gloom, veil, city
+
+Global Const $model_id_silzesh             = 5272 ; quest snakes
+Global Const $model_id_captain_valkyss     = 5272
+Global Const $model_id_general_yendzarsh   = 5272 ; second quest froundry reward
+
+Global Const $model_id_warden_of_whispers  = 5745 ; first quest gloom reward, second quest gloom
+Global Const $model_id_adept_of_whispers   = 5745 ; quests veil
 
 
 ; Jade Quarry
