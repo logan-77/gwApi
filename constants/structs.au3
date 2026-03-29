@@ -33,6 +33,20 @@ Global Const $AGENT_STRUCT_TEMPLATE = _
 'byte Allegiance;               short WeaponType;       short Skill;            short h01BA;'               & _
 'byte WeaponItemType;           byte OffhandItemType;   short WeaponItemID;     short OffhandItemID;'
 
+Global Const $IDX_AGENT_ID = 7
+Global Const $IDX_AGENT_X = 25
+Global Const $IDX_AGENT_Y = 26
+Global Const $IDX_AGENT_MOVEX = 36
+Global Const $IDX_AGENT_MOVEY = 37
+Global Const $IDX_AGENT_ENERGYPERCENT = 67
+Global Const $IDX_AGENT_MAXENERGY = 68
+Global Const $IDX_AGENT_HPPERCENT = 72
+Global Const $IDX_AGENT_MAXHP = 73
+Global Const $IDX_AGENT_EFFECTS = 74
+Global Const $IDX_AGENT_LOGINNUMBER = 86
+Global Const $IDX_AGENT_ALLEGIANCE = 92
+Global Const $IDX_AGENT_SKILL = 94
+
 Global $g_tAgentStruct = DllStructCreate($AGENT_STRUCT_TEMPLATE)
 Global $g_iAgentStructSize = DllStructGetSize($g_tAgentStruct)
 
