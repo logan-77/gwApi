@@ -409,25 +409,21 @@ EndFunc ;==>GetLevel
 
 ;~ Description: Returns the team of an agent.
 Func GetTeam($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x111, "byte")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_TEAM[0], $GC_I_OFFSET_AGENT_TEAM[1])
 EndFunc ;==>GetTeam
 
 ;~ Description: Returns the energy pips of an agent.
 Func GetAgentEnergyPips($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x118, "float")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_ENERGY_PIPS[0], $GC_I_OFFSET_AGENT_ENERGY_PIPS[1])
 EndFunc ;==>GetEnergyPips
 
 ;~ Description: Returns the energy pips of an agent.
 Func GetAgentEnergyPercent($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x120, "float")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_ENERGY_PERCENT[0], $GC_I_OFFSET_AGENT_ENERGY_PERCENT[1])
 EndFunc ;==>GetAgentEnergyPercent
 
 ;~ Description: Returns the energy pips of an agent.
 Func GetAgentEnergyMax($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x124, "float")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MAX_ENERGY[0], $GC_I_OFFSET_AGENT_MAX_ENERGY[1])
 EndFunc ;==>GetAgentEnergyMax
 
@@ -437,7 +433,6 @@ Func GetEnergy($iAgent = -2)
     Local $nEnergyPercent = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_ENERGY_PERCENT[0], $GC_I_OFFSET_AGENT_ENERGY_PERCENT[1])
     Local $nMaxEnergy = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_MAX_ENERGY[0], $GC_I_OFFSET_AGENT_MAX_ENERGY[1])
     Return $nEnergyPercent * $nMaxEnergy
-    ;~ Return Memory_Read($lPtr + 0x120, 'float') * Memory_Read($lPtr + 0x124, "dword")
 EndFunc ;==>GetEnergy
 
 ;~ Description: Returns energy of an agent. (Only self/heroes)
@@ -450,31 +445,26 @@ EndFunc ;==>GetEnergy
 
 ;~ Description: Returns the allegiance of an agent.
 Func GetAllegiance($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1B5, 'byte')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MAX_ENERGY[0], $GC_I_OFFSET_AGENT_MAX_ENERGY[1])
+    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_ALLEGIANCE[0], $GC_I_OFFSET_AGENT_ALLEGIANCE[1])
 EndFunc   ;==>GetAllegiance
 
 ;~ Description: Returns the skill currently being cast by an agent.
 Func GetSkillID($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1B8, "short")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_SKILL[0], $GC_I_OFFSET_AGENT_SKILL[1])
 EndFunc ;==>GetSkillID
 
 ;~ Description: Returns the skill currently being cast by an agent.
 Func GetAgentSkillID($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1B8, "short")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_SKILL[0], $GC_I_OFFSET_AGENT_SKILL[1])
 EndFunc ;==>GetAgentSkillID
 
 ;~ Description: Returns the weapon type of an agent.
 Func GetWeaponType($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1B6, "short")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_WEAPON_TYPE[0], $GC_I_OFFSET_AGENT_WEAPON_TYPE[1])
 EndFunc ;==>GetWeaponType
 
 ;~ Description: Returns the weapon item ID of an agent.
 Func GetWeaponItemID($iAgent)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1BE, "short")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_WEAPON_ITEM_ID[0], $GC_I_OFFSET_AGENT_WEAPON_ITEM_ID[1])
 EndFunc ;==>GetWeaponItemID
 
@@ -485,7 +475,6 @@ EndFunc ;==>GetWeaponItemType
 
 ;~ Description: Returns the offhand item ID of an agent.
 Func GetOffhandItemID($iAgent)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x1C0, "short")
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_OFFHAND_ITEM_ID[0], $GC_I_OFFSET_AGENT_OFFHAND_ITEM_ID[1])
 EndFunc ;==>GetOffhandItemID
 
