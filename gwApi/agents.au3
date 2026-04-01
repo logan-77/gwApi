@@ -2,7 +2,6 @@
 Functions for retrieving information from the Agent Struct.
 #ce
 #include-once
-
 ;~ Case 0: all agents
 ;~ Case 1: agents by: $iType (use only this for 0x200/0x400)
 ;~ Case 2: agents by: $iType + $iAllegiance
@@ -699,10 +698,10 @@ EndFunc   ;==>GetIsPointInPolygon
 ;~ Check if Agent is a Nature Ritual
 Func IsNatureRitual($iModelID)
     Switch $iModelID
-        Case 2925 To 2939
-        Case 4283, 4285 To 4290
-        Case 5766 To 5769
-            Return True
+        Case 2925 To 2939, _
+             4283, 4285 To 4290, _
+             5766 To 5769
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsNatureRitual
@@ -710,10 +709,10 @@ EndFunc ;==>IsNatureRitual
 ;~ Check if Agent is a Binding Ritual
 Func IsBindingRitual($iModelID)
     Switch $iModelID
-        Case 5770 To 5774
-        Case 5904 To 5905
-        Case 4264 To 4282
-            Return True
+        Case 5770 To 5774, _
+             5904 To 5905, _
+             4264 To 4282
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsBindingRitual
@@ -721,14 +720,15 @@ EndFunc ;==>IsBindingRitual
 ;~ Check if Agent is a Nature Ritual or a Binding Ritual
 Func IsSpiritAgent($iModelID)
     Switch $iModelID
-        Case 2925 To 2939
-        Case 4283, 4285 To 4290
-        Case 5766 To 5769 ; nature rituals
-            Return True
-        Case 5770 To 5774
-        Case 5904 To 5905
-        Case 4264 To 4282 ; binding rituals
-            Return True
+        Case 2925 To 2939, _
+             4283, 4285 To 4290, _
+             5766 To 5769 ; nature rituals
+                Return True
+
+        Case 5770 To 5774, _
+             5904 To 5905, _
+             4264 To 4282 ; binding rituals
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsSpiritAgent
@@ -736,10 +736,10 @@ EndFunc ;==>IsSpiritAgent
 ;~ Check if Agent is a Minion
 Func IsMinionAgent($iModelID)
     Switch $iModelID
-        Case 2280 To 2282 ; bone minions
-        Case 4260 To 4261 ; flesh golem, vampiric horror
-        Case 5764 To 5765 ; shambling+jagged
-            Return True
+        Case 2280 To 2282, _ ; bone minions
+             4260 To 4261, _ ; flesh golem, vampiric horror
+             5764 To 5765  ; shambling+jagged
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsMinionAgent
@@ -747,10 +747,10 @@ EndFunc ;==>IsMinionAgent
 ;~ Checks if Agent is a Sensali. Used for Feather Bot.
 Func IsSensali($iModelID)
     Switch $iModelID
-        Case $model_id_sensali_claw
-        Case $model_id_sensali_darkfeather
-        Case $model_id_sensali_cutter
-            Return True
+        Case $model_id_sensali_claw, _
+             $model_id_sensali_darkfeather, _
+             $model_id_sensali_cutter
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsSensali
@@ -758,11 +758,11 @@ EndFunc ;==>IsSensali
 ;~ Check if Agent is from CoF. Used for CoF Bot.
 Func IsCofEnemy($iModelID)
     Switch $iModelID
-        Case $model_id_crypt_ghoul, $model_id_crypt_slasher
-        Case $model_id_crypt_wraith, $model_id_crypt_banshee
-        Case $model_id_shock_phantom, $model_id_ash_phantom
-        Case $model_id_servant_of_murakai
-            Return True
+        Case $model_id_crypt_ghoul, $model_id_crypt_slasher, _
+             $model_id_crypt_wraith, $model_id_crypt_banshee, _
+             $model_id_shock_phantom, $model_id_ash_phantom, _
+             $model_id_servant_of_murakai
+                Return True
     EndSwitch
     Return False
 EndFunc ;==>IsCofEnemy

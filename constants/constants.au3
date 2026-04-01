@@ -604,32 +604,32 @@ Global Const $model_id_irontooth_drake_lvl_18       = 4404
 Global Const $model_id_steelfang_drake              = 4965
 
 ; Plant Fiber Farm
-Global Const $model_id_dragon_moss            = 3773
+Global Const $model_id_dragon_moss         = 3773
 ; Feather Farm
-Global Const $model_id_sensali_claw           = 3995
-Global Const $model_id_sensali_darkfeather    = 3997
-Global Const $model_id_sensali_cutter         = 3999
+Global Const $model_id_sensali_claw        = 3995
+Global Const $model_id_sensali_darkfeather = 3997
+Global Const $model_id_sensali_cutter      = 3999
 ; CoF Farm
-Global Const $model_id_crypt_ghoul            = 7075
-Global Const $model_id_crypt_slasher          = 7077
-Global Const $model_id_crypt_wraith           = 7079
-Global Const $model_id_crypt_banshee          = 7081
-Global Const $model_id_shock_phantom          = 7083
-Global Const $model_id_ash_phantom            = 7085
-Global Const $model_id_servant_of_murakai     = 7069
+Global Const $model_id_crypt_ghoul        = 7075
+Global Const $model_id_crypt_slasher      = 7077
+Global Const $model_id_crypt_wraith       = 7079
+Global Const $model_id_crypt_banshee      = 7081
+Global Const $model_id_shock_phantom      = 7083
+Global Const $model_id_ash_phantom        = 7085
+Global Const $model_id_servant_of_murakai = 7069
 ; ToA Dust Farm
-Global Const $model_id_fog_nightmare           = 1732
+Global Const $model_id_fog_nightmare      = 1732
 ; Moddok Farm
-Global Const $model_id_corsair_cutthroat       = 5127
-Global Const $model_id_corsair_raider          = 5128
-Global Const $model_id_corsair_captain         = 5130
+Global Const $model_id_corsair_cutthroat  = 5127
+Global Const $model_id_corsair_raider     = 5128
+Global Const $model_id_corsair_captain    = 5130
 
 ; FoW and UW
-Global Const $model_id_avatar_of_grenth   = 1995
+Global Const $model_id_avatar_of_grenth      = 1995
 Global Const $model_id_champion_of_balthazar = 1997
-Global Const $model_id_abyssal     = 2861
-Global Const $model_id_shadow_ranger   = 2859
-Global Const $model_id_skeleton_of_dhuum  = 2392
+Global Const $model_id_abyssal           = 2861
+Global Const $model_id_shadow_ranger     = 2859
+Global Const $model_id_skeleton_of_dhuum = 2392
 
 ; DoA
 Global Const $model_id_spirit_of_truth_city = 5036 ; city, foundry, exchange gemstones
@@ -663,15 +663,15 @@ Global Const $model_id_stygian_underlord_dervish = 5214
 Global Const $model_id_stygian_underlord_ranger = 5215
 Global Const $model_id_5216 = 5216 ; ???
 
-Global Const $model_id_kaya     = 5217 ; city+foundry
-Global Const $model_id_dabi     = 5218
-Global Const $model_id_su       = 5219
-Global Const $model_id_ki       = 5220
-Global Const $model_id_vu       = 5221
-Global Const $model_id_tuk      = 5222
-Global Const $model_id_ruk      = 5223
-Global Const $model_id_rund     = 5224
-Global Const $model_id_mank     = 5225
+Global Const $model_id_kaya = 5217 ; city+foundry
+Global Const $model_id_dabi = 5218
+Global Const $model_id_su   = 5219
+Global Const $model_id_ki   = 5220
+Global Const $model_id_vu   = 5221
+Global Const $model_id_tuk  = 5222
+Global Const $model_id_ruk  = 5223
+Global Const $model_id_rund = 5224
+Global Const $model_id_mank = 5225
 
 Global Const $model_id_stygian_hunger = 5226 ; veil
 Global Const $model_id_stygian_brute = 5227
