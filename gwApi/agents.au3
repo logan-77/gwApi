@@ -429,7 +429,7 @@ Func GetEnergy($iAgent = -2)
     Local $lPtr = Agent_GetAgentPtr($iAgent)
     Local $nEnergyPercent = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_ENERGY_PERCENT[0], $GC_I_OFFSET_AGENT_ENERGY_PERCENT[1])
     Local $nMaxEnergy = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_MAX_ENERGY[0], $GC_I_OFFSET_AGENT_MAX_ENERGY[1])
-    Return $nEnergyPercent * $nMaxEnergy
+    Return Int($nEnergyPercent * $nMaxEnergy)
 EndFunc ;==>GetEnergy
 
 ;~ Description: Returns energy of an agent. (Only self/heroes)
@@ -437,7 +437,7 @@ Func GetAgentEnergyCurrent($iAgent = -2)
     Local $lPtr = Agent_GetAgentPtr($iAgent)
     Local $nEnergyPercent = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_ENERGY_PERCENT[0], $GC_I_OFFSET_AGENT_ENERGY_PERCENT[1])
     Local $nMaxEnergy = Memory_Read($lPtr + $GC_I_OFFSET_AGENT_MAX_ENERGY[0], $GC_I_OFFSET_AGENT_MAX_ENERGY[1])
-    Return $nEnergyPercent * $nMaxEnergy
+    Return Int($nEnergyPercent * $nMaxEnergy)
 EndFunc ;==>GetEnergy
 
 ;~ Description: Returns the allegiance of an agent.
