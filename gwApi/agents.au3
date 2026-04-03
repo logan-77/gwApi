@@ -370,13 +370,11 @@ EndFunc   ;==>GetPlayerName
 
 ;~ Description: Returns health of an agent as % of max HP
 Func GetHP($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x134, 'float')
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_HP_PERCENT[0], $GC_I_OFFSET_AGENT_HP_PERCENT[1])
 EndFunc ;==>GetHP
 
 ;~ Description: Returns health of an agent as % of max HP
 Func GetAgentHpPercent($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x134, 'float')
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_HP_PERCENT[0], $GC_I_OFFSET_AGENT_HP_PERCENT[1])
 EndFunc   ;==>GetHP
 
