@@ -1456,7 +1456,7 @@ Func SellJunk()
             $lModelID = GetItemModelID($pItem)
             $iQuantity = GetItemQuantity($pItem)   
             Switch $lModelID
-                Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key
+                Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key, $model_id_obsidian_key
                     ContinueCase
                 Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
                     ContinueCase
@@ -1475,33 +1475,33 @@ Func IsEventItem($aModelID)
     ; ******************************************************************************************* 
     
     ; Canthan New Year
-    If $aModelID = $model_id_lunar_token Then Return True
-    If $aModelID = $model_id_lunar_fortune_horse Then Return True
+    ;~ If $aModelID = $model_id_lunar_token Then Return True
+    ;~ If $aModelID = $model_id_lunar_fortune_horse Then Return True
     
     ; Lucky Treats Week
     ; If $aModelID = $model_id_clover Then Return True
     ; If $aModelID = $model_id_shamrock_ale Then Return True
     
     ; Sweet Treats Week
-    ;~ If $aModelID = $model_id_golden_egg Then Return True
-    ;~ If $aModelID = $model_id_chocolate_bunny Then Return True
+    If $aModelID = $model_id_golden_egg Then Return True
+    If $aModelID = $model_id_chocolate_bunny Then Return True
     
     ;~ === Anniversary Celebration ===
-    ;~ If $aModelID = $model_id_cupcake Then Return True
-    ;~ If $aModelID = $model_id_honeycomb Then Return True
-    ;~ If $aModelID = $model_id_sugary_blue_drink Then Return True
+    If $aModelID = $model_id_cupcake Then Return True
+    If $aModelID = $model_id_honeycomb Then Return True
+    If $aModelID = $model_id_sugary_blue_drink Then Return True
     ;~ Alcohol
-    ;~ If $aModelID = $model_id_hard_apple_cider Then Return True
-    ;~ If $aModelID = $model_id_hunters_ale Then Return True
-    ;~ If $aModelID = $model_id_krytan_brandy Then Return True
+    If $aModelID = $model_id_hard_apple_cider Then Return True
+    If $aModelID = $model_id_hunters_ale Then Return True
+    If $aModelID = $model_id_krytan_brandy Then Return True
     ;~ Party Points
-    ;~ If $aModelID = $model_id_champagne_popper Then Return True
-    ;~ If $aModelID = $model_id_bottle_rocket Then Return True
-    ;~ If $aModelID = $model_id_sparkler Then Return True
+    If $aModelID = $model_id_champagne_popper Then Return True
+    If $aModelID = $model_id_bottle_rocket Then Return True
+    If $aModelID = $model_id_sparkler Then Return True
     ;~ 50 Point Boss Items
-    ;~ If $aModelID = $model_id_delicious_cake Then Return True
-    ;~ If $aModelID = $model_id_iced_tea Then Return True
-    ;~ If $aModelID = $model_id_party_beacon Then Return True
+    If $aModelID = $model_id_delicious_cake Then Return True
+    If $aModelID = $model_id_iced_tea Then Return True
+    If $aModelID = $model_id_party_beacon Then Return True
     
     ; Dragon Festival
     ; If $aModelID = $model_id_victory_token Then Return True ; also anniversary
@@ -1698,14 +1698,11 @@ EndFunc ;==>IsItemMaxDmg
 ;~ Returns True if the Item is of a Weapon Type
 Func IsWeapon($aItem)
     Switch GetItemType($aItem)
-        Case $item_type_axe, $item_type_bow, $item_type_offhand
-            Return True
-        Case $item_type_hammer, $item_type_wand, $item_type_shield
-            Return True
-        Case $item_type_staff, $item_type_sword, $item_type_daggers
-            Return True
-        Case $item_type_scythe, $item_type_spear
-            Return True
+        Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
+                $item_type_hammer, $item_type_wand, $item_type_shield, _
+                $item_type_staff, $item_type_sword, $item_type_daggers, _
+                $item_type_scythe, $item_type_spear
+                    Return True
     EndSwitch
     Return False
 EndFunc ;==>IsWeapon
@@ -1713,14 +1710,11 @@ EndFunc ;==>IsWeapon
 ;~ Returns True if the Item is of a Weapon Type
 Func IsWeaponByType($aType)
     Switch $aType
-        Case $item_type_axe, $item_type_bow, $item_type_offhand
-            Return True
-        Case $item_type_hammer, $item_type_wand, $item_type_shield
-            Return True
-        Case $item_type_staff, $item_type_sword, $item_type_daggers
-            Return True
-        Case $item_type_scythe, $item_type_spear
-            Return True
+        Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
+                $item_type_hammer, $item_type_wand, $item_type_shield, _
+                $item_type_staff, $item_type_sword, $item_type_daggers, _
+                $item_type_scythe, $item_type_spear
+                    Return True
     EndSwitch
     Return False
 EndFunc ;==>IsWeaponByType
