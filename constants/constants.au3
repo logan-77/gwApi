@@ -480,7 +480,9 @@ Global Enum $dis_english, $dis_french, $dis_german, $dis_italian, $dis_spanish, 
 Global Const $map_id_the_black_curtain = 18
 Global Const $map_id_the_fissure_of_woe = 34
 Global Const $map_id_the_underworld = 72
+Global Const $map_id_house_zu_heltzer = 77
 Global Const $map_id_temple_of_the_ages = 138
+Global Const $map_id_cavalon = 193
 Global Const $map_id_drazach_thicket = 195
 Global Const $map_id_jaya_bluffs = 196
 Global Const $map_id_great_temple_of_balthazar = 248
@@ -538,6 +540,12 @@ Global Const $map_id_jade_quarry_arena = 223
 #EndRegion MapID
 
 #Region PlayerNumber
+;~ summoning stones
+Global Const $model_id_summon_dream_rider = 524 ; ghastly stone
+Global Const $model_id_summon_canthan_guard = 9122 ; guards
+Global Const $model_id_summon_canthan_captain = 9124 ; guards
+Global Const $model_id_summon_legionnaire = 8028 ; 
+
 ;~ nature rituals
 Global Const $model_id_winter                = 2925
 Global Const $model_id_winnowing             = 2926
@@ -640,9 +648,79 @@ Global Const $model_id_corsair_captain    = 5130
 ; FoW and UW
 Global Const $model_id_avatar_of_grenth      = 1995
 Global Const $model_id_champion_of_balthazar = 1997
-Global Const $model_id_abyssal           = 2861
+
+;~ FoW
 Global Const $model_id_shadow_ranger     = 2859
-Global Const $model_id_skeleton_of_dhuum = 2392
+Global Const $model_id_abyssal           = 2861
+
+;~ UW
+Global Const $model_id_chained_soul = 2367
+Global Const $model_id_dying_nightmare = 2368
+Global Const $model_id_obsidian_behemoth = 2369
+Global Const $model_id_obsidian_guardian = 2370
+Global Const $model_id_terrorweb_dryder = 2371
+Global Const $model_id_terrorweb_dryder_white = 2372
+Global Const $model_id_keeper_of_souls = 2373
+Global Const $model_id_terrorweb_queen = 2374
+Global Const $model_id_smite_crawler = 2375
+Global Const $model_id_wailing_lord = 2376
+Global Const $model_id_banished_dream_rider = 2377
+Global Const $model_id_2378 = 2378
+Global Const $model_id_kazhad_dhuum = 2379
+Global Const $model_id_ghozer_dhuum = 2379
+Global Const $model_id_madruk_dhuum = 2379
+Global Const $model_id_thul_za_dhuum = 2379
+Global Const $model_id_four_horsemen = 2379
+Global Const $model_id_mindblade = 2380
+Global Const $model_id_2381 = 2381
+Global Const $model_id_dead_collector = 2382
+Global Const $model_id_dead_thresher = 2383
+Global Const $model_id_coldfire_night = 2384
+Global Const $model_id_stalking_night = 2385
+Global Const $model_id_2386 = 2386
+Global Const $model_id_charged_blackness = 2387
+Global Const $model_id_grasping_darkness = 2388
+Global Const $model_id_bladed_aatxe = 2389
+Global Const $model_id_vengeful_aatxe = 2390
+Global Const $model_id_slayer = 2391
+Global Const $model_id_skeleton_of_dhuum_1 = 2392
+Global Const $model_id_skeleton_of_dhuum_2 = 2393
+Global Const $model_id_2394 = 2394
+Global Const $model_id_2395 = 2395
+Global Const $model_id_2396 = 2396
+Global Const $model_id_2397 = 2397
+Global Const $model_id_2398 = 2398
+Global Const $model_id_reaper = 2399 ; quests
+Global Const $model_id_2400 = 2400
+Global Const $model_id_ice_elemental = 2401
+Global Const $model_id_2402 = 2402
+Global Const $model_id_king_frozenwind = 2403
+Global Const $model_id_tortured_spirit_ally_1 = 2404 ; vale, ally
+Global Const $model_id_tortured_spirit_ally_2 = 2405 ; vale, ally
+Global Const $model_id_2406 = 2406
+Global Const $model_id_new_soul_1 = 2407
+Global Const $model_id_new_soul_2 = 2408
+Global Const $model_id_new_soul_3 = 2409
+Global Const $model_id_new_soul_4 = 2410
+Global Const $model_id_new_soul_5 = 2411
+Global Const $model_id_new_soul_6 = 2412
+Global Const $model_id_tortured_spirit_pits_1 = 2413 ; this one activated quest
+Global Const $model_id_tortured_spirit_pits_2 = 2414
+Global Const $model_id_tortured_spirit_pits_3 = 2415
+Global Const $model_id_tortured_spirit_pits_4 = 2416
+Global Const $model_id_2417 = 2417
+Global Const $model_id_2418 = 2418
+Global Const $model_id_2419 = 2419
+Global Const $model_id_2420 = 2420
+Global Const $model_id_2421 = 2421
+Global Const $model_id_tortured_spirit_1 = 2422 ; vale, enemy
+Global Const $model_id_tortured_spirit_2 = 2423 ; vale, enemy
+Global Const $model_id_mayor_alegheri = 2424
+Global Const $model_id_lost_soul = 2425 ; chamber questgiver
+
+Global Const $model_id_champion_of_dhuum = 0
+Global Const $model_id_minion_of_dhuum = 0
+Global Const $model_id_dhuum = 0
 
 ; DoA
 Global Const $model_id_spirit_of_truth_city = 5036 ; city, foundry, exchange gemstones
@@ -660,8 +738,10 @@ Global Const $model_id_stygian_lord_monk = 5199
 
 Global Const $model_id_the_fury = 5200
 Global Const $model_id_the_black_beast_of_arggh = 5201
+
 Global Const $model_id_the_greater_darkness = 5202
 Global Const $model_id_the_darkness = 5203 ; first spawn
+
 Global Const $model_id_5204 = 5204 ; ???
 Global Const $model_id_chill_of_darkness_2 = 5205
 Global Const $model_id_curse_of_darkness_2 = 5206
