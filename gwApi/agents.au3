@@ -119,21 +119,35 @@ Func GetNumberOfDeepWoundedAllies($aRange = 5000)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfDeepWoundedAllies
 
-;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
 ;~ Description: Returns Highest HP Enemy in Range. optional: PlayerNumber
 Func GetHighestHPEnemyPtrToAgent($iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
     Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $iAgent, $aPlayerNumber)
-    Local $lHighestHP = 0, $lHighestHPAgentPtr = 0, $lHP
+    Local $fHighestHP = 0, $pHighestHPAgent = 0, $fHP
     
     For $i = 1 To $aAgentPtr[0]
-        $lHP = GetHP($aAgentPtr[$i])
-        If $lHP > $lHighestHP Then
-            $lHighestHP = $lHP
-            $lHighestHPAgentPtr = $aAgentPtr[$i]
+        $fHP = GetHP($aAgentPtr[$i])
+        If $fHP > $fHighestHP Then
+            $fHighestHP = $fHP
+            $pHighestHPAgent = $aAgentPtr[$i]
         EndIf
     Next
-    Return $lHighestHPAgentPtr
-EndFunc ;==>GetHighestHPEnemyPtr
+    Return $pHighestHPAgent
+    EndFunc ;==>GetHighestHPEnemyPtr
+
+;~ Description: Returns Lowest HP Enemy in Range. optional: PlayerNumber
+Func GetLowestHPEnemyPtrToAgent($iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $iAgent, $aPlayerNumber)
+    Local $fLowestHP = 2, $pLowestHPAgent = 0, $fHP
+    
+    For $i = 1 To $aAgentPtr[0]
+        $fHP = GetHP($aAgentPtr[$i])
+        If $fHP < $fLowestHP Then
+            $fLowestHP = $fHP
+            $pLowestHPAgent = $aAgentPtr[$i]
+        EndIf
+    Next
+    Return $pLowestHPAgent
+EndFunc ;==>GetLowestHPEnemyPtr
 
 Func GetAgentPtrByPlayerNumber($aPlayerNumber, $aRange = 5000)
     Local $aAgentPtr = GetAgentPtrArray(1, 0xDB)
