@@ -280,12 +280,12 @@ EndFunc ;==>GetQuantityInventory
 
 ; Return the amount of an Item in Chest by ModelID
 Func GetQuantityChest($aModelID, $aCountSlotsOnly = False)
-    Return CountItemByModelID($aModelID, 8, 12, $aCountSlotsOnly)
+    Return CountItemByModelID($aModelID, 8, 11, $aCountSlotsOnly)
 EndFunc ;==>GetQuantityChest
 
 ; Returns the amount of an Item by ModelID in Inventory+Chest
 Func GetQuantity($aModelID, $aCountSlotsOnly = False)
-    Return CountItemByModelID($aModelID, 1, 12, $aCountSlotsOnly)
+    Return CountItemByModelID($aModelID, 1, 11, $aCountSlotsOnly)
 EndFunc ;==>GetQuantity
 
 ;~ Description: Returns amount of items of $aType in selected bags.
@@ -354,12 +354,12 @@ EndFunc ;==>GetQuantityInventory
 
 ; Return the amount of an Item in Chest by Type
 Func GetQuantityChestByType($aType, $aCountSlotsOnly = False)
-    Return CountItemByType($aType, 8, 12, $aCountSlotsOnly)
+    Return CountItemByType($aType, 8, 11, $aCountSlotsOnly)
 EndFunc ;==>GetQuantityChest
 
 ; Returns the amount of an Item by Type in Inventory+Chest
 Func GetQuantityByType($aType, $aCountSlotsOnly = False)
-    Return CountItemByType($aType, 1, 12, $aCountSlotsOnly)
+    Return CountItemByType($aType, 1, 11, $aCountSlotsOnly)
 EndFunc ;==>GetQuantity
 
 ;~ Use Item in Inventory
