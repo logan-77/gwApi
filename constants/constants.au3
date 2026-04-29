@@ -542,8 +542,8 @@ Global Const $map_id_jade_quarry_arena = 223
 #Region PlayerNumber
 ;~ summoning stones
 Global Const $model_id_summon_dream_rider = 524 ; ghastly stone
-Global Const $model_id_summon_canthan_guard = 9122 ; guards
-Global Const $model_id_summon_canthan_captain = 9124 ; guards
+Global Const $model_id_summon_canthan_guard = 9262 ; guards
+Global Const $model_id_summon_canthan_captain = 9264 ; guards
 Global Const $model_id_summon_legionnaire = 8028 ; 
 
 ;~ nature rituals
@@ -649,10 +649,6 @@ Global Const $model_id_corsair_captain    = 5130
 Global Const $model_id_avatar_of_grenth      = 1995
 Global Const $model_id_champion_of_balthazar = 1997
 
-;~ FoW
-Global Const $model_id_shadow_ranger     = 2859
-Global Const $model_id_abyssal           = 2861
-
 ;~ UW
 Global Const $model_id_chained_soul = 2367
 Global Const $model_id_dying_nightmare = 2368
@@ -664,6 +660,7 @@ Global Const $model_id_keeper_of_souls = 2373
 Global Const $model_id_terrorweb_queen = 2374
 Global Const $model_id_smite_crawler = 2375
 Global Const $model_id_wailing_lord = 2376
+Global Const $model_id_banshee = 2376 ; at griffs in fow
 Global Const $model_id_banished_dream_rider = 2377
 Global Const $model_id_2378 = 2378
 Global Const $model_id_kazhad_dhuum = 2379
@@ -697,6 +694,7 @@ Global Const $model_id_2402 = 2402
 Global Const $model_id_king_frozenwind = 2403
 Global Const $model_id_tortured_spirit_ally_1 = 2404 ; vale, ally
 Global Const $model_id_tortured_spirit_ally_2 = 2405 ; vale, ally
+Global Const $model_id_enslaved_hero = 2405 ; in fow, after slaves of menzies quest; ally
 Global Const $model_id_2406 = 2406
 Global Const $model_id_new_soul_1 = 2407
 Global Const $model_id_new_soul_2 = 2408
@@ -721,6 +719,63 @@ Global Const $model_id_lost_soul = 2425 ; chamber questgiver
 Global Const $model_id_champion_of_dhuum = 0
 Global Const $model_id_minion_of_dhuum = 0
 Global Const $model_id_dhuum = 0
+
+;~ FoW
+Global Const $model_id_nimros_the_hunter = 1485
+Global Const $model_id_miko_the_unchained = 2015
+
+Global Const $model_id_mahgo_hydra = 2847
+Global Const $model_id_2848 = 2848
+Global Const $model_id_2849 = 2849
+Global Const $model_id_2850 = 2850
+Global Const $model_id_armored_cave_spider = 2851
+Global Const $model_id_smoke_walker = 2852
+Global Const $model_id_obsidian_furnace_drake = 2853
+Global Const $model_id_doubters_dryder = 2854
+Global Const $model_id_shadow_mesmer = 2855
+Global Const $model_id_shadow_elemental = 2856
+Global Const $model_id_shadow_monk = 2857
+Global Const $model_id_shadow_warrior = 2858
+Global Const $model_id_shadow_ranger = 2859
+Global Const $model_id_shadow_beast = 2860
+Global Const $model_id_shadow_lord = 2860
+Global Const $model_id_shadow_lord_vogris = 2860
+Global Const $model_id_abyssal = 2861
+Global Const $model_id_shadow_overlord = 2861
+Global Const $model_id_shadow_patrol = 2861
+Global Const $model_id_seed_of_corruption = 2862
+Global Const $model_id_spirit_wood = 2863
+Global Const $model_id_spirit_shepherd = 2864
+Global Const $model_id_ancient_skale = 2865
+Global Const $model_id_snarling_driftwood = 2866
+Global Const $model_id_skeletal_ether_breaker = 2867
+Global Const $model_id_skeletal_icehand = 2868
+Global Const $model_id_skeletal_bond = 2869
+Global Const $model_id_skeletal_berserker = 2870
+Global Const $model_id_skeletal_impaler = 2871
+Global Const $model_id_rock_borer_wurm = 2872
+Global Const $model_id_infernal_wurm = 2873
+Global Const $model_id_dragon_lich = 2874
+Global Const $model_id_priest_of_menzies = 2875
+Global Const $model_id_2876 = 2876
+Global Const $model_id_kromril_the_eternal = 2877
+Global Const $model_id_rastigan_the_eternal = 2877
+Global Const $model_id_eternal_lord_taeres = 2877
+Global Const $model_id_admiral_saidon_the_eternal = 2877
+Global Const $model_id_forest_griffon = 2878
+Global Const $model_id_lord_khobay = 2879
+Global Const $model_id_eternal_forgemaster = 2880
+Global Const $model_id_2881 = 2881
+Global Const $model_id_eternal_elementalist = 2882
+Global Const $model_id_traitorous_temple_guard_elementalist = 2882
+Global Const $model_id_tower_mage = 2882
+Global Const $model_id_zurotai_the_eternal = 2883
+Global Const $model_id_traitorous_temple_guard_monk = 2883
+Global Const $model_id_eternal_weaponsmith = 2884
+Global Const $model_id_traitorous_temple_guard_warrior = 2884
+Global Const $model_id_eternal_ranger = 2885
+Global Const $model_id_shard_wolf = 2886
+Global Const $model_id_wailing_lord_ally = 2887 ; griffs quest guy as ally
 
 ; DoA
 Global Const $model_id_spirit_of_truth_city = 5036 ; city, foundry, exchange gemstones
@@ -838,6 +893,9 @@ Global Const $model_id_luxon_hauler_turtle    = 3636
 Global Const $model_id_kurzick_carrier_juggernaut = 3418
 
 ; War Supply Farm
+Global Const $model_id_peacekeeper_enforcer_1 = 8390
+Global Const $model_id_peacekeeper_enforcer_2 = 8391
+
 Global Const $model_id_white_mantle_enforcer = 8312
 Global Const $model_id_white_mantle_enforcer_2 = 8313
 Global Const $model_id_white_mantle_enforcer_3 = 8314
@@ -854,13 +912,14 @@ Global Const $model_id_white_mantle_sycophant_6  = 8322 ; WoH isMonk
 Global Const $model_id_white_mantle_ritualist_3 = 8323 ; Discord, condi nec
 Global Const $model_id_white_mantle_ritualist_4 = 8324
 Global Const $model_id_white_mantle_ritualist_5 = 8325 ; Life Siphon, nec
+Global Const $model_id_white_mantle_ritualist_10 = 8326 ; weaken knees, reckless haste
 
 Global Const $model_id_white_mantle_fanatic      = 8327 ; Icy Veins
 Global Const $model_id_white_mantle_fanatic_2    = 8328 ; nec (rit heal)
 Global Const $model_id_white_mantle_fanatic_3    = 8329 ; lingering curse
 Global Const $model_id_white_mantle_fanatic_4    = 8330 ; tainted flesh
 
-Global Const $model_id_white_mantle_savant      = 8331 ; mshower
+Global Const $model_id_white_mantle_savant      = 8331 ; mshower, glyph of renewal
 Global Const $model_id_white_mantle_savant_2    = 8332 ; savannah heat + rit heal
 
 Global Const $model_id_white_mantle_adherent    = 8335 ; water ele
@@ -874,7 +933,7 @@ Global Const $model_id_white_mantle_priest_3    = 8341 ; Healers Boon(hexremove)
 Global Const $model_id_white_mantle_priest_4    = 8342 ; mo/ele (smite) RoJ
 
 Global Const $model_id_white_mantle_abbot        = 8343 ; Prot Mo (Boon Signet, spiritbond)
-Global Const $model_id_white_mantle_abbot_2      = 8344 ; Mantra of Recall
+Global Const $model_id_white_mantle_abbot_2      = 8344 ; Mantra of Recall, guardian (monk)
 Global Const $model_id_white_mantle_abbot_3      = 8345 ; RC, prot spirit (strong heal)
 Global Const $model_id_white_mantle_abbot_4      = 8346 ; zeal benediction + smite
 
@@ -905,9 +964,9 @@ Global Const $model_id_white_mantle_champion  = 8274 ; para/rit (splinter, signe
 Global Const $model_id_white_mantle_champion_2  = 8276 ; para/ranger
 Global Const $model_id_white_mantle_champion_3  = 8277 ; para/war
 
-Global Const $model_id_white_mantle_zealot_5  = 8472 ; war/monk
+Global Const $model_id_white_mantle_zealot_5  = 8612 ; 8472 ; war/monk
 
-Global Const $model_id_miku = 8513
+Global Const $model_id_miku = 8653 ; old: 8513
 #Endregion PlayerNumber
 
 ; === Specific ItemID's ===
