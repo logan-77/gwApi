@@ -53,7 +53,8 @@ Func GetEnergyReq($iSkillID)
     ;~ If $lEnergycost = 11 Then Return 15
     ;~ If $lEnergycost = 12 Then Return 25
     ;~ Return $lEnergycost
-    Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_ENERGY_REQ_QZ])
+    ;~ Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_ENERGY_REQ_QZ])
+    Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_I_SKILL_ENERGY_REQ])
 EndFunc   ;==>GetEnergyReq
 
 ;~ Description: Checks SkillRecharge by SkillSlot; True=Recharged
