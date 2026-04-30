@@ -356,26 +356,30 @@ Global Const $model_id_luxon_hauler_turtle    = 3636
 
 ;~ War Supply Farm
 Global Enum _
+$model_id_silent_peacekeeper_1 = 8366, _
+$model_id_8367, _
+$model_id_silent_peacekeeper_2, _
+$model_id_8369, _
+$model_id_8370, $model_id_8371, $model_id_8372, $model_id_8373, $model_id_8374, $model_id_8375, $model_id_8376, $model_id_8377, $model_id_8378, $model_id_8379, _
+$model_id_8380, $model_id_8381, $model_id_8382, $model_id_8383, $model_id_8384, $model_id_8385, $model_id_8386, $model_id_8387, $model_id_8388, $model_id_8389, _
 $model_id_peacekeeper_enforcer_1 = 8390, _
 $model_id_peacekeeper_enforcer_2, _
 $model_id_8392, $model_id_8393, $model_id_8394, $model_id_8395, $model_id_8396, $model_id_8397, $model_id_8398, $model_id_8399, _
-$model_id_8400, $model_id_8401, $model_id_8402, $model_id_8403, $model_id_8404, $model_id_8405, $model_id_8406, $model_id_8407, $model_id_8408, $model_id_8409, _
-$model_id_8410, $model_id_8411, $model_id_8412, $model_id_8413, _
-$model_id_white_mantle_champion_1, _ ; para/rit (splinter, signet return)
-$model_id_8415, _
-$model_id_white_mantle_champion_2, _    ; para/ranger
-$model_id_white_mantle_champion_3, _    ; para/war
-$model_id_8418, $model_id_8419, _
+$model_id_8400, $model_id_8401, $model_id_8402, $model_id_8403, $model_id_8404, $model_id_8405, $model_id_8406, _
+$model_id_peacekeeper_marksman_1, _     ; barrage, splinter
+$model_id_peacekeeper_marksman_2, _     ; magebane, savage shot, apply poison, frustration
+$model_id_peacekeeper_marksman_3, _     ; burning arrow,
+$model_id_8410, $model_id_8411, $model_id_8412, $model_id_8413, $model_id_8414, $model_id_8415, $model_id_8416, $model_id_8417,  $model_id_8418, $model_id_8419, _
 $model_id_8420, $model_id_8421, $model_id_8422, $model_id_8423, $model_id_8424, $model_id_8425, $model_id_8426, $model_id_8427, $model_id_8428, $model_id_8429, _
 $model_id_8430, $model_id_8431, $model_id_8432, $model_id_8433, $model_id_8434, $model_id_8435, $model_id_8436, $model_id_8437, $model_id_8438, $model_id_8439, _
 $model_id_8440, $model_id_8441, $model_id_8442, $model_id_8443, $model_id_8444, $model_id_8445, $model_id_8446, $model_id_8447, $model_id_8448, $model_id_8449, _
 $model_id_8450, $model_id_8451, _
  _
-$model_id_white_mantle_enforcer_1, _
-$model_id_white_mantle_enforcer_2, _
-$model_id_white_mantle_enforcer_3, _
-$model_id_white_mantle_enforcer_4, _ ; ranger/assa
-$model_id_white_mantle_enforcer_5, _ ; assa
+$model_id_white_mantle_enforcer_1, _    ; war/sin (dismember, hos, keen chop, way of perfection)
+$model_id_white_mantle_enforcer_2, _    ; sin (dancing daggers, mantis touch, vampiric assault, entangling asp)
+$model_id_white_mantle_enforcer_3, _    ; sin/nec (plague touch, twisting fangs, temple strike, leaping mantix sting)
+$model_id_white_mantle_enforcer_4, _    ; ranger/sin (punishing shot, keen arrow, way of the master, shadow refuge)
+$model_id_white_mantle_enforcer_5, _    ; sin (fox fangs, shattering assault, golden fox strike)
  _
 $model_id_white_mantle_sycophant_1, _   ; degen mes (crippling anguish)
 $model_id_white_mantle_sycophant_2, _   ; dom mes (clumsiness) 2nd
@@ -384,59 +388,71 @@ $model_id_white_mantle_sycophant_4, _   ; esurge, spirit shackles 2NDARY
 $model_id_white_mantle_sycophant_5, _   ; condi mes 2nd
 $model_id_white_mantle_sycophant_6, _   ; WoH Monk
  _
-$model_id_white_mantle_ritualist_1, _   ; Discord, condi nec
-$model_id_white_mantle_ritualist_2, _
-$model_id_white_mantle_ritualist_3, _   ; Life Siphon, nec
-$model_id_white_mantle_ritualist_4, _  ; weaken knees, reckless haste
+$model_id_white_mantle_ritualist_1, _   ; discord, well of profane, vile miasma, oppressive gaze, rising bile
+$model_id_white_mantle_ritualist_2, _   ; splinter, flesh golem, bitter chill
+$model_id_white_mantle_ritualist_3, _   ; spoil victor, life siphon, barbed signet, death pact, shadow strike, well of blood
+$model_id_white_mantle_ritualist_4, _   ; weaken knees, reckless haste, order of pain, blood of the aggressor
  _
-$model_id_white_mantle_fanatic_1, _ ; Icy Veins
-$model_id_white_mantle_fanatic_2, _ ; nec (rit heal)
-$model_id_white_mantle_fanatic_3, _ ; lingering curse
-$model_id_white_mantle_fanatic_4, _ ; tainted flesh
+$model_id_white_mantle_fanatic_1, _ ; icy veins, deathl chill, barbs, gale, lightning strike, fetid ground
+$model_id_white_mantle_fanatic_2, _ ; kaolai, recovery, vampiric swarm
+$model_id_white_mantle_fanatic_3, _ ; lingering curse, suffering, ulcerous lungs, defile defenses, ethereal burden
+$model_id_white_mantle_fanatic_4, _ ; tainted flesh, deathly swarm, vile miasma, pious restoration, featherfoot grace
  _
-$model_id_white_mantle_savant_1, _  ; mshower, glyph of renewal
-$model_id_white_mantle_savant_2, _  ; savannah heat + rit heal 8472
+$model_id_white_mantle_savant_1, _  ; mshower, glyph of renewal, liquid, resto
+$model_id_white_mantle_savant_2, _  ; savannah heat, fire storm, immolate, spirit boon strike, rit heal
 $model_id_8473, $model_id_8474, _
  _
-$model_id_white_mantle_adherent_1, _    ; water ele
-$model_id_white_mantle_adherent_2, _    ; shatterstone, water ele
-$model_id_white_mantle_adherent_3, _    ; Unsteady Ground, earth ele
-$model_id_white_mantle_adherent_4, _    ; Sandstorm, earth ele
+$model_id_white_mantle_adherent_1, _    ; shard storm, water trident, snare, chilling winds
+$model_id_white_mantle_adherent_2, _    ; shatterstone, rust, vapor blade, icy prism
+$model_id_white_mantle_adherent_3, _    ; Unsteady Ground, attunement, glyph of restoration
+$model_id_white_mantle_adherent_4, _    ; Sandstorm, stoning, ebon hawk, glowstone
  _
-$model_id_white_mantle_priest_1, _  ; WoH
+$model_id_white_mantle_priest_1, _  ; WoH, patient spirit
 $model_id_white_mantle_priest_2, _  ; Healing Burst
 $model_id_white_mantle_priest_3, _  ; Healers Boon(hexremove)
-$model_id_white_mantle_priest_4, _  ; mo/ele (smite) RoJ
+$model_id_white_mantle_priest_4, _  ; roj, signet of rage, armor of frost
  _
-$model_id_white_mantle_abbot_1, _   ; Prot Mo (Boon Signet, spiritbond)
-$model_id_white_mantle_abbot_2, _   ; Mantra of Recall, guardian (monk)
+$model_id_white_mantle_abbot_1, _   ; Prot Mo (Boon Signet, spiritbond, shielding hands)
+$model_id_white_mantle_abbot_2, _   ; Mantra of Recall, guardian, reversal of fortune
 $model_id_white_mantle_abbot_3, _   ; RC, prot spirit (strong heal)
 $model_id_white_mantle_abbot_4, _   ; zeal benediction + smite
  _
 $model_id_white_mantle_zealot_1, _  ; axe war, signet of return
 $model_id_white_mantle_zealot_2, _  ; war/monk
 $model_id_white_mantle_zealot_3, _  ; Triple Chop, axe war
-$model_id_white_mantle_zealot_4, _  ; bane signet, smite skills
+$model_id_white_mantle_zealot_4, _  ; war/mo (smite)
  _
-$model_id_white_mantle_knight_1, _  ; sword war
-$model_id_white_mantle_knight_2, _  ; sword war, smite
-$model_id_white_mantle_knight_3, _  ; sword war, conjure frost, water skills
-$model_id_white_mantle_knight_4, _  ; res signet
+$model_id_white_mantle_knight_1, _  ; sword war (crippling slash)
+$model_id_white_mantle_knight_2, _  ; sword war (smite)
+$model_id_white_mantle_knight_3, _  ; sword war (frozen burst, conjure frost)
+$model_id_white_mantle_knight_4, _  ; sword war (res signet)
  _
-$model_id_white_mantle_scout_1, _   ; ranger
+$model_id_white_mantle_scout_1, _   ; ranger (comfort animal, victorious sweep)
 $model_id_white_mantle_scout_2, _   ; 
-$model_id_white_mantle_scout_3, _   ;
-$model_id_white_mantle_scout_4, _   ;
-$model_id_white_mantle_scout_5, _   ; 8499
+$model_id_white_mantle_scout_3, _   ; precision shot, splinter shot, melandrus shot
+$model_id_white_mantle_scout_4, _   ; hunters shot, choking gas, res signet, antidote signet
  _
-$model_id_8500, $model_id_8501, $model_id_8502, $model_id_8503, $model_id_8504, $model_id_8505, $model_id_8506, $model_id_8507, _
+$model_id_white_mantle_seeker_1, _  ; incendiary arrows, barbed arrows
+$model_id_white_mantle_seeker_2, _  ; oath shot, penetrating attack, read the wind, signet of weariness
+$model_id_white_mantle_seeker_3, _  ; glass arrows, sundering attack, needling shot, dual shot, conjure flame
+$model_id_white_mantle_seeker_4, _  ; fox fangs, shadow refuge, blinding powder, black mantis thrust
+ _
+$model_id_8503, _
+$model_id_white_mantle_devotee_1, _ ; enfeebling touch, dwaynas touch, grenths grasp, radiant scythe
+$model_id_white_mantle_devotee_2, _ ; reap impurities, dust cloadk, armor of sanctity, wounding strike, veil of thorns
+$model_id_8506, _
+$model_id_white_mantle_devotee_3, _ ; magnetic aura, grasping earth, mystic sweep, lyssas assault, zealous vow
 $model_id_white_mantle_ritualist_5, _   ; rit/paragon spear
 $model_id_white_mantle_ritualist_6, _   ; rit/monk (preservation, strong heal, hexremove, spirits)
 $model_id_white_mantle_ritualist_7_sos, _           ; SoS
 $model_id_white_mantle_ritualist_8_shadowsong, _    ; PRIMARY (shadowsong,bloodsong,pain,anguish)
 $model_id_white_mantle_ritualist_9, _               ; minions 2nd prio
 $model_id_white_mantle_ritualist_10, _              ; weapon of remedy rit(hardrez, prio)
-$model_id_8514, $model_id_8515, $model_id_8516, $model_id_8517, $model_id_8518, $model_id_8519, _
+$model_id_white_mantle_champion_1, _    ; para/rit (splinter, signet return)
+$model_id_8515, _
+$model_id_white_mantle_champion_2, _    ; para/ranger
+$model_id_white_mantle_champion_3, _    ; para/war
+$model_id_8518, $model_id_8519, _
 $model_id_8520, $model_id_8521, $model_id_8522, $model_id_8523, $model_id_8524, $model_id_8525, $model_id_8526, $model_id_8527, $model_id_8528, $model_id_8529, _
 $model_id_8530, $model_id_8531, $model_id_8532, $model_id_8533, $model_id_8534, $model_id_8535, $model_id_8536, $model_id_8537, $model_id_8538, $model_id_8539, _
 $model_id_8540, $model_id_8541, $model_id_8542, $model_id_8543, $model_id_8544, $model_id_8545, $model_id_8546, $model_id_8547, $model_id_8548, $model_id_8549, _
@@ -456,3 +472,20 @@ $model_id_8640, $model_id_8641, $model_id_8642, $model_id_8643, $model_id_8644, 
 $model_id_8650, $model_id_8651, $model_id_8652, _
  _
 $model_id_miku  ; 8653
+
+;~ ConsoleWrite("marksman1: " & $model_id_peacekeeper_marksman_1 & @CRLF)
+;~ ConsoleWrite("enforcer1: " & $model_id_white_mantle_enforcer_1 & @CRLF)
+;~ ConsoleWrite("sycophant1: " & $model_id_white_mantle_sycophant_1 & @CRLF)
+;~ ConsoleWrite("ritu1: " & $model_id_white_mantle_ritualist_1 & @CRLF)
+;~ ConsoleWrite("fanatic1: " & $model_id_white_mantle_fanatic_1 & @CRLF)
+;~ ConsoleWrite("savant1: " & $model_id_white_mantle_savant_1 & @CRLF)
+;~ ConsoleWrite("adherent1: " & $model_id_white_mantle_adherent_1 & @CRLF)
+;~ ConsoleWrite("priest1: " & $model_id_white_mantle_priest_1 & @CRLF)
+;~ ConsoleWrite("abbot1: " & $model_id_white_mantle_abbot_1 & @CRLF)
+;~ ConsoleWrite("zealot1: " & $model_id_white_mantle_zealot_1 & @CRLF)
+;~ ConsoleWrite("knight1: " & $model_id_white_mantle_knight_1 & @CRLF)
+;~ ConsoleWrite("scout1: " & $model_id_white_mantle_scout_1 & @CRLF)
+;~ ConsoleWrite("ritu5: " & $model_id_white_mantle_ritualist_5 & @CRLF)
+;~ ConsoleWrite("champion1: " & $model_id_white_mantle_champion_1 & @CRLF)
+;~ ConsoleWrite("zealot5: " & $model_id_white_mantle_zealot_5 & @CRLF)
+;~ ConsoleWrite("miku: " & $model_id_miku & @CRLF)
