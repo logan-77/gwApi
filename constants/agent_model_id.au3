@@ -3,4 +3,456 @@
     List of all known Agent ModelIDs
 #ce
 
-;~ Global Enum 
+;~ summoning stones
+Global Const $model_id_summon_dream_rider = 524 ; ghastly stone
+Global Const $model_id_summon_canthan_guard = 9262 ; guards
+Global Const $model_id_summon_canthan_captain = 9264 ; guards
+Global Const $model_id_summon_legionnaire = 8028 ; 
+
+;~ nature rituals
+Global Const $model_id_winter                = 2925
+Global Const $model_id_winnowing             = 2926
+Global Const $model_id_extinction            = 2927
+Global Const $model_id_greater_conflagration = 2928
+Global Const $model_id_fertile_season        = 2929
+Global Const $model_id_symbiosis             = 2930
+Global Const $model_id_primal_echoes         = 2931
+Global Const $model_id_predatory_season      = 2932
+Global Const $model_id_frozen_soil           = 2933
+Global Const $model_id_favorable_winds       = 2934
+Global Const $model_id_winds                 = 2935
+Global Const $model_id_energizing_wind       = 2936
+Global Const $model_id_quickening_zephyr     = 2937
+Global Const $model_id_natures_renewal       = 2938
+Global Const $model_id_muddy_terrain         = 2939
+Global Const $model_id_laceration            = 4283
+Global Const $model_id_pestilence            = 4285
+Global Const $model_id_tranquility           = 4286
+Global Const $model_id_equinox               = 4287
+Global Const $model_id_conflagration         = 4288
+Global Const $model_id_famine                = 4289
+Global Const $model_id_brambles              = 4290
+Global Const $model_id_infuriating_heat      = 5766
+Global Const $model_id_toxicity              = 5767
+Global Const $model_id_roaring_winds         = 5768
+Global Const $model_id_quicksand             = 5769
+
+;~ binding rituals
+Global Const $model_id_recovery           = 5770
+Global Const $model_id_anguish            = 5771
+Global Const $model_id_empowerment        = 5772
+Global Const $model_id_fury               = 5773
+Global Const $model_id_vampirism          = 5774
+Global Const $model_id_rejuvenation       = 5904
+Global Const $model_id_agony              = 5905
+Global Const $model_id_shadowsong         = 4264
+Global Const $model_id_pain               = 4265
+Global Const $model_id_destruction        = 4266
+Global Const $model_id_soothing           = 4267
+Global Const $model_id_displacement       = 4268
+Global Const $model_id_life               = 4269
+Global Const $model_id_preservation       = 4270
+Global Const $model_id_recuperation       = 4271
+Global Const $model_id_dissonance         = 4272
+Global Const $model_id_earthbind          = 4273
+Global Const $model_id_shelter            = 4274
+Global Const $model_id_union              = 4275
+Global Const $model_id_disenchantment     = 4276
+Global Const $model_id_restoration        = 4277
+Global Const $model_id_bloodsong          = 4278
+Global Const $model_id_wanderlust         = 4279
+Global Const $model_id_anger              = 4280
+Global Const $model_id_hate               = 4281
+Global Const $model_id_suffering          = 4282
+
+;~ minions
+Global Const $model_id_bone_horror = 2280
+Global Const $model_id_bone_fiend = 2281
+Global Const $model_id_bone_minion = 2282
+Global Const $model_id_flesh_golem = 4260
+Global Const $model_id_vampiric_horror = 4261
+Global Const $model_id_shambling_horror = 5764
+Global Const $model_id_jagged_horror = 5765
+
+; Nightfall Pcons farm
+Global Const $model_id_fanged_iboga     = 4439
+Global Const $model_id_fanged_iboga_lvl_6   = 4437
+Global Const $model_id_stormseed_jacaranda_lvl_6    = 4436
+Global Const $model_id_stormseed_jacaranda_lvl_10   = 4438
+Global Const $model_id_grub_lance_lvl_8             = 4428
+Global Const $model_id_preying_lance_lvl_8          = 4430
+Global Const $model_id_stalking_nephila_lvl_2       = 4393
+Global Const $model_id_stalking_nephila_lvl_15      = 4392
+Global Const $model_id_irontooth_drake_lvl_10       = 4403
+Global Const $model_id_irontooth_drake_lvl_18       = 4404
+Global Const $model_id_steelfang_drake              = 4965
+
+; Plant Fiber Farm
+Global Const $model_id_dragon_moss         = 3773
+; Feather Farm
+Global Const $model_id_sensali_claw        = 3995
+Global Const $model_id_sensali_darkfeather = 3997
+Global Const $model_id_sensali_cutter      = 3999
+; CoF Farm
+Global Const $model_id_crypt_ghoul        = 7075
+Global Const $model_id_crypt_slasher      = 7077
+Global Const $model_id_crypt_wraith       = 7079
+Global Const $model_id_crypt_banshee      = 7081
+Global Const $model_id_shock_phantom      = 7083
+Global Const $model_id_ash_phantom        = 7085
+Global Const $model_id_servant_of_murakai = 7069
+; ToA Dust Farm
+Global Const $model_id_fog_nightmare      = 1732
+; Moddok Farm
+Global Const $model_id_corsair_cutthroat  = 5127
+Global Const $model_id_corsair_raider     = 5128
+Global Const $model_id_corsair_captain    = 5130
+
+; FoW and UW
+Global Const $model_id_avatar_of_grenth      = 1995
+Global Const $model_id_champion_of_balthazar = 1997
+
+;~ UW
+Global Const $model_id_chained_soul = 2367
+Global Const $model_id_dying_nightmare = 2368
+Global Const $model_id_obsidian_behemoth = 2369
+Global Const $model_id_obsidian_guardian = 2370
+Global Const $model_id_terrorweb_dryder = 2371
+Global Const $model_id_terrorweb_dryder_white = 2372
+Global Const $model_id_keeper_of_souls = 2373
+Global Const $model_id_terrorweb_queen = 2374
+Global Const $model_id_smite_crawler = 2375
+Global Const $model_id_wailing_lord = 2376
+Global Const $model_id_banshee = 2376 ; at griffs in fow
+Global Const $model_id_banished_dream_rider = 2377
+Global Const $model_id_2378 = 2378
+Global Const $model_id_kazhad_dhuum = 2379
+Global Const $model_id_ghozer_dhuum = 2379
+Global Const $model_id_madruk_dhuum = 2379
+Global Const $model_id_thul_za_dhuum = 2379
+Global Const $model_id_four_horsemen = 2379
+Global Const $model_id_mindblade = 2380
+Global Const $model_id_2381 = 2381
+Global Const $model_id_dead_collector = 2382
+Global Const $model_id_dead_thresher = 2383
+Global Const $model_id_coldfire_night = 2384
+Global Const $model_id_stalking_night = 2385
+Global Const $model_id_2386 = 2386
+Global Const $model_id_charged_blackness = 2387
+Global Const $model_id_grasping_darkness = 2388
+Global Const $model_id_bladed_aatxe = 2389
+Global Const $model_id_vengeful_aatxe = 2390
+Global Const $model_id_slayer = 2391
+Global Const $model_id_skeleton_of_dhuum_1 = 2392
+Global Const $model_id_skeleton_of_dhuum_2 = 2393
+Global Const $model_id_2394 = 2394
+Global Const $model_id_2395 = 2395
+Global Const $model_id_2396 = 2396
+Global Const $model_id_2397 = 2397
+Global Const $model_id_2398 = 2398
+Global Const $model_id_reaper = 2399 ; quests
+Global Const $model_id_2400 = 2400
+Global Const $model_id_ice_elemental = 2401
+Global Const $model_id_2402 = 2402
+Global Const $model_id_king_frozenwind = 2403
+Global Const $model_id_tortured_spirit_ally_1 = 2404 ; vale, ally
+Global Const $model_id_tortured_spirit_ally_2 = 2405 ; vale, ally
+Global Const $model_id_enslaved_hero = 2405 ; in fow, after slaves of menzies quest; ally
+Global Const $model_id_2406 = 2406
+Global Const $model_id_new_soul_1 = 2407
+Global Const $model_id_new_soul_2 = 2408
+Global Const $model_id_new_soul_3 = 2409
+Global Const $model_id_new_soul_4 = 2410
+Global Const $model_id_new_soul_5 = 2411
+Global Const $model_id_new_soul_6 = 2412
+Global Const $model_id_tortured_spirit_pits_1 = 2413 ; this one activated quest
+Global Const $model_id_tortured_spirit_pits_2 = 2414
+Global Const $model_id_tortured_spirit_pits_3 = 2415
+Global Const $model_id_tortured_spirit_pits_4 = 2416
+Global Const $model_id_2417 = 2417
+Global Const $model_id_2418 = 2418
+Global Const $model_id_2419 = 2419
+Global Const $model_id_2420 = 2420
+Global Const $model_id_2421 = 2421
+Global Const $model_id_tortured_spirit_1 = 2422 ; vale, enemy
+Global Const $model_id_tortured_spirit_2 = 2423 ; vale, enemy
+Global Const $model_id_mayor_alegheri = 2424
+Global Const $model_id_lost_soul = 2425 ; chamber questgiver
+
+Global Const $model_id_champion_of_dhuum = 0
+Global Const $model_id_minion_of_dhuum = 0
+Global Const $model_id_dhuum = 0
+
+;~ FoW
+Global Const $model_id_nimros_the_hunter = 1485
+Global Const $model_id_miko_the_unchained = 2015
+
+Global Const $model_id_mahgo_hydra = 2847
+Global Const $model_id_2848 = 2848
+Global Const $model_id_2849 = 2849
+Global Const $model_id_2850 = 2850
+Global Const $model_id_armored_cave_spider = 2851
+Global Const $model_id_smoke_walker = 2852
+Global Const $model_id_obsidian_furnace_drake = 2853
+Global Const $model_id_doubters_dryder = 2854
+Global Const $model_id_shadow_mesmer = 2855
+Global Const $model_id_shadow_elemental = 2856
+Global Const $model_id_shadow_monk = 2857
+Global Const $model_id_shadow_warrior = 2858
+Global Const $model_id_shadow_ranger = 2859
+Global Const $model_id_shadow_beast = 2860
+Global Const $model_id_shadow_lord = 2860
+Global Const $model_id_shadow_lord_vogris = 2860
+Global Const $model_id_abyssal = 2861
+Global Const $model_id_shadow_overlord = 2861
+Global Const $model_id_shadow_patrol = 2861
+Global Const $model_id_seed_of_corruption = 2862
+Global Const $model_id_spirit_wood = 2863
+Global Const $model_id_spirit_shepherd = 2864
+Global Const $model_id_ancient_skale = 2865
+Global Const $model_id_snarling_driftwood = 2866
+Global Const $model_id_skeletal_ether_breaker = 2867
+Global Const $model_id_skeletal_icehand = 2868
+Global Const $model_id_skeletal_bond = 2869
+Global Const $model_id_skeletal_berserker = 2870
+Global Const $model_id_skeletal_impaler = 2871
+Global Const $model_id_rock_borer_wurm = 2872
+Global Const $model_id_infernal_wurm = 2873
+Global Const $model_id_dragon_lich = 2874
+Global Const $model_id_priest_of_menzies = 2875
+Global Const $model_id_2876 = 2876
+Global Const $model_id_kromril_the_eternal = 2877
+Global Const $model_id_rastigan_the_eternal = 2877
+Global Const $model_id_eternal_lord_taeres = 2877
+Global Const $model_id_admiral_saidon_the_eternal = 2877
+Global Const $model_id_forest_griffon = 2878
+Global Const $model_id_lord_khobay = 2879
+Global Const $model_id_eternal_forgemaster = 2880
+Global Const $model_id_2881 = 2881
+Global Const $model_id_eternal_elementalist = 2882
+Global Const $model_id_traitorous_temple_guard_elementalist = 2882
+Global Const $model_id_tower_mage = 2882
+Global Const $model_id_zurotai_the_eternal = 2883
+Global Const $model_id_traitorous_temple_guard_monk = 2883
+Global Const $model_id_eternal_weaponsmith = 2884
+Global Const $model_id_traitorous_temple_guard_warrior = 2884
+Global Const $model_id_eternal_ranger = 2885
+Global Const $model_id_shard_wolf = 2886
+Global Const $model_id_wailing_lord_ally = 2887 ; griffs quest guy as ally
+
+; DoA
+Global Const $model_id_spirit_of_truth_city = 5036 ; city, foundry, exchange gemstones
+Global Const $model_id_spirit_of_truth_veil = 5037 ; veil, gloom, exchange gemstones
+Global Const $model_id_captain_jerazh = 5053 ; first quest foundry
+Global Const $model_id_tekliss = 5053 ; first quest foundry reward, second quest foundry
+Global Const $model_id_captain_sulahresh = 5053 ; first quest city
+
+Global Const $model_id_jadoth   = 5195
+
+Global Const $model_id_stygian_lord_necro = 5196
+Global Const $model_id_stygian_lord_mesmer = 5197
+Global Const $model_id_stygian_lord_ele = 5198
+Global Const $model_id_stygian_lord_monk = 5199
+
+Global Const $model_id_the_fury = 5200
+Global Const $model_id_the_black_beast_of_arggh = 5201
+
+Global Const $model_id_the_greater_darkness = 5202
+Global Const $model_id_the_darkness = 5203 ; first spawn
+
+Global Const $model_id_5204 = 5204 ; ???
+Global Const $model_id_chill_of_darkness_2 = 5205
+Global Const $model_id_curse_of_darkness_2 = 5206
+Global Const $model_id_flesh_tormentor_2 = 5207
+Global Const $model_id_earth_tormentor_3 = 5208
+Global Const $model_id_big_fury_titan = 5209
+Global Const $model_id_shaunur = 5210 ; Shaunur the Divine
+Global Const $model_id_turep = 5211 ; Turep, Maker of Orphans
+Global Const $model_id_guardian_of_komalie_ele = 5212
+Global Const $model_id_guardian_of_komalie_mesmer = 5213
+Global Const $model_id_stygian_underlord_dervish = 5214
+Global Const $model_id_stygian_underlord_ranger = 5215
+Global Const $model_id_5216 = 5216 ; ???
+
+Global Const $model_id_kaya = 5217 ; city+foundry
+Global Const $model_id_dabi = 5218
+Global Const $model_id_su   = 5219
+Global Const $model_id_ki   = 5220
+Global Const $model_id_vu   = 5221
+Global Const $model_id_tuk  = 5222
+Global Const $model_id_ruk  = 5223
+Global Const $model_id_rund = 5224
+Global Const $model_id_mank = 5225
+
+Global Const $model_id_stygian_hunger = 5226 ; veil
+Global Const $model_id_stygian_brute = 5227
+Global Const $model_id_stygian_golem = 5228
+Global Const $model_id_stygian_horror = 5229
+Global Const $model_id_stygian_fiend = 5230
+
+Global Const $model_id_mind_tormentor_veil = 5231 ; veil
+Global Const $model_id_soul_tormentor_veil = 5232
+Global Const $model_id_water_tormentor_veil = 5233
+Global Const $model_id_heart_tormentor_veil = 5234
+Global Const $model_id_flesh_tormentor_veil = 5235
+Global Const $model_id_spirit_tormentor_veil = 5236
+Global Const $model_id_earth_tormentor_veil = 5237
+Global Const $model_id_sanity_tormentor_veil = 5238
+
+Global Const $model_id_thought_of_darkness = 5239 ; gloom+veil
+Global Const $model_id_chill_of_darkness = 5240
+Global Const $model_id_scourge_of_darkness = 5241
+Global Const $model_id_claw_of_darkness = 5242
+Global Const $model_id_wind_of_darkness = 5243
+Global Const $model_id_curse_of_darkness = 5244
+Global Const $model_id_abyssal_doa = 5245
+
+Global Const $model_id_misery_titan     = 5246 ; foundry
+Global Const $model_id_rage_titan_2     = 5247 ; spawned from misery
+Global Const $model_id_dementia_titan_2 = 5248 ; spawned from rage
+Global Const $model_id_anguish_titan    = 5249 ; original
+Global Const $model_id_despair_titan_2  = 5250 ; spawned from anguish
+Global Const $model_id_fury_titan       = 5251 ; spawned from despair 
+Global Const $model_id_rage_titan       = 5252 ; original
+Global Const $model_id_dementia_titan   = 5253 ; original
+Global Const $model_id_despair_titan    = 5254 ; original
+
+Global Const $model_id_mind_tormentor = 5255 ; gloom
+Global Const $model_id_soul_tormentor = 5256
+Global Const $model_id_water_tormentor = 5257
+Global Const $model_id_heart_tormentor = 5258
+Global Const $model_id_flesh_tormentor = 5259
+Global Const $model_id_spirit_tormentor = 5260
+Global Const $model_id_earth_tormentor = 5261
+Global Const $model_id_earth_tormentor_2 = 5262 ; spawned by the darkness, gloom endfight
+Global Const $model_id_sanity_tormentor = 5263
+
+Global Const $model_id_torment_claw = 5264 ; veil+gloom
+Global Const $model_id_smothering_tendrils = 5265
+
+Global Const $model_id_tortureweb_dryder    = 5266
+Global Const $model_id_greater_dream_rider  = 5267 ; r5 foundry
+Global Const $model_id_greater_dream_rider_2= 5268 ; spawned
+
+Global Const $model_id_voice_of_whispers   = 5269 ; first quest gloom, second quest gloom reward, third quest gloom + reward
+Global Const $model_id_whispers_informant  = 5269 ; foundry, gloom, veil, city
+
+Global Const $model_id_silzesh             = 5272 ; quest snakes
+Global Const $model_id_captain_valkyss     = 5272
+Global Const $model_id_general_yendzarsh   = 5272 ; second quest froundry reward
+
+Global Const $model_id_warden_of_whispers  = 5745 ; first quest gloom reward, second quest gloom
+Global Const $model_id_adept_of_whispers   = 5745 ; quests veil
+
+; Jade Quarry
+Global Const $model_id_kurzick_illusionist    = 3137 ; mes
+Global Const $model_id_luxon_wizard           = 3138 ; mes
+Global Const $model_id_kurzick_thunder        = 3139 ; ele
+Global Const $model_id_luxon_storm_caller     = 3140 ; ele
+Global Const $model_id_kurzick_far_shot       = 3141 ; ranger
+Global Const $model_id_luxon_longbow          = 3142 ; ranger
+Global Const $model_id_kurzick_carrier_juggernaut = 3418
+Global Const $model_id_luxon_hauler_turtle    = 3636
+
+;~ War Supply Farm
+Global Enum _
+$model_id_peacekeeper_enforcer_1 = 8390, _
+$model_id_peacekeeper_enforcer_2, _
+$model_id_8392, $model_id_8393, $model_id_8394, $model_id_8395, $model_id_8396, $model_id_8397, $model_id_8398, $model_id_8399, _
+$model_id_8400, $model_id_8401, $model_id_8402, $model_id_8403, $model_id_8404, $model_id_8405, $model_id_8406, $model_id_8407, $model_id_8408, $model_id_8409, _
+$model_id_8410, $model_id_8411, $model_id_8412, $model_id_8413, _
+$model_id_white_mantle_champion_1, _ ; para/rit (splinter, signet return)
+$model_id_8415, _
+$model_id_white_mantle_champion_2, _    ; para/ranger
+$model_id_white_mantle_champion_3, _    ; para/war
+$model_id_8418, $model_id_8419, _
+$model_id_8420, $model_id_8421, $model_id_8422, $model_id_8423, $model_id_8424, $model_id_8425, $model_id_8426, $model_id_8427, $model_id_8428, $model_id_8429, _
+$model_id_8430, $model_id_8431, $model_id_8432, $model_id_8433, $model_id_8434, $model_id_8435, $model_id_8436, $model_id_8437, $model_id_8438, $model_id_8439, _
+$model_id_8440, $model_id_8441, $model_id_8442, $model_id_8443, $model_id_8444, $model_id_8445, $model_id_8446, $model_id_8447, $model_id_8448, $model_id_8449, _
+$model_id_8450, $model_id_8451, _
+ _
+$model_id_white_mantle_enforcer_1, _
+$model_id_white_mantle_enforcer_2, _
+$model_id_white_mantle_enforcer_3, _
+$model_id_white_mantle_enforcer_4, _ ; ranger/assa
+$model_id_white_mantle_enforcer_5, _ ; assa
+ _
+$model_id_white_mantle_sycophant_1, _   ; degen mes (crippling anguish)
+$model_id_white_mantle_sycophant_2, _   ; dom mes (clumsiness) 2nd
+$model_id_white_mantle_sycophant_3, _   ; dom mes (emp+healing signet)
+$model_id_white_mantle_sycophant_4, _   ; esurge, spirit shackles 2NDARY
+$model_id_white_mantle_sycophant_5, _   ; condi mes 2nd
+$model_id_white_mantle_sycophant_6, _   ; WoH Monk
+ _
+$model_id_white_mantle_ritualist_1, _   ; Discord, condi nec
+$model_id_white_mantle_ritualist_2, _
+$model_id_white_mantle_ritualist_3, _   ; Life Siphon, nec
+$model_id_white_mantle_ritualist_4, _  ; weaken knees, reckless haste
+ _
+$model_id_white_mantle_fanatic_1, _ ; Icy Veins
+$model_id_white_mantle_fanatic_2, _ ; nec (rit heal)
+$model_id_white_mantle_fanatic_3, _ ; lingering curse
+$model_id_white_mantle_fanatic_4, _ ; tainted flesh
+ _
+$model_id_white_mantle_savant_1, _  ; mshower, glyph of renewal
+$model_id_white_mantle_savant_2, _  ; savannah heat + rit heal 8472
+$model_id_8473, $model_id_8474, _
+ _
+$model_id_white_mantle_adherent_1, _    ; water ele
+$model_id_white_mantle_adherent_2, _    ; shatterstone, water ele
+$model_id_white_mantle_adherent_3, _    ; Unsteady Ground, earth ele
+$model_id_white_mantle_adherent_4, _    ; Sandstorm, earth ele
+ _
+$model_id_white_mantle_priest_1, _  ; WoH
+$model_id_white_mantle_priest_2, _  ; Healing Burst
+$model_id_white_mantle_priest_3, _  ; Healers Boon(hexremove)
+$model_id_white_mantle_priest_4, _  ; mo/ele (smite) RoJ
+ _
+$model_id_white_mantle_abbot_1, _   ; Prot Mo (Boon Signet, spiritbond)
+$model_id_white_mantle_abbot_2, _   ; Mantra of Recall, guardian (monk)
+$model_id_white_mantle_abbot_3, _   ; RC, prot spirit (strong heal)
+$model_id_white_mantle_abbot_4, _   ; zeal benediction + smite
+ _
+$model_id_white_mantle_zealot_1, _  ; axe war, signet of return
+$model_id_white_mantle_zealot_2, _  ; war/monk
+$model_id_white_mantle_zealot_3, _  ; Triple Chop, axe war
+$model_id_white_mantle_zealot_4, _  ; bane signet, smite skills
+ _
+$model_id_white_mantle_knight_1, _  ; sword war
+$model_id_white_mantle_knight_2, _  ; sword war, smite
+$model_id_white_mantle_knight_3, _  ; sword war, conjure frost, water skills
+$model_id_white_mantle_knight_4, _  ; res signet
+ _
+$model_id_white_mantle_scout_1, _   ; ranger
+$model_id_white_mantle_scout_2, _   ; 
+$model_id_white_mantle_scout_3, _   ;
+$model_id_white_mantle_scout_4, _   ;
+$model_id_white_mantle_scout_5, _   ; 8499
+ _
+$model_id_8500, $model_id_8501, $model_id_8502, $model_id_8503, $model_id_8504, $model_id_8505, $model_id_8506, $model_id_8507, _
+$model_id_white_mantle_ritualist_5, _   ; rit/paragon spear
+$model_id_white_mantle_ritualist_6, _   ; rit/monk (preservation, strong heal, hexremove, spirits)
+$model_id_white_mantle_ritualist_7_sos, _           ; SoS
+$model_id_white_mantle_ritualist_8_shadowsong, _    ; PRIMARY (shadowsong,bloodsong,pain,anguish)
+$model_id_white_mantle_ritualist_9, _               ; minions 2nd prio
+$model_id_white_mantle_ritualist_10, _              ; weapon of remedy rit(hardrez, prio)
+$model_id_8514, $model_id_8515, $model_id_8516, $model_id_8517, $model_id_8518, $model_id_8519, _
+$model_id_8520, $model_id_8521, $model_id_8522, $model_id_8523, $model_id_8524, $model_id_8525, $model_id_8526, $model_id_8527, $model_id_8528, $model_id_8529, _
+$model_id_8530, $model_id_8531, $model_id_8532, $model_id_8533, $model_id_8534, $model_id_8535, $model_id_8536, $model_id_8537, $model_id_8538, $model_id_8539, _
+$model_id_8540, $model_id_8541, $model_id_8542, $model_id_8543, $model_id_8544, $model_id_8545, $model_id_8546, $model_id_8547, $model_id_8548, $model_id_8549, _
+$model_id_8550, $model_id_8551, $model_id_8552, $model_id_8553, $model_id_8554, $model_id_8555, $model_id_8556, $model_id_8557, $model_id_8558, $model_id_8559, _
+$model_id_8560, $model_id_8561, $model_id_8562, $model_id_8563, $model_id_8564, $model_id_8565, $model_id_8566, $model_id_8567, $model_id_8568, $model_id_8569, _
+$model_id_8570, $model_id_8571, $model_id_8572, $model_id_8573, $model_id_8574, $model_id_8575, $model_id_8576, $model_id_8577, $model_id_8578, $model_id_8579, _
+$model_id_8580, $model_id_8581, $model_id_8582, $model_id_8583, $model_id_8584, $model_id_8585, $model_id_8586, $model_id_8587, $model_id_8588, $model_id_8589, _
+$model_id_8590, $model_id_8591, $model_id_8592, $model_id_8593, $model_id_8594, $model_id_8595, $model_id_8596, $model_id_8597, $model_id_8598, $model_id_8599, _
+$model_id_8600, $model_id_8601, $model_id_8602, $model_id_8603, $model_id_8604, $model_id_8605, $model_id_8606, $model_id_8607, $model_id_8608, $model_id_8609, _
+$model_id_8610, $model_id_8611, _
+ _
+$model_id_white_mantle_zealot_5, _  ; war/monk 8612
+$model_id_8613, $model_id_8614, $model_id_8615, $model_id_8616, $model_id_8617, $model_id_8618, $model_id_8619, _
+$model_id_8620, $model_id_8621, $model_id_8622, $model_id_8623, $model_id_8624, $model_id_8625, $model_id_8626, $model_id_8627, $model_id_8628, $model_id_8629, _
+$model_id_8630, $model_id_8631, $model_id_8632, $model_id_8633, $model_id_8634, $model_id_8635, $model_id_8636, $model_id_8637, $model_id_8638, $model_id_8639, _
+$model_id_8640, $model_id_8641, $model_id_8642, $model_id_8643, $model_id_8644, $model_id_8645, $model_id_8646, $model_id_8647, $model_id_8648, $model_id_8649, _
+$model_id_8650, $model_id_8651, $model_id_8652, _
+ _
+$model_id_miku  ; 8653
