@@ -1479,12 +1479,12 @@ Func IsEventItem($aModelID)
     ;~ If $aModelID = $model_id_lunar_fortune_horse Then Return True
     
     ; Lucky Treats Week
-    ; If $aModelID = $model_id_clover Then Return True
-    ; If $aModelID = $model_id_shamrock_ale Then Return True
+    ;~ If $aModelID = $model_id_clover Then Return True
+    ;~ If $aModelID = $model_id_shamrock_ale Then Return True
     
     ; Sweet Treats Week
-    If $aModelID = $model_id_golden_egg Then Return True
-    If $aModelID = $model_id_chocolate_bunny Then Return True
+    ;~ If $aModelID = $model_id_golden_egg Then Return True
+    ;~ If $aModelID = $model_id_chocolate_bunny Then Return True
     
     ;~ === Anniversary Celebration ===
     If $aModelID = $model_id_cupcake Then Return True
@@ -1708,8 +1708,8 @@ Func IsWeapon($aItem)
 EndFunc ;==>IsWeapon
 
 ;~ Returns True if the Item is of a Weapon Type
-Func IsWeaponByType($aType)
-    Switch $aType
+Func IsWeaponByType($iType)
+    Switch $iType
         Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
                 $item_type_hammer, $item_type_wand, $item_type_shield, _
                 $item_type_staff, $item_type_sword, $item_type_daggers, _
