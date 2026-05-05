@@ -1487,24 +1487,24 @@ Func IsEventItem($aModelID)
     ;~ If $aModelID = $model_id_chocolate_bunny Then Return True
     
     ;~ === Anniversary Celebration ===
-    If $aModelID = $model_id_cupcake Then Return True
-    If $aModelID = $model_id_honeycomb Then Return True
-    If $aModelID = $model_id_sugary_blue_drink Then Return True
-    ;~ Alcohol
-    If $aModelID = $model_id_hard_apple_cider Then Return True
-    If $aModelID = $model_id_hunters_ale Then Return True
-    If $aModelID = $model_id_krytan_brandy Then Return True
-    ;~ Party Points
-    If $aModelID = $model_id_champagne_popper Then Return True
-    If $aModelID = $model_id_bottle_rocket Then Return True
-    If $aModelID = $model_id_sparkler Then Return True
-    ;~ 50 Point Boss Items
-    If $aModelID = $model_id_delicious_cake Then Return True
-    If $aModelID = $model_id_iced_tea Then Return True
-    If $aModelID = $model_id_party_beacon Then Return True
+    ;~ If $aModelID = $model_id_cupcake Then Return True
+    ;~ If $aModelID = $model_id_honeycomb Then Return True
+    ;~ If $aModelID = $model_id_sugary_blue_drink Then Return True
+    ;~ ;~ Alcohol
+    ;~ If $aModelID = $model_id_hard_apple_cider Then Return True
+    ;~ If $aModelID = $model_id_hunters_ale Then Return True
+    ;~ If $aModelID = $model_id_krytan_brandy Then Return True
+    ;~ ;~ Party Points
+    ;~ If $aModelID = $model_id_champagne_popper Then Return True
+    ;~ If $aModelID = $model_id_bottle_rocket Then Return True
+    ;~ If $aModelID = $model_id_sparkler Then Return True
+    ;~ ;~ 50 Point Boss Items
+    ;~ If $aModelID = $model_id_delicious_cake Then Return True
+    ;~ If $aModelID = $model_id_iced_tea Then Return True
+    ;~ If $aModelID = $model_id_party_beacon Then Return True
     
     ; Dragon Festival
-    ; If $aModelID = $model_id_victory_token Then Return True ; also anniversary
+    If $aModelID = $model_id_victory_token Then Return True ; also anniversary
     
     ; Wintersday in July
     ; -->see Wintersday
