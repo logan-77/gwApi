@@ -174,5 +174,6 @@ Func IsInTargetDistrict($iTargetDistrict = $dis_europe)
                 Or $iCurrentRegion = $GC_REGION_CHINA _
                 Or $iCurrentRegion = $GC_REGION_JAPAN)
     EndSwitch
+    
     Return False
 EndFunc ;==>IsInTargetDistrict
