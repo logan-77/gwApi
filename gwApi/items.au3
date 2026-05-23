@@ -4,64 +4,64 @@ Global $g_hTimerMoveItem = TimerInit()
 Global Const $g_iTimeoutMoveItem = 500 ; wait between different MoveItem operations (make sure Bag/Slot state is solid)
 
 #Region Items
-Func GetItemExists($aItemID)
-    Return Item_GetItemPtr($aItemID) <> 0
+Func GetItemExists($pItem)
+    Return Item_GetItemPtr($pItem) <> 0
 EndFunc ;==>GetItemExists
 
-;~ Description: Returns the AgentID of Item; $aItem = Ptr/Struct/ID
-Func GetItemAgentID($aItem) 
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x4, 'dword')
+;~ Description: Returns the AgentID of Item; $pItem = Ptr/Struct/ID
+Func GetItemAgentID($pItem) 
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x4, 'dword')
 EndFunc ;==>GetItemAgentID
 
-;~ Description: Returns the Type of Item; $aItem = Ptr/Struct/ID
-Func GetItemType($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x20, 'byte')
+;~ Description: Returns the Type of Item; $pItem = Ptr/Struct/ID
+Func GetItemType($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x20, 'byte')
 EndFunc ;==>GetItemType
 
-;~ Description: Returns the ExtraID of Item; $aItem = Ptr/Struct/ID
-Func GetItemExtraID($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x22, 'byte')
+;~ Description: Returns the ExtraID of Item; $pItem = Ptr/Struct/ID
+Func GetItemExtraID($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x22, 'byte')
 EndFunc ;==>GetItemExtraID
 
-;~ Description: Returns the Value of Item; $aItem = Ptr/Struct/ID
-Func GetItemValue($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x24, 'short')
+;~ Description: Returns the Value of Item; $pItem = Ptr/Struct/ID
+Func GetItemValue($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x24, 'short')
 EndFunc ;==>GetItemValue
 
-;~ Description: Returns the ModelID of Item; $aItem = Ptr/Struct/ID
-Func GetItemModelID($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x2C, 'dword')
+;~ Description: Returns the ModelID of Item; $pItem = Ptr/Struct/ID
+Func GetItemModelID($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x2C, 'dword')
 EndFunc ;==>GetItemModelID
 
-;~ Description: Returns rarity (name color) of an item; $aItem = Ptr/Struct/ID
-Func GetRarity($aItem)
-    Local $lNameString = Memory_Read(Item_GetItemPtr($aItem) + 0x38, "ptr")
+;~ Description: Returns rarity (name color) of an item; $pItem = Ptr/Struct/ID
+Func GetRarity($pItem)
+    Local $lNameString = Memory_Read(Item_GetItemPtr($pItem) + 0x38, "ptr")
     If $lNameString = 0 Then Return
     Return Memory_Read($lNameString, "ushort")
 EndFunc ;==>GetRarity
 
-;~ Description: Returns quantity of an item; $aItem = Ptr/Struct/ID
-Func GetItemQuantity($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0x4C, 'short')
+;~ Description: Returns quantity of an item; $pItem = Ptr/Struct/ID
+Func GetItemQuantity($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0x4C, 'short')
 EndFunc ;==>GetQuantity
 
 ;~ Description: Tests if an item is identified.
-Func GetIsIDed($aItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x1) > 0
+Func GetIsIDed($pItem)
+    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x1) > 0
 EndFunc ;==>GetIsIDed
 
-Func GetIsIdentified($aItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x1) > 0
+Func GetIsIdentified($pItem)
+    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x1) > 0
 EndFunc ;==>GetIsIdentified
 
 ;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
-Func GetCanBeIdentified($aItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($aItem) + 0x28, 'dword'), 0x00800000) > 0
+Func GetCanBeIdentified($pItem)
+    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x00800000) > 0
 EndFunc ;==>GetCanBeIdentified
 
 ;~ Description: Tests if an Item can be salvaged into Materials.
-Func GetIsSalvageable($aItem)
-    Return (Memory_Read(Item_GetItemPtr($aItem) + 0x4A, "byte") <> 0)
+Func GetIsSalvageable($pItem)
+    Return (Memory_Read(Item_GetItemPtr($pItem) + 0x4A, "byte") <> 0)
 EndFunc ;==>GetIsSalvageable
 
 Func GetItemPtrBySlot($aBag, $aSlot)
@@ -72,7 +72,7 @@ EndFunc   ;==>GetItemPtrBySlot
 
 ; Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
 Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialStacksOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lModelID, $lCount = 0
+    Local $pItem, $pBag, $lItemArrayPtr, $lModelID, $iCount = 0
     
     If IsArray($aModelID) Then
         Local $lReturnPtr[UBound($aModelID)]
@@ -99,8 +99,8 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialSta
                     If $lReturnPtr[$i] <> 0 Or $lModelID <> $aModelID[$i] Then ContinueLoop
                     If $bPartialStacksOnly And GetItemQuantity($pItem) >= 250 Then ContinueLoop
                     $lReturnPtr[$i] = $pItem
-                    $lCount += 1
-                    If $lCount = UBound($aModelID) Then
+                    $iCount += 1
+                    If $iCount = UBound($aModelID) Then
                         Return $lReturnPtr
                     EndIf
                     ExitLoop
@@ -129,7 +129,7 @@ EndFunc ;==>GetItemPtrByModelID
 
 ; Return first ItemPtr by Type in specified bags. Zero if no Item is found.
 Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lType, $lCount = 0
+    Local $pItem, $pBag, $lItemArrayPtr, $lType, $iCount = 0
     
     If IsArray($aType) Then
         Local $lReturnPtr[UBound($aType)]
@@ -155,8 +155,8 @@ Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipment
                 For $i = 0 To UBound($aType) - 1
                     If $lReturnPtr[$i] <> 0 Or $lType <> $aType[$i] Then ContinueLoop
                     $lReturnPtr[$i] = $pItem
-                    $lCount += 1
-                    If $lCount = UBound($aType) Then
+                    $iCount += 1
+                    If $iCount = UBound($aType) Then
                         Return $lReturnPtr
                     EndIf
                     ExitLoop
@@ -218,12 +218,12 @@ EndFunc ;==>GetItemByModStruct
 Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
     Local $pItem, $pBag, $lItemArrayPtr, $lModelID
     If IsArray($aModelID) Then
-        Local $lCount[UBound($aModelID)]
+        Local $iCount[UBound($aModelID)]
         For $i = 0 To UBound($aModelID) - 1
-            $lCount[$i] = 0
+            $iCount[$i] = 0
         Next
     Else
-        Local $lCount = 0
+        Local $iCount = 0
     EndIf
     
     If IsArray($aModelID) Then
@@ -241,9 +241,9 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
                 For $i = 0 To UBound($aModelID) - 1
                     If $lModelID = $aModelID[$i] Then
                         If $aCountSlotsOnly Then
-                            $lCount[$i] += 1
+                            $iCount[$i] += 1
                         Else
-                            $lCount[$i] += GetItemQuantity($pItem)
+                            $iCount[$i] += GetItemQuantity($pItem)
                         EndIf
                     EndIf
                 Next
@@ -262,15 +262,15 @@ Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsO
                 If $pItem = 0 Then ContinueLoop
                 If GetItemModelID($pItem) = $aModelID Then
                     If $aCountSlotsOnly Then
-                        $lCount += 1
+                        $iCount += 1
                     Else
-                        $lCount += GetItemQuantity($pItem)
+                        $iCount += GetItemQuantity($pItem)
                     EndIf
                 EndIf
             Next
         Next 
     EndIf
-    Return $lCount
+    Return $iCount
 EndFunc ;==>CountItemByModelID
 
 ; Returns the amount of an Item in Inventory by ModelID
@@ -292,12 +292,12 @@ EndFunc ;==>GetQuantity
 Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
     Local $pItem, $pBag, $lItemArrayPtr, $lType
     If IsArray($aType) Then
-        Local $lCount[UBound($aType)]
+        Local $iCount[UBound($aType)]
         For $i = 0 To UBound($aType) - 1
-            $lCount[$i] = 0
+            $iCount[$i] = 0
         Next
     Else
-        Local $lCount = 0
+        Local $iCount = 0
     EndIf
     
     If IsArray($aType) Then
@@ -315,9 +315,9 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
                 For $i = 0 To UBound($aType) - 1
                     If $lType = $aType[$i] Then
                         If $aCountSlotsOnly Then
-                            $lCount[$i] += 1
+                            $iCount[$i] += 1
                         Else
-                            $lCount[$i] += GetItemQuantity($pItem)
+                            $iCount[$i] += GetItemQuantity($pItem)
                         EndIf
                     EndIf
                 Next
@@ -336,15 +336,15 @@ Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = 
                 If $pItem = 0 Then ContinueLoop
                 If GetItemType($pItem) = $aType Then
                     If $aCountSlotsOnly Then
-                        $lCount += 1
+                        $iCount += 1
                     Else
-                        $lCount += GetItemQuantity($pItem)
+                        $iCount += GetItemQuantity($pItem)
                     EndIf
                 EndIf
             Next
         Next 
     EndIf
-    Return $lCount
+    Return $iCount
 EndFunc ;==>CountItemByType
 
 ; Returns the amount of an Item in Inventory by Type
@@ -363,17 +363,17 @@ Func GetQuantityByType($aType, $aCountSlotsOnly = False)
 EndFunc ;==>GetQuantity
 
 ;~ Use Item in Inventory
-Func UseItemByModelID($aModelID)
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
+Func UseItemByModelID($iModelID)
+    If Not IsArray($iModelID) Then
+        Local $aTmp[1] = [$iModelID]
+        $iModelID = $aTmp
     EndIf
 
-    Local $aItem = GetItemInInventory($aModelID)
+    Local $pItem = GetItemInInventory($iModelID)
 
-    For $i = 0 To UBound($aModelID) - 1
-        If $aItem[$i] = 0 Then ContinueLoop
-        Item_UseItem($aItem[$i])
+    For $i = 0 To UBound($iModelID) - 1
+        If $pItem[$i] = 0 Then ContinueLoop
+        Item_UseItem($pItem[$i])
     Next
     Other_PingSleep(100)
 EndFunc ;==>UseItemByModelID
@@ -414,7 +414,7 @@ Func DropItemsByType($aType)
 EndFunc ;==>DropItemsByType
 
 ;Drops all Items of given ModelID to ground, if in explorable
-Func DropItemsByModelID($aModelID, $aFullStack = False)
+Func DropItemsByModelID($iModelID, $aFullStack = False)
     If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
     Local $pItem, $pBag
     For $bag = 1 To 4
@@ -423,7 +423,7 @@ Func DropItemsByModelID($aModelID, $aFullStack = False)
         For $slot = 1 To GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
-            If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
+            If GetItemModelID($pItem) <> $iModelID Then ContinueLoop
             If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
             Item_DropItem($pItem)
             Other_PingSleep(100)
@@ -432,44 +432,48 @@ Func DropItemsByModelID($aModelID, $aFullStack = False)
 EndFunc ;==>DropItemsByModelID
 
 ;Description: Destroys an Item
-Func DestroyItem($aItem)
-    Item_DestroyItem($aItem)
+Func DestroyItem($pItem)
+    Item_DestroyItem($pItem)
     Other_PingSleep(100)
 EndFunc   ;==>DestroyItem
 
 ;~ Description: Moves an Item and can split up a Stack
-Func MoveItemEx($aItem, $aBag, $aSlot, $aAmount = 0)
-    Local $pItem = Item_GetItemPtr($aItem)
+Func MoveItemEx($pItemSource, $iBag, $iSlot, $iAmount = 0)
+    Local $pItem = Item_GetItemPtr($pItemSource)
     If $pItem = 0 Then Return 0
 
-    Local $iQuantity = GetItemQuantity($aItem)
-    If $aAmount = 0 Or $aAmount > $iQuantity Then $aAmount = $iQuantity
-    If $aAmount >= $iQuantity Then
-        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($aItem), BagID($aBag), $aSlot - 1)
+    Local $iQuantity = GetItemQuantity($pItem)
+    If $iAmount = 0 Or $iAmount > $iQuantity Then $iAmount = $iQuantity
+
+    If $iAmount >= $iQuantity Then
+        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), BagID($iBag), $iSlot - 1)
     Else
-        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($aItem), $aAmount, BagID($aBag), $aSlot - 1)
+        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($pItem), $iAmount, BagID($iBag), $iSlot - 1)
     EndIf
     Return 1
 EndFunc ;==>MoveItemEx
 
 Func PickUpLootEx($iMaxDist = 2500)
     Local $lAgentPtr, $lAgentID, $pItem, $lOwner
-
     Local $lAgentPtrArray = GetAgentPtrArray(1, 0x400)
+
     For $i = 1 To $lAgentPtrArray[0]
         $lAgentPtr = $lAgentPtrArray[$i]
-        $lAgentID = ID($lAgentPtr)
         $pItem = GetItemPtrByAgentPtr($lAgentPtr)
         If $pItem = 0 Then ContinueLoop
+
+        $lAgentID = ID($lAgentPtr)
         $lOwner = Memory_Read($lAgentPtr + 0xC4, 'long')
         If $lOwner <> 0 And $lOwner <> GetMyID() Then ContinueLoop ; assigned to another player
+        
         If CanPickUpEx($pItem) And GetDistance($lAgentPtr) < $iMaxDist Then
             If GetDistanceToXY(X($lAgentPtr), Y($lAgentPtr)) > 250 Then MoveTo(X($lAgentPtr), Y($lAgentPtr))
-            $lDeadlock = TimerInit()
+
+            $hDeadlock = TimerInit()
             Do
                 Item_PickUpItem($lAgentID)
                 Other_PingSleep(500)
-            Until Agent_GetAgentPtr($lAgentID) <> $lAgentPtr Or GetIsDead(-2) Or TimerDiff($lDeadlock) > 2000
+            Until Agent_GetAgentPtr($lAgentID) <> $lAgentPtr Or GetIsDead(-2) Or TimerDiff($hDeadlock) > 2000
         EndIf
     Next
 EndFunc   ;==>PickupLootEx
@@ -489,40 +493,48 @@ EndFunc   ;==>GetItemPtrByAgentPtr
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
 ;~                     the items will be stacked together; the overflow goes to an empty slot
-Func MoveItemToChest($aItem, $bStackItem = False)
-    Local $pItem, $pBag, $iModelID = GetItemModelID($aItem)
+Func MoveItemToChest($pItemSource, $bStackItem = False)
+    Local $pItem, $pBag, $iModelIDSource = 0
     Local $bMoveItem = False
     Local $aBagSlotSource[2] = [0, 0]
+    If $bStackItem Then $iModelIDSource = GetItemModelID($pItemSource)
+
     For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
+
             If $pItem = 0 Then
                 $bMoveItem = True
                 ExitLoop 2
             EndIf
-            If $bStackItem And (GetItemModelID($pItem) = $iModelID) Then
+
+            If $bStackItem And (GetItemModelID($pItem) = $iModelIDSource) Then
                 Local $iQuantityDest = GetItemQuantity($pItem)
                 If $iQuantityDest >= 250 Then ContinueLoop
-                Local $iQuantitySource = GetItemQuantity($aItem)    
+
+                Local $iQuantitySource = GetItemQuantity($pItemSource)    
                 If ($iQuantitySource + $iQuantityDest) <= 250 Then
                     $bMoveItem = True
                     ExitLoop 2
                 Else
                     $iQuantitySource = 250 - $iQuantityDest
-                    MoveItemEx($aItem, $bag, $slot, $iQuantitySource)
-                    Other_PingSleep(250)
+                    MoveItemEx($pItemSource, $bag, $slot, $iQuantitySource)
+                    Other_PingSleep(500) ; game needs time to update item data
                 EndIf
             EndIf
         Next
     Next
     
     If $bMoveItem = False Then Return False
-    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($aItem, "Bag"), "Index") + 1
-    $aBagSlotSource[1] = Item_GetItemInfoByPtr($aItem, "Slot") + 1
-    Item_MoveItem($aItem, $bag, $slot)
+
+    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemSource, "Bag"), "Index") + 1
+    $aBagSlotSource[1] = Item_GetItemInfoByPtr($pItemSource, "Slot") + 1
+
+    Item_MoveItem($pItemSource, $bag, $slot)
     WaitForItemMove($aBagSlotSource[0], $aBagSlotSource[1])
+    
     Return True
 EndFunc ;==>MoveItemToChest
 
@@ -534,8 +546,10 @@ Func MergeItemToChest($pItemSource, $pItemDest = 0)
     If $pItemDest <> 0 Then
         If $pItemSource = $pItemDest Then Return 0
         If GetItemModelID($pItemSource) <> GetItemModelID($pItemDest) Then Return 0
+
         Local $iQuantityDest = GetItemQuantity($pItemDest)
         If $iQuantityDest >= 250 Then Return 0
+
         Local $iQuantitySource = GetItemQuantity($pItemSource)
         Local $iBag = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemDest, "Bag"), "Index") + 1
         Local $iSlot = Item_GetItemInfoByPtr($pItemDest, "Slot") + 1
@@ -552,6 +566,7 @@ Func MergeItemToChest($pItemSource, $pItemDest = 0)
 
     Local $pItem, $pBag, $iModelID = GetItemModelID($pItemSource)
     Local $iQuantitySource = GetItemQuantity($pItemSource), $iQuantityDest
+
     For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
@@ -559,8 +574,10 @@ Func MergeItemToChest($pItemSource, $pItemDest = 0)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
             If GetItemModelID($pItem) <> $iModelID Then ContinueLoop
+
             $iQuantityDest = GetItemQuantity($pItem)
             If $iQuantityDest >= 250 Then ContinueLoop
+
             If ($iQuantitySource + $iQuantityDest) <= 250 Then
                 Item_MoveItem($pItemSource, $bag, $slot)
                 Return ($iQuantitySource + $iQuantityDest)
@@ -577,40 +594,48 @@ EndFunc ;==>MergeItemToChest
 ;~ Description: Looks for free Slot and moves Item to Inventory
 ;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
 ;~                     the items will be stacked together; the overflow goes to an empty slot
-Func MoveItemToInventory($aItem, $bStackItem = False)
-    Local $pItem, $pBag, $iModelID = GetItemModelID($aItem)
+Func MoveItemToInventory($pItemSource, $bStackItem = False)
+    Local $pItem, $pBag, $iModelIDSource = 0
     Local $bMoveItem = False
     Local $aBagSlotSource[2] = [0, 0]
+    If $bStackItem Then $iModelIDSource = GetItemModelID($pItemSource)
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 To GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
+
             If $pItem = 0 Then
                 $bMoveItem = True
                 ExitLoop 2
             EndIf
-            If $bStackItem And (GetItemModelID($pItem) = $iModelID) Then
+
+            If $bStackItem And (GetItemModelID($pItem) = $iModelIDSource) Then
                 Local $iQuantityDest = GetItemQuantity($pItem)
                 If $iQuantityDest >= 250 Then ContinueLoop
-                Local $iQuantitySource = GetItemQuantity($aItem)    
+
+                Local $iQuantitySource = GetItemQuantity($pItemSource)    
                 If ($iQuantitySource + $iQuantityDest) <= 250 Then
                     $bMoveItem = True
                     ExitLoop 2
                 Else
                     $iQuantitySource = 250 - $iQuantityDest
-                    MoveItemEx($aItem, $bag, $slot, $iQuantitySource)
-                    Other_PingSleep(250)
+                    MoveItemEx($pItemSource, $bag, $slot, $iQuantitySource)
+                    Other_PingSleep(500) ; game needs time to update item data
                 EndIf
             EndIf
         Next
     Next
     
     If $bMoveItem = False Then Return False
-    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($aItem, "Bag"), "Index") + 1
-    $aBagSlotSource[1] = Item_GetItemInfoByPtr($aItem, "Slot") + 1
-    Item_MoveItem($aItem, $bag, $slot)
+
+    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemSource, "Bag"), "Index") + 1
+    $aBagSlotSource[1] = Item_GetItemInfoByPtr($pItemSource, "Slot") + 1
+
+    Item_MoveItem($pItemSource, $bag, $slot)
     WaitForItemMove($aBagSlotSource[0], $aBagSlotSource[1])
+
     Return True
 EndFunc ;==>MoveItemToInventory
 
@@ -622,8 +647,10 @@ Func MergeItemToInventory($pItemSource, $pItemDest = 0)
     If $pItemDest <> 0 Then
         If $pItemSource = $pItemDest Then Return 0
         If GetItemModelID($pItemSource) <> GetItemModelID($pItemDest) Then Return 0
+
         Local $iQuantityDest = GetItemQuantity($pItemDest)
         If $iQuantityDest >= 250 Then Return 0
+
         Local $iQuantitySource = GetItemQuantity($pItemSource)
         Local $iBag = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemDest, "Bag"), "Index") + 1
         Local $iSlot = Item_GetItemInfoByPtr($pItemDest, "Slot") + 1
@@ -861,112 +888,115 @@ EndFunc ;==>WithdrawItemsByType
 ;~ Wait for confirmation, that an Item has moved. (i.e. the slot is empty)
 ;~ Params: original position of the item
 Func WaitForItemMove($iBag, $iSlot)
-    Local $hDeadlock = TimerInit()
+    Local $hDeadlock = TimerInit(), $bTimeout
     Do
-        If TimerDiff($hDeadlock) > 2000 Then
-            Out("WaitForItemMove timeout.")
-            Return 0
-        EndIf
-    Until GetItemPtrBySlot($iBag, $iSlot) = 0
+        Sleep(50)
+        $bTimeout = TimerDiff($hDeadlock) > 2000
+    Until GetItemPtrBySlot($iBag, $iSlot) = 0 Or $bTimeout
+
     Sleep(100)
-    Return 1
+    Return $bTimeout ? 0 : 1
 EndFunc ;==>WaitForItemMove
 
 #Region Identify And Salvage
-Func IdentifyItem($aItem, $aIdKit = FindIDKit()) 
-    If GetIsIDed($aItem) Then Return 1
+Func IdentifyItem($pItem, $pIdKit = FindIDKit())
+    If Not GetCanBeIdentified($pItem) Then Return 1
     
-    Local $lIdKit = 0
-    If IsPtr($aIDKit) Then
-        $lIdKit = $aIdKit
-    Else
-        $lIdKit = FindIDKit()
-    EndIf
-    If $lIdKit = 0 Then Return 0
+    Local $pKit = IsPtr($pIdKit) ? $pIdKit : FindIDKit()
+    If $pKit = 0 Then Return 0
     
-    Core_SendPacket(0xC, $GC_I_HEADER_ITEM_IDENTIFY, Item_ItemID($lIdKit), Item_ItemID($aItem))
-    Local $lDeadlock = TimerInit()
+    Core_SendPacket(0xC, $GC_I_HEADER_ITEM_IDENTIFY, Item_ItemID($pKit), Item_ItemID($pItem))
+
+    Local $hDeadlock = TimerInit(), $bTimeout
     Do
         Sleep(50)
-    Until GetIsIDed($aItem) Or TimerDiff($lDeadlock) > 5000
-    If TimerDiff($lDeadlock) > 5000 Then Return 0
-    Return 1
+        $bTimeout = TimerDiff($hDeadlock) > 5000
+    Until Not GetCanBeIdentified($pItem) Or $bTimeout
+
+    Return $bTimeout ? 0 : 1
 EndFunc ;==>IdentifyItem
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
-Func FindIDKit($aCheckUses = False)
-    Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
+Func FindIDKit($bCheckUses = False)
+    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 to GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
-            $lValue = GetItemValue($pItem)
+
             Switch GetItemModelID($pItem)
                 Case 2989
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 2) < $lUses Then
-                        $lUses = $lValue / 2
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 2) < $iUses Then
+                        $iUses = $iValue / 2
+                        $pKit = $pItem
                     EndIf
                 Case 5899
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 2.5) < $lUses Then
-                        $lUses = $lValue / 2.5
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 2.5) < $iUses Then
+                        $iUses = $iValue / 2.5
+                        $pKit = $pItem
                     EndIf
-                Case Else
-                    ContinueLoop
             EndSwitch
         Next
     Next
-    Return $lKitPtr
-EndFunc   ;==>FindIDKit
+
+    Return $pKit
+EndFunc ;==>FindIDKit
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
-Func FindSuperiorIDKit($aCheckUses = False)
-    Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
+Func FindSuperiorIDKit($bCheckUses = False)
+    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 to GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
-            $lValue = GetItemValue($pItem)
+            
             Switch GetItemModelID($pItem)
                 Case 5899
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 2.5) < $lUses Then
-                        $lUses = $lValue / 2.5
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 2.5) < $iUses Then
+                        $iUses = $iValue / 2.5
+                        $pKit = $pItem
                     EndIf
-                Case Else
-                    ContinueLoop
             EndSwitch
         Next
     Next
-    Return $lKitPtr
-EndFunc   ;==>FindSuperiorIDKit
+
+    Return $pKit
+EndFunc ;==>FindSuperiorIDKit
 
 ;~ Description: Starts a salvaging session of an item.
-Func StartSalvage($aItem, $aSalvageKit = 0, $aCheap = True)
-    Local $lSalvageKit = 0
+Func StartSalvage($pItem, $pSalvageKit = 0, $bCheap = True)
+    Local $pKit = 0
 
-    If IsPtr($aSalvageKit) Then
-        $lSalvageKit = $aSalvageKit
-    ElseIf $aCheap Then
-        $lSalvageKit = FindCheapSalvageKit()
+    If IsPtr($pSalvageKit) Then
+        $pKit = $pSalvageKit
+    ElseIf $bCheap Then
+        $pKit = FindCheapSalvageKit()
     Else
-        $lSalvageKit = FindExpertSalvageKit()
+        $pKit = FindExpertSalvageKit()
     EndIf
-    If $lSalvageKit = 0 Then Return 0
+
+    If $pKit = 0 Then Return 0
 
     Local $l_a_Offset[4] = [0, 0x18, 0x2C, 0x690]
     Local $l_i_SalvageSessionID = Memory_ReadPtr($g_p_BasePointer, $l_a_Offset)
 
-    DllStructSetData($g_d_Salvage, 2, Item_ItemID($aItem))
-    DllStructSetData($g_d_Salvage, 3, Item_ItemID($lSalvageKit))
+    DllStructSetData($g_d_Salvage, 2, Item_ItemID($pItem))
+    DllStructSetData($g_d_Salvage, 3, Item_ItemID($pKit))
     DllStructSetData($g_d_Salvage, 4, $l_i_SalvageSessionID[1])
     Core_Enqueue($g_p_Salvage, 16)
     Return 1
@@ -983,142 +1013,138 @@ Func SalvageMod($aModIndex)
 EndFunc   ;==>SalvageMod
 
 ;~ Description: Returns ItemPtr of cheap Salvage Kit in inventory. Return 0, if no Kit found.
-Func FindCheapSalvageKit($aCheckUses = False)
-    Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
+Func FindCheapSalvageKit($bCheckUses = False)
+    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 to GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
-            $lValue = GetItemValue($pItem)
+            
             Switch GetItemModelID($pItem)
                 Case 2992
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 2) < $lUses Then
-                        $lUses = $lValue / 2
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 2) < $iUses Then
+                        $iUses = $iValue / 2
+                        $pKit = $pItem
                     EndIf
-                Case Else
-                    ContinueLoop
             EndSwitch
         Next
     Next
-    Return $lKitPtr
-EndFunc   ;==>FindCheapSalvageKit
+
+    Return $pKit
+EndFunc ;==>FindCheapSalvageKit
 
 ;~ Description: Returns ItemPtr of any Salvage Kit in inventory. Return 0, if no Kit found.
-Func FindExpertSalvageKit($aCheckUses = False)
-    Local $pItem, $lValue, $lKitPtr = 0, $lUses = 101
+Func FindExpertSalvageKit($bCheckUses = False)
+    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
         For $slot = 1 to GetMaxSlots($pBag)
             $pItem = GetItemPtrBySlot($pBag, $slot)
             If $pItem = 0 Then ContinueLoop
-            $lValue = GetItemValue($pItem)
+            
             Switch GetItemModelID($pItem)
                 Case 2991
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 8) < $lUses Then
-                        $lUses = $lValue / 8
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 8) < $iUses Then
+                        $iUses = $iValue / 8
+                        $pKit = $pItem
                     EndIf
-                ; Case 2992
-                    ; If $aCheckUses = False Then Return $pItem
-                    ; If ($lValue / 2) < $lUses Then
-                        ; $lUses = $lValue / 2
-                        ; $lKitPtr = $pItem
-                    ; EndIf
                 Case 5900
-                    If $aCheckUses = False Then Return $pItem
-                    If ($lValue / 10) < $lUses Then
-                        $lUses = $lValue / 10
-                        $lKitPtr = $pItem
+                    If $bCheckUses = False Then Return $pItem
+
+                    $iValue = GetItemValue($pItem)
+                    If ($iValue / 10) < $iUses Then
+                        $iUses = $iValue / 10
+                        $pKit = $pItem
                     EndIf
-                Case Else
-                    ContinueLoop
             EndSwitch
         Next
     Next
-    Return $lKitPtr
-EndFunc   ;==>FindExpertSalvageKit
+
+    Return $pKit
+EndFunc ;==>FindExpertSalvageKit
 #EndRegion Identify and Salvage
 
 #Region Buy and Sell
-; Buys the cheapest Salvage Kit
-Func BuySalvageKit()
-    Merchant_BuyItem($model_id_salvage_kit, 1)
+;~ Buys Salvage Kit
+Func BuySalvageKit($iQuantity = 1)
+    If $iQuantity <= 0 Then Return
+    Merchant_BuyItem($model_id_salvage_kit, $iQuantity)
     Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
 
-; Buys Expert Salvage Kit
-Func BuyExpertSalvageKit()
-    Merchant_BuyItem($model_id_expert_salvage_kit, 1)
+;~ Buys Expert Salvage Kit
+Func BuyExpertSalvageKit($iQuantity = 1)
+    If $iQuantity <= 0 Then Return
+    Merchant_BuyItem($model_id_expert_salvage_kit, $iQuantity)
     Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
 
-; Buys Superior Salvage Kit
-Func BuySuperiorSalvageKit()
-    Merchant_BuyItem($model_id_superior_salvage_kit, 1)
+;~ Buys Superior Salvage Kit
+Func BuySuperiorSalvageKit($iQuantity = 1)
+    If $iQuantity <= 0 Then Return
+    Merchant_BuyItem($model_id_superior_salvage_kit, $iQuantity)
     Other_PingSleep(1000)
 EndFunc ;==>BuySalvageKit
 
-;~ Description: Buys an ID kit.
-Func BuyIDKit()
-    Merchant_BuyItem($model_id_identification_kit, 1)
+;~ Buys an ID kit.
+Func BuyIDKit($iQuantity = 1)
+    If $iQuantity <= 0 Then Return
+    Merchant_BuyItem($model_id_identification_kit, $iQuantity)
     Other_PingSleep(1000)
-EndFunc   ;==>BuyIDKit
+EndFunc ;==>BuyIDKit
 
-; Buys Superior ID kit.
-Func BuySuperiorIDKit()
-    Merchant_BuyItem($model_id_superior_identification_kit, 1)
+;~ Buys Superior ID kit.
+Func BuySuperiorIDKit($iQuantity = 1)
+    If $iQuantity <= 0 Then Return
+    Merchant_BuyItem($model_id_superior_identification_kit, $iQuantity)
     Other_PingSleep(1000)
-EndFunc
+EndFunc ;==>BuySuperiorIDKit
 #EndRegion Buy and Sell
 
 ;~ === Slots ===
-;~ Description: Returns amount of slots of bag.
-Func GetMaxSlots($aBag)
-    Local $pBag = Item_GetBagPtr($aBag)
-    If $pBag = 0 Then Return 0
-    Return Memory_Read($pBag + 0x20, 'long')
-EndFunc   ;==>GetMaxSlots
+;~ returns the amount of slots of the bag
+Func GetMaxSlots($bag)
+    Local $pBag = Item_GetBagPtr($bag)
+    Return ($pBag = 0) ? 0 : Memory_Read($pBag + 0x20, 'long')
+EndFunc ;==>GetMaxSlots
 
-;~ Description: Returns amount of slots available to character.
-Func GetMaxTotalSlots()
-   Local $SlotCount = 0, $pBag
-   For $Bag = 1 to 4
-      $pBag = Item_GetBagPtr($Bag)
-      $SlotCount += Memory_Read($pBag + 0x20, 'long')
-   Next
-   For $Bag = 8 To 11
-      $pBag = Item_GetBagPtr($Bag)
-      $SlotCount += Memory_Read($pBag + 0x20, 'long')
-   Next
-   Return $SlotCount
-EndFunc   ;==>GetMaxTotalSlots
-
-;~ Description: Returns number of free slots in inventory
+;~ returns the number of free slots in inventory
 Func CountFreeSlots()
-    Local $lCount = 0, $pBag
-    For $lBag = 1 To 4
-        $pBag = Item_GetBagPtr($lBag)
-        If $pBag = 0 Then ContinueLoop
-        $lCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
-    Next
-    Return $lCount
-EndFunc   ;==>CountFreeSlots
+    Local $iCount = 0, $pBag
 
-;~ Description: Returns number of free slots in storage
-Func CountFreeSlotsStorage()
-    Local $lCount = 0, $pBag
-    For $lBag = 8 To 11
-        $pBag = Item_GetBagPtr($lBag)
+    For $bag = 1 To 4
+        $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
-        $lCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
+
+        $iCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
     Next
-    Return $lCount
+
+    Return $iCount
+EndFunc ;==>CountFreeSlots
+
+;~ returns the number of free slots in storage
+Func CountFreeSlotsStorage()
+    Local $iCount = 0, $pBag
+
+    For $bag = 8 To 11
+        $pBag = Item_GetBagPtr($bag)
+        If $pBag = 0 Then ContinueLoop
+
+        $iCount += Memory_Read($pBag + 0x20, "long") - Memory_Read($pBag + 0x10, "dword")
+    Next
+
+    Return $iCount
 EndFunc ;==>CountFreeSlotsStorage
 
 Func GetFreeSlotsInventory()
@@ -1128,6 +1154,7 @@ Func GetFreeSlotsInventory()
     
     Local $aFreeSlots[60][2]
     Local $pItem, $pBag, $iCount = 0
+
     For $bag = 1 To 4
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
@@ -1153,6 +1180,7 @@ Func GetFreeSlotsStorage()
 
     Local $aFreeSlots[125][2]
     Local $pItem, $pBag, $iCount = 0
+
     For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
         If $pBag = 0 Then ContinueLoop
@@ -1182,20 +1210,20 @@ Func BagID($aBag)
     Else
         Return Memory_Read(Item_GetBagPtr($aBag) + 0x8, "dword")
     EndIf
-EndFunc   ;==>BagID
+EndFunc ;==>BagID
 
 ;~ Description: Returns the Bag of an item by ItemID/ItemPtr/ItemStruct
 ;~ Is Zero if the item has been destroyed(e.g. IdKit)
-Func GetBagPtrByItem($aItem)
-    Return Memory_Read(Item_GetItemPtr($aItem) + 0xC, 'ptr')
-EndFunc   ;==>GetBagPtrByItem
+Func GetBagPtrByItem($pItem)
+    Return Memory_Read(Item_GetItemPtr($pItem) + 0xC, 'ptr')
+EndFunc ;==>GetBagPtrByItem
 
 ;~ Description: Returns the Bag Index of an item by ItemID/ItemPtr/ItemStruct
-Func GetBagNumberByItem($aItem)
-    Local $pBag = GetBagPtrByItem($aItem)
+Func GetBagNumberByItem($pItem)
+    Local $pBag = GetBagPtrByItem($pItem)
     If $pBag = 0 Then Return 0
     Return Memory_Read($pBag + 0x4, "dword")
-EndFunc   ;==>GetBagNumberByItem
+EndFunc ;==>GetBagNumberByItem
 #EndRegion Bag
 
 #Region Equipment
@@ -1540,12 +1568,12 @@ Func IsEventItem($aModelID)
 EndFunc ;==>IsEventItem
 
 ;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
-Func IsInsignia($aItem)
-    Local $lModstruct = GetModStruct($aItem)
+Func IsInsignia($pItem)
+    Local $sModstruct = GetModStruct($pItem)
 
     For $i = 0 To UBound($array_insignia) - 1
         If $array_insignia[$i][$insig_value] = 0 Then ContinueLoop
-        If StringInStr($lModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then
+        If StringInStr($sModstruct, $array_insignia[$i][$insig_mod_string]) > 0 Then
             Out($array_insignia[$i][$insig_name]) 
             Return $array_insignia[$i][$insig_value]
         EndIf
@@ -1553,14 +1581,14 @@ Func IsInsignia($aItem)
     Return 0
 EndFunc ;==>IsInsignia
 
-Func IsRune($aItem)
-    Local $lModstruct = GetModStruct($aItem), $lRarity = GetRarity($aItem)
+Func IsRune($pItem)
+    Local $sModstruct = GetModStruct($pItem), $lRarity = GetRarity($pItem)
 
     Switch $lRarity
         Case $rarity_blue
             For $i = 0 To UBound($array_rune_minor) - 1
                 If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
-                If StringInStr($lModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then
+                If StringInStr($sModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then
                     Out($array_rune_minor[$i][$rune_name])
                     Return $array_rune_minor[$i][$rune_value]
                 EndIf
@@ -1568,7 +1596,7 @@ Func IsRune($aItem)
         Case $rarity_purple
             For $i = 0 To UBound($array_rune_major) - 1
                 If $array_rune_major[$i][$rune_value] = 0 Then ContinueLoop
-                If StringInStr($lModstruct, $array_rune_major[$i][$rune_mod_string]) > 0 Then
+                If StringInStr($sModstruct, $array_rune_major[$i][$rune_mod_string]) > 0 Then
                     Out($array_rune_major[$i][$rune_name])
                     Return $array_rune_major[$i][$rune_value]
                 EndIf
@@ -1576,7 +1604,7 @@ Func IsRune($aItem)
         Case $rarity_gold
             For $i = 0 To UBound($array_rune_superior) - 1
                 If $array_rune_superior[$i][$rune_value] = 0 Then ContinueLoop
-                If StringInStr($lModstruct, $array_rune_superior[$i][$rune_mod_string]) > 0 Then
+                If StringInStr($sModstruct, $array_rune_superior[$i][$rune_mod_string]) > 0 Then
                     Out($array_rune_superior[$i][$rune_name])
                     Return $array_rune_superior[$i][$rune_value]
                 EndIf
@@ -1588,9 +1616,10 @@ EndFunc ;==>IsRune
 
 #Region ModStruct
 ;~ Description: Returns modstruct of an item.
-Func GetModStruct($aItem)
-    If IsString($aItem) Then Return $aItem
-    Local $pItem = Item_GetItemPtr($aItem)
+Func GetModStruct($pItem)
+    If IsString($pItem) Then Return $pItem
+
+    $pItem = Item_GetItemPtr($pItem)
     If $pItem = 0 Then Return 0
 
     Local $lModStructPtr = Item_GetItemInfoByPtr($pItem, "ModStruct")
@@ -1600,75 +1629,88 @@ Func GetModStruct($aItem)
     If $lModStructSize = 0 Then Return 0
     
     Return Memory_Read($lModStructPtr, 'Byte[' & $lModStructSize * 4 & ']')
-EndFunc   ;==>GetModStruct
+EndFunc ;==>GetModStruct
 
 ;~ Description: Returns an array of a the requested mod.
-Func GetModByIdentifier($aItem, $aIdentifier)
-    Local $lReturn[2] = [0, 0]
-    Local $lString = StringTrimLeft(GetModStruct($aItem), 2)
-    For $i = 0 To StringLen($lString) / 8 - 2
-        If StringMid($lString, 8 * $i + 5, 4) == $aIdentifier Then
-            $lReturn[0] = Int("0x" & StringMid($lString, 8 * $i + 1, 2))
-            $lReturn[1] = Int("0x" & StringMid($lString, 8 * $i + 3, 2))
+Func GetModByIdentifier($pItem, $sIdentifier)
+    Local $aReturn[2] = [0, 0]
+    Local $sModStruct = StringTrimLeft(GetModStruct($pItem), 2)
+
+    For $i = 0 To StringLen($sModStruct) / 8 - 2
+        If StringMid($sModStruct, 8 * $i + 5, 4) == $sIdentifier Then
+            $aReturn[0] = Int("0x" & StringMid($sModStruct, 8 * $i + 1, 2))
+            $aReturn[1] = Int("0x" & StringMid($sModStruct, 8 * $i + 3, 2))
             ExitLoop
         EndIf
     Next
-    Return $lReturn
-EndFunc   ;==>GetModByIdentifier
+
+    Return $aReturn
+EndFunc ;==>GetModByIdentifier
+
+;~ checks complete modstruct for a pattern
+Func CheckModstruct($sModstruct, $sPattern)
+    Return StringInStr($sModstruct, $sPattern) > 0
+EndFunc ;==>CheckModstruct
 #EndRegion ModStruct
 
 #Region Weapons
 ;~ Description: Returns a weapon or shield's minimum required attribute.
-Func GetItemReq($aItem)
-    Local $lMod = GetModByIdentifier($aItem, '9827')
+Func GetItemReq($pItem)
+    Local $lMod = GetModByIdentifier($pItem, '9827')
     Return $lMod[0]
-EndFunc   ;==>GetItemReq
+EndFunc ;==>GetItemReq
 
 ;~ Description: Returns a weapon or shield's required attribute.
-Func GetItemAttribute($aItem)
-    Local $lMod = GetModByIdentifier($aItem, '9827')
+Func GetItemAttribute($pItem)
+    Local $lMod = GetModByIdentifier($pItem, '9827')
     Return $lMod[1]
-EndFunc   ;==>GetItemAttribute
+EndFunc ;==>GetItemAttribute
 
 ;~ Description: Returns the maximum Dmg/Energy/Armor
-Func GetItemMaxDmg($aItem)
-    Local $lModString = GetModStruct($aItem)
+Func GetItemMaxDmg($pItem)
+    Local $lModString = GetModStruct($pItem)
     Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
     If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
     If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
     If $lPos = 0 Then Return 0
+
     Return Int("0x" & StringMid($lModString, $lPos - 2, 2))
 EndFunc ;==>GetItemMaxDmg
 
 ;~ Description: Returns the minimum Dmg/Energy/Armor
-Func GetItemMinDmg($aItem)
-    Local $lModString = GetModStruct($aItem)
+Func GetItemMinDmg($pItem)
+    Local $lModString = GetModStruct($pItem)
     Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
     If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
     If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
     If $lPos = 0 Then Return 0
+
     Return Int("0x" & StringMid($lModString, $lPos - 4, 2))
 EndFunc ;==>GetItemMinDmg
 
 ;~ Description: Returns Dmg/Energy/Armor
-Func GetItemDmg($aItem)
-    Local $lModString = GetModStruct($aItem)
+Func GetItemDmg($pItem)
+    Local $lModString = GetModStruct($pItem)
     Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
     If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
     If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
     If $lPos = 0 Then Return 0
+
     Local $lMod[2] = [0, 0]
     $lMod[0] = Int("0x" & StringMid($lModString, $lPos - 4, 2))
     $lMod[1] = Int("0x" & StringMid($lModString, $lPos - 2, 2))
     Return $lMod
 EndFunc ;==>GetItemDmg
 
-Func IsItemMaxDmg($aItem)
-    Local $lDmg = GetItemDmg($aItem)
-    If $lDmg = 0 Then Return False
-    Local $lType = GetItemType($aItem)
+Func IsItemMaxDmg($pItem)
+    Local $iType = GetItemType($pItem)
 
-    Switch $lType
+    If Not IsWeaponByType($iType) Then Return False
+
+    Local $lDmg = GetItemDmg($pItem)
+    If $lDmg = 0 Then Return False
+    
+    Switch $iType
         Case $item_type_axe
             If $lDmg[0] = 6 And $lDmg[1] = 28 Then Return True
         Case $item_type_bow
@@ -1696,8 +1738,8 @@ Func IsItemMaxDmg($aItem)
 EndFunc ;==>IsItemMaxDmg
 
 ;~ Returns True if the Item is of a Weapon Type
-Func IsWeapon($aItem)
-    Switch GetItemType($aItem)
+Func IsWeapon($pItem)
+    Switch GetItemType($pItem)
         Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
                 $item_type_hammer, $item_type_wand, $item_type_shield, _
                 $item_type_staff, $item_type_sword, $item_type_daggers, _
@@ -1724,137 +1766,369 @@ Func HasWeaponsInInventory()
     Local $aWeapons = GetItemInInventoryByType($g_aWeaponType)
 
     For $i = 0 To UBound($aWeapons) - 1
-        If $aWeapons[$i] <> 0 Then Return 1
+        If $aWeapons[$i] <> 0 Then Return True
     Next
-    Return 0
+    Return False
 EndFunc ;==>HasWeaponsInInventory
 #Region Weapons
 
 #Region Weapon Mods
-;~ Description: Checks if weapon has +20% ench upgrade
-Func Is20Ench($aItem)
-    If StringInStr(GetModStruct($aItem), "1400B822") > 0 Then Return True
-    Return False
-EndFunc ;==>Is20Ench
+;~ checks for 'of the Profession' upgrade
+Func IsOfTheProfession($pItem, $iAttribute = -1)
+    Local $aMod = GetModByIdentifier($pItem, 'A828')
+    If $aMod[0] < 5 Then Return False ; attribute bonus, 5=max
+    
+    If $iAttribute = -1 Then Return True ; all
+    If $aMod[1] = $iAttribute Then Return True ; only one attribute
+    
+    Return False    
+EndFunc ;==>IsOfTheProfession
 
-;~ Description: Checks if weapon has +45^ench upgrade
-Func Is45HPEnch($aItem)
-    Local $l45 = GetModByIdentifier($aItem, '6823')
-    If $l45[1] = 45 Then Return True
-    Return False
-EndFunc ;==>Is45HPEnch
 
-;~ Description: Checks if weapon has +30HP upgrade
-Func Is30HP($aItem)
-    If GetItemType($aItem) <> $item_type_shield Then Return False
-    Local $l30 = GetModByIdentifier($aItem, '4823')
-    If $l30[1] = 30 Then Return True
-    Return False
-EndFunc ;==>Is30HP
+;~ checks for 20% HSR upgrade (any)
+Func Is20HSR($pItem)
+    Local $aMod = GetModByIdentifier($pItem, '2828')
+    Return $aMod[1] = 20
+EndFunc ;==>Is20HSR
 
-; Mod: +5 energy / "I have the power!"
-Func Is5Energy($aItem)
-    If IsWeapon($aItem) = False Then Return False
-    If StringInStr(GetModStruct($aItem), "0500D822") > 0 Then Return True
-    Return False
-EndFunc ;==>Is5Energy
+;~ checks for wand wrapping of memory (20% HSR)
+Func IsWandWrappingOfMemory($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "5F010824BF02302500142828")
+EndFunc ;==>IsWandWrappingOfMemory
 
-;~ Description: Check if an OS Weapon has Dual Vamp Mod (or Zeal)
-Func IsDualVamp($aItem)
-    If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-    Local $lModstruct = GetModStruct($aItem)
-    Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
-    Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
-    If $lDv15 > 0 Or $lDv14 > 0 Then Return True
-    Return False
-EndFunc ;==>IsDualVamp
-
-Func IsDualZeal($aItem)
-    If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-    Local $lModstruct = GetModStruct($aItem)
-    Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
-    Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
-    If $lDz15 > 0 Or $lDz14 > 0 Then Return True
-    Return False
-EndFunc ;==>IsDualZeal
-
-; Mod: +15% dmg / -10 armor while attacking
-Func Is15Minus10($aItem)
-    If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-    If StringInStr(GetModStruct($aItem), "0F0038220A001820") > 0 Then Return True
-    Return False
-EndFunc ;==>Is15Minus10
-
-; Mod: +15% dmg / -5 energy
-Func Is15Minus5($aItem)
-    If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-    Local $lModstruct = GetModStruct($aItem)
-    Local $l15m5 = StringInStr($lModstruct, "0F0038220500B820")
-    If $l15m5 > 0 Then Return True
-    Return False
-EndFunc ;==>Is15Minus5
-
-; Mod 15% dmg / Health above 50%
-Func Is1550($aItem)
-    If IsWeapon($aItem) = False Or GetRarity($aItem) <> $rarity_gold Then Return False
-    If StringInStr(GetModStruct($aItem), "0F327822") > 0 Then Return True
-    Return False
-EndFunc ;==>Is1550
-
-;~ Description: Check if Weapon has Vamp upgrade
-Func IsVamp($aItem)
-    If IsWeapon($aItem) = False Then Return False
-    Local $lVamp = GetModByIdentifier($aItem, 'E820')
-    If $lVamp[0] = 1 Then Return True
-    Return False
-EndFunc
-
-;~ Description: Check if Weapon has Zealous upgrade
-Func IsZealous($aItem)
-    If IsWeapon($aItem) = False Then Return False
-    Local $lZeal = GetModByIdentifier($aItem, 'C820')
-    If $lZeal[0] = 1 Then Return True
-    Return False
-EndFunc
-
-;~ Description: Check if weapon has Forget Me Not inscription
-Func IsForgetMeNot($aItem)
-    If GetItemType($aItem) <> $item_type_offhand Then Return False
-    Local $lForget = GetModByIdentifier($aItem, '2828')
-    If $lForget[1] >= 19 Then Return True
-    Return False
+;~ checks for forget me not inscription (20% HSR)
+Func IsForgetMeNot($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "C20108248403322500142828")
 EndFunc ;==>IsForgetMeNot
 
-;~ Description: Check if focus has +20% HCT
-Func Is20HCTFocus($aItem)
-    If GetItemType($aItem) <> $item_type_offhand Then Return False
-    Local $lHct = GetModByIdentifier($aItem, '0828')
-    If $lHct[1] = 20 Then Return True
-    Return False
-EndFunc ;==>Is20HCTFocus
+;~ checks for inherent 20% staff HSR
+Func Is20HSRStaff($pItem)
+    Local $aMod = GetModByIdentifier($pItem, 'A823')
+    Return $aMod[1] = 20
+EndFunc ;==>Is20HSRStaff
 
-; Mod: 10% HCT Focus
-Func Is10HCTFocus($aItem)
-    If GetItemType($aItem) <> $item_type_offhand Then Return False
-    If StringInStr(GetModStruct($aItem), "000A0822") > 0 Then Return True
-    Return False
-EndFunc ;==>Is10HCTFocus
 
-; Mod: 10% HSR Focus
-Func Is10HSRFocus($aItem)
-    If GetItemType($aItem) <> $item_type_offhand Then Return False
-    If StringInStr(GetModStruct($aItem), "000AA823") > 0 Then Return True
+;~ checks for 10% HSR upgrade (any)
+Func Is10HSR($pItem)
+    Local $aMod = GetModByIdentifier($pItem, 'A823')
+    Return $aMod[1] = 10
+EndFunc ;==>Is10HSR
+
+;~ checks for wand wrapping of quickening (10% HSR)
+Func IsWandWrappingOfQuickening($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "60010824C1023025000AA823")
+EndFunc ;==>IsWandWrappingOfQuickening
+
+;~ checks for serenity now inscription (10% HSR)
+Func IsSerenityNow($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "C101082482033225000AA823")
+EndFunc ;==>IsSerenityNow
+
+;~ checks for let the memory live again inscription (10% HSR)
+Func IsLetTheMemoryLiveAgain($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "5E010824BC023225000AA823")
+EndFunc ;==>IsLetTheMemoryLiveAgain
+
+
+;~ checks for 20% HCT upgrade (any)
+Func Is20HCT($pItem)
+    Local $aMod = GetModByIdentifier($pItem, '0828')
+    Return $aMod[1] = 20
+EndFunc ;==>Is20HCT
+
+;~ checks for focus core of aptitude (20% HCT)
+Func IsFocusCoreOfAptitude($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "170208242F04302500140828")
+EndFunc ;==>IsFocusCoreOfAptitude
+
+;~ checks for adept staff head (20% HCT)
+Func IsAdeptStaffHead($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "100208242004302500140828")
+EndFunc ;==>IsAdeptStaffHead
+
+;~ checks for aptitude not attitude inscription (20% HCT)
+Func IsAptitudeNotAttitude($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D7010824AE03322500140828")
+EndFunc ;==>IsAptitudeNotAttitude
+
+
+;~ checks for 10% HCT upgrade (any)
+Func Is10HCT($pItem)
+    Local $aMod = GetModByIdentifier($pItem, '0822')
+    Return $aMod[1] = 10
+EndFunc ;==>Is20HCT
+
+;~ checks for focus core of swiftness (10% HCT)
+Func IsFocusCoreOfSwiftness($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "1C02082439043025000A0822")
+EndFunc ;==>IsFocusCoreOfSwiftness
+
+;~ checks for swift staff head (10% HCT)
+Func IsSwiftStaffHead($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "0F0208241E043025000A0822")
+EndFunc ;==>IsSwiftStaffHead
+
+;~ checks for don't think twice inscription (10% HCT)
+Func IsDontThinkTwice($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "DD010824BA033225000A0822")
+EndFunc ;==>IsDontThinkTwice
+
+
+;~ checks for +30Hp upgrade (any)
+Func Is30Hp($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '4823')
+    If $aMod[1] < 30 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing
     Return False
-EndFunc ;==>Is10HSRFocus
+EndFunc ;==>Is30Hp
+
+;~ checks for hale staff head (+30hp prefix)
+Func IsHaleStaffHead($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "9D0008243A013025001E4823")
+EndFunc ;==>IsHaleStaffHead
+
+;~ checks for staff wrapping of fortitude (+30hp suffix)
+Func IsStaffWrappingOfFortitude($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "DC000824B9013025001E4823")
+EndFunc ;==>IsStaffWrappingOfFortitude
+
+;~ checks for +45^ench upgrade (any)
+Func Is45HpEnch($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '6823')
+    If $aMod[1] < 45 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing
+    Return False
+EndFunc ;==>Is45HpEnch
+
+;~ checks for +45^stance upgrade (any)
+Func Is45HpStance($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '8823')
+    If $aMod[1] < 45 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing
+    Return False
+EndFunc ;==>Is45HpStance
+
+;~ checks for +60^hex upgrade (any)
+Func Is60HpHex($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '7823')
+    If $aMod[1] < 60 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing
+    Return False
+EndFunc ;==>Is60HpHex
+
+
+;~ checks for vampiric upgrade
+Func IsVampiric($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '2825')
+    If $aMod[1] = 0 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing, also check if vamp is max
+    Return False
+EndFunc ;==>IsVampiric
+
+;~ checks for zealous upgrade
+Func IsZealous($pItem, $iWeaponType = -1)
+    Local $sModStruct = GetModStruct($pItem)
+    Local $aMod = GetModByIdentifier($sModStruct, '1825')
+    If $aMod[0] = 0 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type is missing
+    Return False
+EndFunc ;==>IsZealous
+
+
+;~ checks for 'of Enchanting' upgrade (any)
+Func IsOfEnchanting($pItem, $iWeaponType = -1)
+    Local $aMod = GetModByIdentifier($pItem, 'B822')
+    If $aMod[0] < 20 Then Return False
+
+    If $iWeaponType = -1 Then Return True
+
+    ;~ Switch for selective weapon type missing
+    Return False
+EndFunc ;==>IsOfEnchanting
+
+
+;~ checks for insightful staff head (+5e)
+Func IsInsightfulStaffHead($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "9C000824380130250500D822")
+EndFunc ;==>IsInsightfulStaffHead
+
+;~ checks for I have the power inscription (+5e)
+Func IsIHaveThePower($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "5C010824B80232250500D822")
+EndFunc ;==>IsIHaveThePower
+
+;~ checks for have faith inscription (+5e^ench)
+Func IsHaveFaith($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D9010824B20332250500F822")
+EndFunc ;==>IsHaveFaith
+
+;~ checks for seize the day inscription (+15e^-1)
+Func IsSeizeTheDay($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "B00332250F00D822B00332250100C820")
+EndFunc ;==>IsSeizeTheDay
+
+;~ checks for live for today inscription (+15e^-1)
+Func IsLiveForToday($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "800332250F00D822800332250100C820")
+EndFunc ;==>IsLiveForToday
+
+
+;~ checks for "to the pain inscription" (15^-10a)
+Func IsToThePain($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D40232250F003822D40232250A001820")
+EndFunc ;==>IsToThePain
+
+;~ checks for "brawn over brains" inscription (15^-5e)
+Func IsBrawnOverBrains($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D20232250F003822D20232250500B820")
+EndFunc ;==>IsBrawnOverBrains
+
+;~ checks for "guided by faith" inscription (15^ench)
+Func IsGuidedByFaith($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "64010824C80232250F006822")
+EndFunc ;==>IsGuidedByFaith
+
+;~ checks for "strength is honor" inscription (15^50)
+Func IsStrengthAndHonor($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "65010824CA0232250F327822")
+EndFunc ;==>IsStrengthAndHonor
+
+;~ checks for "vengeance is mine" inscription (20^50)
+Func IsVengeanceIsMine($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "66010824CC02322514328822")
+EndFunc ;==>IsVengeanceIsMine
+
+;~ checks for "dont fear the reaper" inscription (20^hexed)
+Func IsDontFearTheReaper($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "67010824CE02322514009822")
+EndFunc ;==>IsDontFearTheReaper
+
+;~ checks for "dance with death" inscription (15^stance)
+Func IsDanceWithDeath($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "68010824D00232250F00A822")
+EndFunc ;==>IsDanceWithDeath
+
+;~ checks for "too much information" inscription (15^vsHexed)
+Func IsTooMuchInformation($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "")
+EndFunc ;==>IsTooMuchInformation
+
+
+;~ checks for "sheltered by faith" inscription (-2^ench)
+Func IsShelteredByFaith($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D3010824A603322502008820")
+EndFunc ;==>IsShelteredByFaith
+
+;~ checks for "run for your life" inscription (-2^stance)
+Func IsRunForYourLife($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D5010824AA0332250200A820")
+EndFunc ;==>IsRunForYourLife
+
+;~ checks for "nothing to fear" inscription (-3^hex)
+Func IsNothingToFear($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D4010824A803322503009820")
+EndFunc ;==>IsNothingToFear
+
+;~ checks for "luck of the draw" inscription (-5^20%)
+Func IsLuckOfTheDraw($pItem)
+    Return CheckModstruct(GetModStruct($pItem), "D2010824A403322505147820")
+EndFunc ;==>IsLuckOfTheDraw
+
+Func IsArmorInscription($pItem, $sMod = "")
+
+EndFunc ;==>IsArmorInscription
+
+;~ checks for "" inscription (+10 vs)
+Func Is($pItem)
+
+EndFunc ;==>Is
 #EndRegion Weapon Mods
 
 #Region OS Filter
-Func IsPerfectShield($aItem)
-    If GetItemType($aItem) <> $item_type_shield Then Return False ; check if shield
-    If Not IsItemMaxDmg($aItem) Then Return False
+;~ filter for any OS martial weapon
+Func CheckOsMartialWeapon($pItem, $sMod = "", $iWeaponType = -1)
+
+    If $iWeaponType <> -1 And Not IsString($pItem) Then
+        If GetItemType($pItem) <> $iWeaponType Then Return False
+    EndIf
+
+    Local $sModStruct = GetModStruct($pItem)
+
+    Switch $sMod
+        Case "1550"
+            Return CheckModstruct($sModStruct, "0F327822")
+        Case "15ench"
+            Return CheckModstruct($sModStruct, "0F006822")
+        Case "15stance"
+            Return CheckModstruct($sModStruct, "0F00A822")
+        Case "15vshexed"
+            Return CheckModstruct($sModStruct, "")
+        Case "15-5e"
+            Return CheckModstruct($sModStruct, "0F0038220500B820")
+        Case "15-10a"
+            Return CheckModstruct($sModStruct, "0F0038220A001820")
+        Case "5e"
+            Return CheckModstruct($sModStruct, "0500D822")
+        Case "2050"
+            Return CheckModstruct($sModStruct, "14009822")
+        Case "dualvamp"
+            Return CheckModstruct($sModStruct, "0F0038220100E820")
+        Case "dualzeal"
+            Return CheckModstruct($sModStruct, "0F0038220100C820")
+    EndSwitch
+    Return False
+EndFunc ;==>CheckOsMartialWeapon
+
+;~ filter for OS wand
+Func CheckOsWand($pItem)
+    Local $sModStruct = GetModStruct($pItem)
+EndFunc ;==>CheckOsWand
+
+;~ filter for OS focus
+Func CheckOsFocus($pItem)
+    Local $sModStruct = GetModStruct($pItem)
+EndFunc ;==>CheckOsFocus
+
+;~ filter for OS staff
+Func CheckOsStaff($pItem)
+    Local $sModStruct = GetModStruct($pItem)
+EndFunc ;==>CheckOsStaff
+
+;~ filter or OS shield
+Func CheckOsShield($pItem)
+    Local $sModStruct = GetModStruct($pItem)
+EndFunc ;==>CheckOsShield
+
+
+Func IsPerfectShield($pItem)
+    If GetItemType($pItem) <> $item_type_shield Then Return False ; check if shield
+    If Not IsItemMaxDmg($pItem) Then Return False
     
-    Local $lReq = GetItemReq($aItem)
-    Local $lModStruct = GetModStruct($aItem)
+    Local $lReq = GetItemReq($pItem)
+    Local $lModStruct = GetModStruct($pItem)
     ; Universal mods
     Local $Plus30 = StringInStr($lModStruct, "001E4823", 0, 1) ; +30HP
     Local $Plus45Ench = StringInStr($lModStruct, "002D6823", 0, 1) ; +45^ench
@@ -1862,7 +2136,7 @@ Func IsPerfectShield($aItem)
     Local $Plus43Ench = StringInStr($lModStruct, "002B6823", 0, 1) ; +43^ench
     Local $Plus42Ench = StringInStr($lModStruct, "002A6823", 0, 1) ; +42^ench
     Local $Plus41Ench = StringInStr($lModStruct, "00296823", 0, 1) ; +41^ench
-    Local $Minus2Ench = StringInStr($lModStruct, "2008820", 0, 1) ; -2^ench
+    Local $Minus2Ench = StringInStr($lModStruct, "02008820", 0, 1) ; -2^ench
     Local $Minus3Hex = StringInStr($lModStruct, "3009820", 0, 1) ; -3^hex
     Local $Plus60Hex = StringInStr($lModStruct, "003C7823", 0, 1) ; +60^hex
     Local $Plus45Stance = StringInStr($lModStruct, "002D8823", 0, 1) ; +45^stance
@@ -1966,4 +2240,23 @@ Func IsPerfectShield($aItem)
     EndIf
     Return False
 EndFunc ;==>IsPerfectShield
+
+;~ Description: Check if an OS Weapon has Dual Vamp Mod
+Func IsDualVamp($pItem)
+    If IsWeapon($pItem) = False Or GetRarity($pItem) <> $rarity_gold Then Return False
+    Local $lModstruct = GetModStruct($pItem)
+    Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
+    Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
+    If $lDv15 > 0 Or $lDv14 > 0 Then Return True
+    Return False
+EndFunc ;==>IsDualVamp
+
+Func IsDualZeal($pItem)
+    If IsWeapon($pItem) = False Or GetRarity($pItem) <> $rarity_gold Then Return False
+    Local $lModstruct = GetModStruct($pItem)
+    Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
+    Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
+    If $lDz15 > 0 Or $lDz14 > 0 Then Return True
+    Return False
+EndFunc ;==>IsDualZeal
 #EndRegion OS Filter
