@@ -379,51 +379,6 @@ Global $Ritualist = 8
 Global $Paragon = 9
 Global $Dervish = 10
 
-; ATTRIBUTES
-Global $Fast_Casting = 0;
-Global $Illusion_Magic = 1;
-Global $Domination_Magic = 2;
-Global $Inspiration_Magic = 3;
-Global $Blood_Magic = 4;
-Global $Death_Magic = 5;
-Global $Soul_Reaping = 6;
-Global $Curses = 7;
-Global $Air_Magic = 8;
-Global $Earth_Magic = 9;
-Global $Fire_Magic = 10;
-Global $Water_Magic = 11;
-Global $Energy_Storage = 12;
-Global $Healing_Prayers = 13;
-Global $Smiting_Prayers = 14;
-Global $Protection_Prayers = 15;
-Global $Divine_Favor = 16;
-Global $Strength = 17;
-Global $Axe_Mastery = 18;
-Global $Hammer_Mastery = 19;
-Global $Swordsmanship = 20;
-Global $Tactics = 21;
-Global $Beast_Mastery = 22;
-Global $Expertise = 23;
-Global $Wilderness_Survival = 24;
-Global $Marksmanship = 25;
-Global $Dagger_Mastery = 29;
-Global $Deadly_Arts = 30;
-Global $Shadow_Arts = 31;
-Global $Communing = 32;
-Global $Restoration_Magic = 33;
-Global $Channeling_Magic = 34;
-Global $Critical_Strikes = 35;
-Global $Spawning_Power = 36;
-Global $Spear_Mastery = 37;
-Global $Command = 38;
-Global $Motivation = 39;
-Global $Leadership = 40;
-Global $Scythe_Mastery = 41;
-Global $Wind_Prayers = 42;
-Global $Earth_Prayers = 43;
-Global $Mysticism = 44;
-Global $AttrID_None = 0xFF
-
 ; === Range ===
 Global Enum $range_adjacent   = 156,       $range_nearby    = 240,       $range_area    = 312,       $range_earshot   = 1000,        $range_spellcast   = 1085,        $range_spirit   = 2500,        $range_nature_ritual   = 3500,        $range_compass   = 5000
 Global Enum $range_adjacent_2 = 156 * 156, $range_nearby_2  = 240 * 240, $range_area_2  = 312 * 312, $range_earshot_2 = 1000 * 1000, $range_spellcast_2 = 1085 * 1085, $range_spirit_2 = 2500 * 2500, $range_nature_ritual_2 = 3500 * 3500, $range_compass_2 = 5000 * 5000
@@ -569,3 +524,40 @@ Global Const $aXYMaterialTraderSifhalla = [11489, 22240]
 Global Const $aXYRareMaterialTraderSifhalla = [10875, 22596]
 Global Const $aXYRuneTraderSifhalla = [11240, 22573]
 #EndRegion TraderCoords
+
+#Region Weapons
+Global Enum $item_req, $item_min_dmg, $item_max_dmg
+
+Global Const $g_aAxeMaxStats[][] = [ _
+    [9, 6, 28], [8, 6, 27], [7, 6, 25], [6, 6, 24], [5, 6, 22], [4, 6, 19], [3, 6, 17], [2, 6, 14], [1, 6, 12], [0, 6, 12]]
+
+Global Const $g_aBowMaxStats[][] = [ _
+    [9, 15, 28], [8, 14, 27], [7, 14, 25], [6, 14, 24], [5, 13, 22], [4, 12, 20], [3, 11, 18], [2, 10, 16], [1, 9, 14], [0, 9, 13]]
+
+Global Const $g_aOffhandMaxStats[][] = [ _
+    [9, 6, 12], [8, 6, 12], [7, 0, 11], [6, 0, 11], [5, 0, 10], [4, 0, 9], [3, 0, 8], [2, 0, 7], [1, 0, 6], [0, 0, 6]]
+
+Global Const $g_aHammerMaxStats[][] = [ _
+    [9, 19, 35], [8, 18, 34], [7, 18, 32], [6, 17, 30], [5, 16, 28], [4, 15, 24], [3, 14, 22], [2, 12, 19], [1, 11, 16], [0, 11, 15]]
+
+Global Const $g_aWandMaxStats[][] = [ _
+    [9, 11, 22], [8, 11, 21], [7, 11, 20], [6, 11, 19], [5, 10, 18], [4, 10, 16], [3, 9, 14], [2, 8, 13], [1, 7, 11], [0, 7, 11]]
+
+Global Const $g_aShieldMaxStats[][] = [ _
+    [9, 8, 16], [8, 8, 16], [7, 0, 15], [6, 0, 14], [5, 0, 13], [4, 0, 12], [3, 0, 11], [2, 0, 10], [1, 0, 9], [0, 0, 8]]
+
+Global Const $g_aStaffMaxStats[][] = [ _
+    [9, 11, 22], [8, 11, 21], [7, 11, 20], [6, 10, 19], [5, 10, 18], [4, 10, 16], [3, 9, 14], [2, 8, 13], [1, 7, 11], [0, 7, 11]]
+
+Global Const $g_aSwordMaxStats[][] = [ _
+    [9, 15, 22], [8, 15, 22], [7, 14, 20], [6, 14, 19], [5, 13, 18], [4, 12, 16], [3, 11, 14], [2, 9, 13], [1, 8, 11], [0, 8, 10]]
+
+Global Const $g_aDaggerMaxStats[][] = [ _
+    [9, 7, 17], [8, 7, 16], [7, 7, 15], [6, 7, 14], [5, 6, 13], [4, 6, 12], [3, 5, 11], [2, 5, 9], [1, 4, 8], [0, 4, 8]]
+
+Global Const $g_aScytheMaxStats[][] = [ _
+    [9, 9, 41], [8, 9, 40], [7, 9, 36], [6, 9, 35], [5, 9, 32], [4, 9, 28], [3, 9, 24], [2, 9, 21], [1, 8, 18], [0, 8, 16]] ; [0, 8, 17]
+
+Global Const $g_aSpearMaxStats[][] = [ _
+    [9, 14, 27], [8, 14, 26], [7, 13, 25], [6, 13, 23], [5, 12, 21], [4, 12, 19], [3, 11, 17], [2, 10, 15], [1, 8, 13], [0, 8, 12]]
+#EndRegion Weapons
