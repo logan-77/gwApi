@@ -1862,9 +1862,9 @@ Func HasUpgradePrefix($pItem, $sMods)
             Case "20hct", "adept", "adeptstaffhead"
                 If CheckModstruct($sModStruct, "2004302500140828") Then Return True
             Case "5a", "defensive", "defensivestaffhead"
-                If CheckModstruct($sModStruct, "CE02322514009822") Then Return True
+                If CheckModstruct($sModStruct, "2201302505000821") Then Return True
             Case "30hp", "hale", "halestaffhead"
-                If CheckModstruct($sModStruct, "CC02322514328822") Then Return True
+                If CheckModstruct($sModStruct, "3A013025001E4823") Then Return True
             Case "10hct", "swift", "swiftstaffhead"
                 If CheckModstruct($sModStruct, "1E043025000A0822") Then Return True
 
@@ -1888,7 +1888,7 @@ Func HasUpgradeSuffix($pItem, $sMods)
             Case "7physical", "shelter", "ofshelter"
                 If CheckModstruct($sModStruct, "07005821") Then Return True
             Case "7elemental", "warding", "ofwarding"
-                If CheckModstruct($sModStruct, "") Then Return True
+                If CheckModstruct($sModStruct, "07002821") Then Return True
 
             Case "20ench", "enchanting", "ofenchanting"
                 If CheckModstruct($sModStruct, "1400B822") Then Return True
@@ -1906,7 +1906,7 @@ Func HasUpgradeSuffix($pItem, $sMods)
             Case "60hex", "valor", "ofvalor"
                 If CheckModstruct($sModStruct, "003C7823") Then Return True
 
-            ;~ needs work
+            ;~ both do the same, maybe diff function for the staff upgrade, to include attribute?
             Case "+120attribute", "attribute", "ofattribute"
                 Local $aMod = GetModByIdentifier($sModStruct, "1824")
                 Return $aMod[0] = 20
@@ -1919,7 +1919,7 @@ Func HasUpgradeSuffix($pItem, $sMods)
             Case "20hsr", "memory", "ofmemory"
                 If CheckModstruct($sModStruct, "BF02302500142828") Then Return True
 
-            ;~ needs work, check for 20% missing
+            ;~ needs work, check for 20% missing, maybe diff function?
             Case "20undead", "deathbane", "ofdeathbane"
                 If CheckModstruct($sModStruct, "00008080") Then Return True
 
@@ -2096,12 +2096,12 @@ EndFunc ;==>Is20HSR
 
 ;~ checks for wand wrapping of memory (20% HSR)
 Func IsWandWrappingOfMemory($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "5F010824BF02302500142828")
+    Return CheckModstruct(GetModStruct($pItem), "BF02302500142828")
 EndFunc ;==>IsWandWrappingOfMemory
 
 ;~ checks for forget me not inscription (20% HSR)
 Func IsForgetMeNot($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "C20108248403322500142828")
+    Return CheckModstruct(GetModStruct($pItem), "8403322500142828")
 EndFunc ;==>IsForgetMeNot
 
 ;~ checks for inherent 20% staff HSR
@@ -2119,12 +2119,12 @@ EndFunc ;==>Is10HSR
 
 ;~ checks for wand wrapping of quickening (10% HSR)
 Func IsWandWrappingOfQuickening($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "60010824C1023025000AA823")
+    Return CheckModstruct(GetModStruct($pItem), "C1023025000AA823")
 EndFunc ;==>IsWandWrappingOfQuickening
 
 ;~ checks for serenity now inscription (10% HSR)
 Func IsSerenityNow($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "C101082482033225000AA823")
+    Return CheckModstruct(GetModStruct($pItem), "82033225000AA823")
 EndFunc ;==>IsSerenityNow
 
 ;~ checks for let the memory live again inscription (10% HSR)
@@ -2141,12 +2141,12 @@ EndFunc ;==>Is20HCT
 
 ;~ checks for focus core of aptitude (20% HCT)
 Func IsFocusCoreOfAptitude($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "170208242F04302500140828")
+    Return CheckModstruct(GetModStruct($pItem), "2F04302500140828")
 EndFunc ;==>IsFocusCoreOfAptitude
 
 ;~ checks for adept staff head (20% HCT)
 Func IsAdeptStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "100208242004302500140828")
+    Return CheckModstruct(GetModStruct($pItem), "2004302500140828")
 EndFunc ;==>IsAdeptStaffHead
 
 ;~ checks for aptitude not attitude inscription (20% HCT)
@@ -2163,12 +2163,12 @@ EndFunc ;==>Is20HCT
 
 ;~ checks for focus core of swiftness (10% HCT)
 Func IsFocusCoreOfSwiftness($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "1C02082439043025000A0822")
+    Return CheckModstruct(GetModStruct($pItem), "39043025000A0822")
 EndFunc ;==>IsFocusCoreOfSwiftness
 
 ;~ checks for swift staff head (10% HCT)
 Func IsSwiftStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "0F0208241E043025000A0822")
+    Return CheckModstruct(GetModStruct($pItem), "1E043025000A0822")
 EndFunc ;==>IsSwiftStaffHead
 
 ;~ checks for don't think twice inscription (10% HCT)
@@ -2191,12 +2191,12 @@ EndFunc ;==>Is30Hp
 
 ;~ checks for hale staff head (+30hp prefix)
 Func IsHaleStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "9D0008243A013025001E4823")
+    Return CheckModstruct(GetModStruct($pItem), "3A013025001E4823")
 EndFunc ;==>IsHaleStaffHead
 
 ;~ checks for staff wrapping of fortitude (+30hp suffix)
 Func IsStaffWrappingOfFortitude($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "DC000824B9013025001E4823")
+    Return CheckModstruct(GetModStruct($pItem), "B9013025001E4823")
 EndFunc ;==>IsStaffWrappingOfFortitude
 
 ;~ checks for +45^ench upgrade (any)
@@ -2379,7 +2379,7 @@ Func CheckOsMartialWeapon($pItem, $sMod = "", $iWeaponType = -1)
         Case "15stance"
             Return CheckModstruct($sModStruct, "0F00A822")
         Case "15vshexed"
-            Return CheckModstruct($sModStruct, "")
+            Return CheckModstruct($sModStruct, "0F005822")
         Case "15-5e"
             Return CheckModstruct($sModStruct, "0F0038220500B820")
         Case "15-10a"
@@ -2393,6 +2393,7 @@ Func CheckOsMartialWeapon($pItem, $sMod = "", $iWeaponType = -1)
         Case "dualzeal"
             Return CheckModstruct($sModStruct, "0F0038220100C820")
     EndSwitch
+
     Return False
 EndFunc ;==>CheckOsMartialWeapon
 
