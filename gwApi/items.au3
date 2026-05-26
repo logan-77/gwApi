@@ -3,6 +3,20 @@
 Global $g_hTimerMoveItem = TimerInit()
 Global Const $g_iTimeoutMoveItem = 500 ; wait between different MoveItem operations (make sure Bag/Slot state is solid)
 
+Global Enum _
+    $idx_mod_shield_30hp, _
+    $idx_mod_shield_45stance, _
+    $idx_mod_shield_60hex, _
+    $idx_mod_shield_45ench, _
+    $idx_mod_shield_2ench, _
+    $idx_mod_shield_2stance, _
+    $idx_mod_shield_3hex, _
+    $idx_mod_shield_armor_value, _
+    $idx_mod_shield_armor_type, _
+    $idx_mod_shield_monster, _
+    $idx_mod_shield_condition, _
+    $idx_mod_shield_attribute
+
 #Region Items
 Func GetItemExists($pItem)
     Return Item_GetItemPtr($pItem) <> 0
@@ -1648,9 +1662,9 @@ Func GetModByIdentifier($pItem, $sIdentifier)
 EndFunc ;==>GetModByIdentifier
 
 ;~ checks complete modstruct for a pattern
-Func CheckModstruct($sModstruct, $sPattern)
+Func CheckModStruct($sModstruct, $sPattern)
     Return StringInStr($sModstruct, $sPattern) > 0
-EndFunc ;==>CheckModstruct
+EndFunc ;==>CheckModStruct
 #EndRegion ModStruct
 
 #Region Weapons
@@ -1757,7 +1771,7 @@ Func IsWeaponMaxDmg($pItem, $iType = -1)
 EndFunc ;==>IsWeaponMaxDmg
 
 ;~ checks if weapon has max damage/armor/energy stats
-Func CheckMaxDmg($iReq, $aDmg, $iType, ByRef $aMaxStats)
+Func CheckMaxDmg($iReq, $aDmg, $iType, ByRef Const $aMaxStats)
     If $iReq > 9 Then $iReq = 9 ; normalize all req's 9-13, they all got same stats
 
     For $i = 0 To UBound($aMaxStats) - 1
@@ -1821,34 +1835,34 @@ Func HasUpgradeOfTheProfession($pItem, $sMods)
     For $sCurrentMod In $aMods
         Switch $sCurrentMod
             Case "fastcasting", "mesmer", "mes"
-                If CheckModstruct($sModStruct, "0500A828") Then Return True
+                If CheckModStruct($sModStruct, "0500A828") Then Return True
 
             Case "soulreaping", "necromancer", "necro"
-                If CheckModstruct($sModStruct, "0506A828") Then Return True
+                If CheckModStruct($sModStruct, "0506A828") Then Return True
 
             Case "energystorage", "elementalist", "ele"
-                If CheckModstruct($sModStruct, "050CA828") Then Return True
+                If CheckModStruct($sModStruct, "050CA828") Then Return True
 
             Case "divinefavor", "monk"
-                If CheckModstruct($sModStruct, "0510A828") Then Return True
+                If CheckModStruct($sModStruct, "0510A828") Then Return True
 
             Case "strength", "warrior"
-                If CheckModstruct($sModStruct, "0511A828") Then Return True
+                If CheckModStruct($sModStruct, "0511A828") Then Return True
 
             Case "expertise", "ranger"
-                If CheckModstruct($sModStruct, "0517A828") Then Return True
+                If CheckModStruct($sModStruct, "0517A828") Then Return True
 
             Case "criticalstrikes", "assassin", "assa", "sin"
-                If CheckModstruct($sModStruct, "0523A828") Then Return True
+                If CheckModStruct($sModStruct, "0523A828") Then Return True
 
             Case "spawningpower", "ritualist", "rit"
-                If CheckModstruct($sModStruct, "0524A828") Then Return True
+                If CheckModStruct($sModStruct, "0524A828") Then Return True
 
             Case "leadership", "paragon", "para"
-                If CheckModstruct($sModStruct, "0528A828") Then Return True
+                If CheckModStruct($sModStruct, "0528A828") Then Return True
 
             Case "mysticism", "dervish", "derv"
-                If CheckModstruct($sModStruct, "052CA828") Then Return True
+                If CheckModStruct($sModStruct, "052CA828") Then Return True
         
         EndSwitch
     Next
@@ -1866,45 +1880,45 @@ Func HasUpgradePrefix($pItem, $sMods)
     For $sCurrentMod In $aMods
         Switch $sCurrentMod
             Case "33bleeding", "barbed"
-                If CheckModstruct($sModStruct, "DE016824") Then Return True
+                If CheckModStruct($sModStruct, "DE016824") Then Return True
             Case "33crippled", "crippling"
-                If CheckModstruct($sModStruct, "E1016824") Then Return True
+                If CheckModStruct($sModStruct, "E1016824") Then Return True
             Case "33deepwound", "cruel"
-                If CheckModstruct($sModStruct, "E2016824") Then Return True
+                If CheckModStruct($sModStruct, "E2016824") Then Return True
             Case "33weakness", "heavy"
-                If CheckModstruct($sModStruct, "E6016824") Then Return True
+                If CheckModStruct($sModStruct, "E6016824") Then Return True
             Case "33poison", "poisonous"
-                If CheckModstruct($sModStruct, "E4016824") Then Return True
+                If CheckModStruct($sModStruct, "E4016824") Then Return True
             Case "33dazed", "silencing"
-                If CheckModstruct($sModStruct, "E5016824") Then Return True
+                If CheckModStruct($sModStruct, "E5016824") Then Return True
 
             Case "earth", "ebon"
-                If CheckModstruct($sModStruct, "000BB824") Then Return True
+                If CheckModStruct($sModStruct, "000BB824") Then Return True
             Case "fire", "fiery"
-                If CheckModstruct($sModStruct, "0005B824") Then Return True
+                If CheckModStruct($sModStruct, "0005B824") Then Return True
             Case "cold", "icy"
-                If CheckModstruct($sModStruct, "0003B824") Then Return True
+                If CheckModStruct($sModStruct, "0003B824") Then Return True
             Case "lightning", "shocking"
-                If CheckModstruct($sModStruct, "0004B824") Then Return True
+                If CheckModStruct($sModStruct, "0004B824") Then Return True
 
             Case "10adrenaline", "furious"
-                If CheckModstruct($sModStruct, "0A00B823") Then Return True
+                If CheckModStruct($sModStruct, "0A00B823") Then Return True
             Case "sundering"
-                If CheckModstruct($sModStruct, "1414F823") Then Return True
+                If CheckModStruct($sModStruct, "1414F823") Then Return True
             Case "vampiric"
-                If CheckModstruct($sModStruct, "00032825") Then Return True
-                If CheckModstruct($sModStruct, "00052825") Then Return True
+                If CheckModStruct($sModStruct, "00032825") Then Return True
+                If CheckModStruct($sModStruct, "00052825") Then Return True
             Case "zealous"
-                If CheckModstruct($sModStruct, "01001825") Then Return True
+                If CheckModStruct($sModStruct, "01001825") Then Return True
 
             Case "20hct", "adept", "adeptstaffhead"
-                If CheckModstruct($sModStruct, "2004302500140828") Then Return True
+                If CheckModStruct($sModStruct, "2004302500140828") Then Return True
             Case "5a", "defensive", "defensivestaffhead"
-                If CheckModstruct($sModStruct, "2201302505000821") Then Return True
+                If CheckModStruct($sModStruct, "2201302505000821") Then Return True
             Case "30hp", "hale", "halestaffhead"
-                If CheckModstruct($sModStruct, "3A013025001E4823") Then Return True
+                If CheckModStruct($sModStruct, "3A013025001E4823") Then Return True
             Case "10hct", "swift", "swiftstaffhead"
-                If CheckModstruct($sModStruct, "1E043025000A0822") Then Return True
+                If CheckModStruct($sModStruct, "1E043025000A0822") Then Return True
 
         EndSwitch
     Next
@@ -1922,27 +1936,27 @@ Func HasUpgradeSuffix($pItem, $sMods)
     For $sCurrentMod In $aMods
         Switch $sCurrentMod
             Case "5a", "defense", "ofdefense"
-                If CheckModstruct($sModStruct, "05000821") Then Return True
+                If CheckModStruct($sModStruct, "05000821") Then Return True
             Case "7physical", "shelter", "ofshelter"
-                If CheckModstruct($sModStruct, "07005821") Then Return True
+                If CheckModStruct($sModStruct, "07005821") Then Return True
             Case "7elemental", "warding", "ofwarding"
-                If CheckModstruct($sModStruct, "07002821") Then Return True
+                If CheckModStruct($sModStruct, "07002821") Then Return True
 
             Case "20ench", "enchanting", "ofenchanting"
-                If CheckModstruct($sModStruct, "1400B822") Then Return True
+                If CheckModStruct($sModStruct, "1400B822") Then Return True
             Case "10hct", "swiftness", "ofswiftness"
-                If CheckModstruct($sModStruct, "39043025000A0822") Then Return True
+                If CheckModStruct($sModStruct, "39043025000A0822") Then Return True
             Case "20hct", "aptitude", "ofaptitude"
-                If CheckModstruct($sModStruct, "2F04302500140828") Then Return True
+                If CheckModStruct($sModStruct, "2F04302500140828") Then Return True
 
             Case "30hp", "fortitude", "offortitude"
-                If CheckModstruct($sModStruct, "001E4823") Then Return True
+                If CheckModStruct($sModStruct, "001E4823") Then Return True
             Case "45ench", "devotion", "ofdevotion"
-                If CheckModstruct($sModStruct, "002D6823") Then Return True
+                If CheckModStruct($sModStruct, "002D6823") Then Return True
             Case "45stance", "endurance", "ofendurance"
-                If CheckModstruct($sModStruct, "002D8823") Then Return True
+                If CheckModStruct($sModStruct, "002D8823") Then Return True
             Case "60hex", "valor", "ofvalor"
-                If CheckModstruct($sModStruct, "003C7823") Then Return True
+                If CheckModStruct($sModStruct, "003C7823") Then Return True
 
             ;~ both do the same, maybe diff function for the staff upgrade, to include attribute?
             Case "+120attribute", "attribute", "ofattribute"
@@ -1953,43 +1967,43 @@ Func HasUpgradeSuffix($pItem, $sMods)
                 Return $aMod[0] = 20
 
             Case "10hsr", "quickening", "ofquickening"
-                If CheckModstruct($sModStruct, "C1023025000AA823") Then Return True
+                If CheckModStruct($sModStruct, "C1023025000AA823") Then Return True
             Case "20hsr", "memory", "ofmemory"
-                If CheckModstruct($sModStruct, "BF02302500142828") Then Return True
+                If CheckModStruct($sModStruct, "BF02302500142828") Then Return True
 
             ;~ needs work, check for 20% missing, maybe diff function?
             Case "20undead", "deathbane", "ofdeathbane"
-                If CheckModstruct($sModStruct, "00008080") Then Return True
+                If CheckModStruct($sModStruct, "00008080") Then Return True
 
             Case "20charr", "charrslaying", "ofcharrslaying"
-                If CheckModstruct($sModStruct, "00018080") Then Return True
+                If CheckModStruct($sModStruct, "00018080") Then Return True
 
             Case "20trolls", "trollslaying", "oftrollslaying"
-                If CheckModstruct($sModStruct, "00028080") Then Return True
+                If CheckModStruct($sModStruct, "00028080") Then Return True
 
             Case "20plants", "pruning", "ofpruning"
-                If CheckModstruct($sModStruct, "00038080") Then Return True
+                If CheckModStruct($sModStruct, "00038080") Then Return True
 
             Case "20skeleton", "skeletonslaying", "ofskeletonslaying"
-                If CheckModstruct($sModStruct, "00048080") Then Return True
+                If CheckModStruct($sModStruct, "00048080") Then Return True
 
             Case "20giants", "giantslaying", "ofgiantslaying"
-                If CheckModstruct($sModStruct, "00058080") Then Return True
+                If CheckModStruct($sModStruct, "00058080") Then Return True
 
             Case "20dwarves", "dwarfslaying", "ofdwarfslaying"
-                If CheckModstruct($sModStruct, "00068080") Then Return True
+                If CheckModStruct($sModStruct, "00068080") Then Return True
 
             Case "20tengu", "tenguslaying", "oftenguslaying"
-                If CheckModstruct($sModStruct, "00078080") Then Return True
+                If CheckModStruct($sModStruct, "00078080") Then Return True
 
             Case "20demons", "demonslaying", "ofdemonslaying"
-                If CheckModstruct($sModStruct, "00088080") Then Return True
+                If CheckModStruct($sModStruct, "00088080") Then Return True
 
             Case "20dragons", "dragonslaying", "ofdragonslaying"
-                If CheckModstruct($sModStruct, "00098080") Then Return True
+                If CheckModStruct($sModStruct, "00098080") Then Return True
             
             Case "20ogres", "ogreslaying", "ofogreslaying"
-                If CheckModstruct($sModStruct, "000A8080") Then Return True
+                If CheckModStruct($sModStruct, "000A8080") Then Return True
 
         EndSwitch
     Next
@@ -2007,118 +2021,118 @@ Func HasInscription($pItem, $sMods)
     For $sCurrentMod In $aMods
         Switch $sCurrentMod
             Case "1550", "strengthandhonor"
-                If CheckModstruct($sModStruct, "CA0232250F327822") Then Return True
+                If CheckModStruct($sModStruct, "CA0232250F327822") Then Return True
             Case "15ench", "guidedbyfate"
-                If CheckModstruct($sModStruct, "C80232250F006822") Then Return True
+                If CheckModStruct($sModStruct, "C80232250F006822") Then Return True
             Case "15stance", "dancewithdeath"
-                If CheckModstruct($sModStruct, "D00232250F00A822") Then Return True
+                If CheckModStruct($sModStruct, "D00232250F00A822") Then Return True
             Case "15vshexed", "toomuchinformation"
-                If CheckModstruct($sModStruct, "C60232250F005822") Then Return True
+                If CheckModStruct($sModStruct, "C60232250F005822") Then Return True
             Case "15-10a", "tothepain"
-                If CheckModstruct($sModStruct, "D40232250F003822D40232250A001820") Then Return True
+                If CheckModStruct($sModStruct, "D40232250F003822D40232250A001820") Then Return True
             Case "15-5e", "brawnoverbrains"
-                If CheckModstruct($sModStruct, "D20232250F003822D20232250500B820") Then Return True
+                If CheckModStruct($sModStruct, "D20232250F003822D20232250500B820") Then Return True
             Case "2050", "vengeanceismine"
-                If CheckModstruct($sModStruct, "CC02322514328822") Then Return True
+                If CheckModStruct($sModStruct, "CC02322514328822") Then Return True
             Case "20hexed", "dontfearthereaper"
-                If CheckModstruct($sModStruct, "CE02322514009822") Then Return True
+                If CheckModStruct($sModStruct, "CE02322514009822") Then Return True
 
             Case "5e", "ihavethepower"
-                If CheckModstruct($sModStruct, "B80232250500D822") Then Return True
+                If CheckModStruct($sModStruct, "B80232250500D822") Then Return True
             Case "5e50", "haleandhearty"
-                If CheckModstruct($sModStruct, "B403322505320823") Then Return True
+                If CheckModStruct($sModStruct, "B403322505320823") Then Return True
             Case "5eench", "havefaith"
-                If CheckModstruct($sModStruct, "B20332250500F822") Then Return True
+                If CheckModStruct($sModStruct, "B20332250500F822") Then Return True
             Case "7e50", "dontcallitacomeback"
-                If CheckModstruct($sModStruct, "B603322507321823") Then Return True
+                If CheckModStruct($sModStruct, "B603322507321823") Then Return True
             Case "7ehexed", "iamsorrow"
-                If CheckModstruct($sModStruct, "B803322507002823") Then Return True
+                If CheckModStruct($sModStruct, "B803322507002823") Then Return True
             Case "15e-1main", "seizetheday"
-                If CheckModstruct($sModStruct, "B00332250F00D822B00332250100C820") Then Return True
+                If CheckModStruct($sModStruct, "B00332250F00D822B00332250100C820") Then Return True
 
             Case "10hct", "dontthinktwice"
-                If CheckModstruct($sModStruct, "BA033225000A0822") Then Return True
+                If CheckModStruct($sModStruct, "BA033225000A0822") Then Return True
             Case "10hsr", "letthememoryliveagain"
-                If CheckModstruct($sModStruct, "BC023225000AA823") Then Return True
+                If CheckModStruct($sModStruct, "BC023225000AA823") Then Return True
             Case "20hct", "aptitudenotattitude"
-                If CheckModstruct($sModStruct, "AE03322500140828") Then Return True
+                If CheckModStruct($sModStruct, "AE03322500140828") Then Return True
 
             Case "10blunt", "nottheface"
-                If CheckModstruct($sModStruct, "860332A50A0018A1") Then Return True
+                If CheckModStruct($sModStruct, "860332A50A0018A1") Then Return True
             Case "10cold", "leafonthewind"
-                If CheckModstruct($sModStruct, "880332A50A0318A1") Then Return True
+                If CheckModStruct($sModStruct, "880332A50A0318A1") Then Return True
             Case "10earth", "likearollingstone"
-                If CheckModstruct($sModStruct, "8A0332A50A0B18A1") Then Return True
+                If CheckModStruct($sModStruct, "8A0332A50A0B18A1") Then Return True
             Case "10fire", "sleepnowinthefire"
-                If CheckModstruct($sModStruct, "8E0332A50A0518A1") Then Return True
+                If CheckModStruct($sModStruct, "8E0332A50A0518A1") Then Return True
             Case "10lightning", "ridersonthestorm"
-                If CheckModstruct($sModStruct, "8C0332A50A0418A1") Then Return True
+                If CheckModStruct($sModStruct, "8C0332A50A0418A1") Then Return True
             Case "10piercing", "throughthickandthin"
-                If CheckModstruct($sModStruct, "900332A50A0118A1") Then Return True
+                If CheckModStruct($sModStruct, "900332A50A0118A1") Then Return True
             Case "10slashing", "theriddleofsteel"
-                If CheckModstruct($sModStruct, "920332A50A0218A1") Then Return True
+                If CheckModStruct($sModStruct, "920332A50A0218A1") Then Return True
                 
             Case "-2ench", "shelteredbyfaith"
-                If CheckModstruct($sModStruct, "A603322502008820") Then Return True
+                If CheckModStruct($sModStruct, "A603322502008820") Then Return True
             Case "-2stance", "runforyourlife"
-                If CheckModstruct($sModStruct, "AA0332250200A820") Then Return True
+                If CheckModStruct($sModStruct, "AA0332250200A820") Then Return True
             Case "-3hex", "nothingtofear"
-                If CheckModstruct($sModStruct, "A803322503009820") Then Return True
+                If CheckModStruct($sModStruct, "A803322503009820") Then Return True
             Case "-520", "luckofthedraw"
-                If CheckModstruct($sModStruct, "A403322505147820") Then Return True
+                If CheckModStruct($sModStruct, "A403322505147820") Then Return True
 
             Case "20bleeding", "fearcutsdeeper"
-                If CheckModstruct($sModStruct, "9403322500005828") Then Return True
+                If CheckModStruct($sModStruct, "9403322500005828") Then Return True
             Case "20blind", "icanseeclearlynow"
-                If CheckModstruct($sModStruct, "9603322500015828") Then Return True
+                If CheckModStruct($sModStruct, "9603322500015828") Then Return True
             Case "20crippled", "swiftasthewind"
-                If CheckModstruct($sModStruct, "9803322500035828") Then Return True
+                If CheckModStruct($sModStruct, "9803322500035828") Then Return True
             Case "20dazed", "soundnessofmind"
-                If CheckModstruct($sModStruct, "A003322500075828") Then Return True
+                If CheckModStruct($sModStruct, "A003322500075828") Then Return True
             Case "20deepwound", "strengthofbody"
-                If CheckModstruct($sModStruct, "9A03322500045828") Then Return True
+                If CheckModStruct($sModStruct, "9A03322500045828") Then Return True
             Case "20disease", "castouttheunclean"
-                If CheckModstruct($sModStruct, "9C03322500055828") Then Return True
+                If CheckModStruct($sModStruct, "9C03322500055828") Then Return True
             Case "20poison", "pureofheart"
-                If CheckModstruct($sModStruct, "9E03322500065828") Then Return True
+                If CheckModStruct($sModStruct, "9E03322500065828") Then Return True
             Case "20weakness", "onlythestrongsurvive"
-                If CheckModstruct($sModStruct, "A203322500085828") Then Return True
+                If CheckModStruct($sModStruct, "A203322500085828") Then Return True
 
             Case "5a50", "hailtotheking"
-                If CheckModstruct($sModStruct, "7C0332250532A821") Then Return True
+                If CheckModStruct($sModStruct, "7C0332250532A821") Then Return True
             Case "5aench", "faithismyshield"
-                If CheckModstruct($sModStruct, "7803322505009821") Then Return True
+                If CheckModStruct($sModStruct, "7803322505009821") Then Return True
             Case "5aattacking", "mightmakesright"
-                If CheckModstruct($sModStruct, "7403322505007821") Then Return True
+                If CheckModStruct($sModStruct, "7403322505007821") Then Return True
             Case "5acasting", "knowingishalfthebattle"
-                If CheckModstruct($sModStruct, "7603322505008821") Then Return True
+                If CheckModStruct($sModStruct, "7603322505008821") Then Return True
             Case "5aelemental", "manforallseasons"
-                If CheckModstruct($sModStruct, "7003322505002821") Then Return True
+                If CheckModStruct($sModStruct, "7003322505002821") Then Return True
             Case "5aphysical", "survivalofthefittest"
-                If CheckModstruct($sModStruct, "7203322505005821") Then Return True
+                If CheckModStruct($sModStruct, "7203322505005821") Then Return True
             Case "5a-5e", "ignoranceisbliss"
-                If CheckModstruct($sModStruct, "6C033225050008216C0332250500B820") Then Return True
+                If CheckModStruct($sModStruct, "6C033225050008216C0332250500B820") Then Return True
             Case "5a-20hp", "lifeispain"
-                If CheckModstruct($sModStruct, "6E033225050008216E0332251400D820") Then Return True
+                If CheckModStruct($sModStruct, "6E033225050008216E0332251400D820") Then Return True
             Case "10a50", "downbutnotout"
-                If CheckModstruct($sModStruct, "7A0332250A32B821") Then Return True
+                If CheckModStruct($sModStruct, "7A0332250A32B821") Then Return True
             Case "10ahexed", "bejustandfearnot"
-                If CheckModstruct($sModStruct, "7E0332250A00C821") Then Return True
+                If CheckModStruct($sModStruct, "7E0332250A00C821") Then Return True
             Case "15e-1offhand", "livefortoday"
-                If CheckModstruct($sModStruct, "800332250F00D822800332250100C820") Then Return True
+                If CheckModStruct($sModStruct, "800332250F00D822800332250100C820") Then Return True
                 
             Case "+120", "masterofmydomain"
-                If CheckModstruct($sModStruct, "AC03322500143828") Then Return True
+                If CheckModStruct($sModStruct, "AC03322500143828") Then Return True
             Case "10hsroffhand", "serenitynow"
-                If CheckModstruct($sModStruct, "82033225000AA823") Then Return True
+                If CheckModStruct($sModStruct, "82033225000AA823") Then Return True
             Case "20hsr", "forgetmenot"
-                If CheckModstruct($sModStruct, "8403322500142828") Then Return True
+                If CheckModStruct($sModStruct, "8403322500142828") Then Return True
                 
             Case "m4m", "measureformeasure"
-                If CheckModstruct($sModStruct, "3E0432251D000826") Then Return True
+                If CheckModStruct($sModStruct, "3E0432251D000826") Then Return True
             Case "showmethemoney"
-                If CheckModstruct($sModStruct, "3C0432252E00F825") Then Return True
-                If CheckModstruct($sModStruct, "3C0432253000F825") Then Return True
+                If CheckModStruct($sModStruct, "3C0432252E00F825") Then Return True
+                If CheckModStruct($sModStruct, "3C0432253000F825") Then Return True
         EndSwitch
     Next
 
@@ -2134,12 +2148,12 @@ EndFunc ;==>Is20HSR
 
 ;~ checks for wand wrapping of memory (20% HSR)
 Func IsWandWrappingOfMemory($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "BF02302500142828")
+    Return CheckModStruct(GetModStruct($pItem), "BF02302500142828")
 EndFunc ;==>IsWandWrappingOfMemory
 
 ;~ checks for forget me not inscription (20% HSR)
 Func IsForgetMeNot($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "8403322500142828")
+    Return CheckModStruct(GetModStruct($pItem), "8403322500142828")
 EndFunc ;==>IsForgetMeNot
 
 ;~ checks for inherent 20% staff HSR
@@ -2157,17 +2171,17 @@ EndFunc ;==>Is10HSR
 
 ;~ checks for wand wrapping of quickening (10% HSR)
 Func IsWandWrappingOfQuickening($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "C1023025000AA823")
+    Return CheckModStruct(GetModStruct($pItem), "C1023025000AA823")
 EndFunc ;==>IsWandWrappingOfQuickening
 
 ;~ checks for serenity now inscription (10% HSR)
 Func IsSerenityNow($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "82033225000AA823")
+    Return CheckModStruct(GetModStruct($pItem), "82033225000AA823")
 EndFunc ;==>IsSerenityNow
 
 ;~ checks for let the memory live again inscription (10% HSR)
 Func IsLetTheMemoryLiveAgain($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "BC023225000AA823")
+    Return CheckModStruct(GetModStruct($pItem), "BC023225000AA823")
 EndFunc ;==>IsLetTheMemoryLiveAgain
 
 
@@ -2179,17 +2193,17 @@ EndFunc ;==>Is20HCT
 
 ;~ checks for focus core of aptitude (20% HCT)
 Func IsFocusCoreOfAptitude($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "2F04302500140828")
+    Return CheckModStruct(GetModStruct($pItem), "2F04302500140828")
 EndFunc ;==>IsFocusCoreOfAptitude
 
 ;~ checks for adept staff head (20% HCT)
 Func IsAdeptStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "2004302500140828")
+    Return CheckModStruct(GetModStruct($pItem), "2004302500140828")
 EndFunc ;==>IsAdeptStaffHead
 
 ;~ checks for aptitude not attitude inscription (20% HCT)
 Func IsAptitudeNotAttitude($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "AE03322500140828")
+    Return CheckModStruct(GetModStruct($pItem), "AE03322500140828")
 EndFunc ;==>IsAptitudeNotAttitude
 
 
@@ -2201,17 +2215,17 @@ EndFunc ;==>Is20HCT
 
 ;~ checks for focus core of swiftness (10% HCT)
 Func IsFocusCoreOfSwiftness($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "39043025000A0822")
+    Return CheckModStruct(GetModStruct($pItem), "39043025000A0822")
 EndFunc ;==>IsFocusCoreOfSwiftness
 
 ;~ checks for swift staff head (10% HCT)
 Func IsSwiftStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "1E043025000A0822")
+    Return CheckModStruct(GetModStruct($pItem), "1E043025000A0822")
 EndFunc ;==>IsSwiftStaffHead
 
 ;~ checks for don't think twice inscription (10% HCT)
 Func IsDontThinkTwice($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "BA033225000A0822")
+    Return CheckModStruct(GetModStruct($pItem), "BA033225000A0822")
 EndFunc ;==>IsDontThinkTwice
 
 
@@ -2229,12 +2243,12 @@ EndFunc ;==>Is30Hp
 
 ;~ checks for hale staff head (+30hp prefix)
 Func IsHaleStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "3A013025001E4823")
+    Return CheckModStruct(GetModStruct($pItem), "3A013025001E4823")
 EndFunc ;==>IsHaleStaffHead
 
 ;~ checks for staff wrapping of fortitude (+30hp suffix)
 Func IsStaffWrappingOfFortitude($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "B9013025001E4823")
+    Return CheckModStruct(GetModStruct($pItem), "B9013025001E4823")
 EndFunc ;==>IsStaffWrappingOfFortitude
 
 ;~ checks for +45^ench upgrade (any)
@@ -2313,124 +2327,139 @@ EndFunc ;==>IsOfEnchanting
 
 ;~ checks for insightful staff head (+5e)
 Func IsInsightfulStaffHead($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "9C000824380130250500D822")
+    Return CheckModStruct(GetModStruct($pItem), "9C000824380130250500D822")
 EndFunc ;==>IsInsightfulStaffHead
 
 ;~ checks for I have the power inscription (+5e)
 Func IsIHaveThePower($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "B80232250500D822")
+    Return CheckModStruct(GetModStruct($pItem), "B80232250500D822")
 EndFunc ;==>IsIHaveThePower
 
 ;~ checks for have faith inscription (+5e^ench)
 Func IsHaveFaith($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "B20332250500F822")
+    Return CheckModStruct(GetModStruct($pItem), "B20332250500F822")
 EndFunc ;==>IsHaveFaith
 
 ;~ checks for seize the day inscription (+15e^-1)
 Func IsSeizeTheDay($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "B00332250F00D822B00332250100C820")
+    Return CheckModStruct(GetModStruct($pItem), "B00332250F00D822B00332250100C820")
 EndFunc ;==>IsSeizeTheDay
 
 ;~ checks for live for today inscription (+15e^-1)
 Func IsLiveForToday($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "800332250F00D822800332250100C820")
+    Return CheckModStruct(GetModStruct($pItem), "800332250F00D822800332250100C820")
 EndFunc ;==>IsLiveForToday
 
 
 ;~ checks for "to the pain inscription" (15^-10a)
 Func IsToThePain($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "D40232250F003822D40232250A001820")
+    Return CheckModStruct(GetModStruct($pItem), "D40232250F003822D40232250A001820")
 EndFunc ;==>IsToThePain
 
 ;~ checks for "brawn over brains" inscription (15^-5e)
 Func IsBrawnOverBrains($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "D20232250F003822D20232250500B820")
+    Return CheckModStruct(GetModStruct($pItem), "D20232250F003822D20232250500B820")
 EndFunc ;==>IsBrawnOverBrains
 
 ;~ checks for "guided by faith" inscription (15^ench)
 Func IsGuidedByFaith($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "C80232250F006822")
+    Return CheckModStruct(GetModStruct($pItem), "C80232250F006822")
 EndFunc ;==>IsGuidedByFaith
 
 ;~ checks for "strength is honor" inscription (15^50)
 Func IsStrengthAndHonor($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "CA0232250F327822")
+    Return CheckModStruct(GetModStruct($pItem), "CA0232250F327822")
 EndFunc ;==>IsStrengthAndHonor
 
 ;~ checks for "vengeance is mine" inscription (20^50)
 Func IsVengeanceIsMine($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "CC02322514328822")
+    Return CheckModStruct(GetModStruct($pItem), "CC02322514328822")
 EndFunc ;==>IsVengeanceIsMine
 
 ;~ checks for "dont fear the reaper" inscription (20^hexed)
 Func IsDontFearTheReaper($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "CE02322514009822")
+    Return CheckModStruct(GetModStruct($pItem), "CE02322514009822")
 EndFunc ;==>IsDontFearTheReaper
 
 ;~ checks for "dance with death" inscription (15^stance)
 Func IsDanceWithDeath($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "D00232250F00A822")
+    Return CheckModStruct(GetModStruct($pItem), "D00232250F00A822")
 EndFunc ;==>IsDanceWithDeath
 
 ;~ checks for "too much information" inscription (15^vsHexed)
 Func IsTooMuchInformation($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "C60232250F005822")
+    Return CheckModStruct(GetModStruct($pItem), "C60232250F005822")
 EndFunc ;==>IsTooMuchInformation
 
 
 ;~ checks for "sheltered by faith" inscription (-2^ench)
 Func IsShelteredByFaith($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "A603322502008820")
+    Return CheckModStruct(GetModStruct($pItem), "A603322502008820")
 EndFunc ;==>IsShelteredByFaith
 
 ;~ checks for "run for your life" inscription (-2^stance)
 Func IsRunForYourLife($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "AA0332250200A820")
+    Return CheckModStruct(GetModStruct($pItem), "AA0332250200A820")
 EndFunc ;==>IsRunForYourLife
 
 ;~ checks for "nothing to fear" inscription (-3^hex)
 Func IsNothingToFear($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "A803322503009820")
+    Return CheckModStruct(GetModStruct($pItem), "A803322503009820")
 EndFunc ;==>IsNothingToFear
 
 ;~ checks for "luck of the draw" inscription (-5^20%)
 Func IsLuckOfTheDraw($pItem)
-    Return CheckModstruct(GetModStruct($pItem), "A403322505147820")
+    Return CheckModStruct(GetModStruct($pItem), "A403322505147820")
 EndFunc ;==>IsLuckOfTheDraw
 #EndRegion Weapon Mods
 
 #Region OS Filter
 ;~ filter for any OS martial weapon
-Func CheckOsMartialWeapon($pItem, $sMod = "", $iWeaponType = -1)
-
-    If $iWeaponType <> -1 And Not IsString($pItem) Then
-        If GetItemType($pItem) <> $iWeaponType Then Return False
-    EndIf
+Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
+    If $sMods = "" Then Return False
 
     Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+    
+    ;~ dismiss all bigger req's
+    If GetItemReq($sModStruct) > $iReq Then Return False
 
-    Switch $sMod
-        Case "1550"
-            Return CheckModstruct($sModStruct, "0F327822")
-        Case "15ench"
-            Return CheckModstruct($sModStruct, "0F006822")
-        Case "15stance"
-            Return CheckModstruct($sModStruct, "0F00A822")
-        Case "15vshexed"
-            Return CheckModstruct($sModStruct, "0F005822")
-        Case "15-5e"
-            Return CheckModstruct($sModStruct, "0F0038220500B820")
-        Case "15-10a"
-            Return CheckModstruct($sModStruct, "0F0038220A001820")
-        Case "5e"
-            Return CheckModstruct($sModStruct, "0500D822")
-        Case "2050"
-            Return CheckModstruct($sModStruct, "14009822")
-        Case "dualvamp"
-            Return CheckModstruct($sModStruct, "0F0038220100E820")
-        Case "dualzeal"
-            Return CheckModstruct($sModStruct, "0F0038220100C820")
-    EndSwitch
+    Local $aMods = StringSplit(StringLower($sMods), "|", $STR_NOCOUNT)
+
+    For $sCurrentMod In $aMods
+        Switch $sCurrentMod
+            Case "1550"
+                Return CheckModStruct($sModStruct, "0F327822")
+
+            Case "15ench"
+                Return CheckModStruct($sModStruct, "0F006822")
+
+            Case "15stance"
+                Return CheckModStruct($sModStruct, "0F00A822")
+
+            Case "15vshexed"
+                Return CheckModStruct($sModStruct, "0F005822")
+
+            Case "15-5e"
+                Return CheckModStruct($sModStruct, "0F0038220500B820")
+
+            Case "15-10a"
+                Return CheckModStruct($sModStruct, "0F0038220A001820")
+
+            Case "5e"
+                Return CheckModStruct($sModStruct, "0500D822")
+
+            Case "2050"
+                Return CheckModStruct($sModStruct, "14009822")
+
+            Case "dualvamp"
+                Return CheckModStruct($sModStruct, "0F0038220100E820")
+
+            Case "dualzeal"
+                Return CheckModStruct($sModStruct, "0F0038220100C820")
+
+        EndSwitch
+    Next
 
     Return False
 EndFunc ;==>CheckOsMartialWeapon
@@ -2451,145 +2480,435 @@ Func CheckOsStaff($pItem)
 EndFunc ;==>CheckOsStaff
 
 ;~ filter or OS shield
-Func CheckOsShield($pItem)
+;~ template for $sRules:
+;~ "highestattribute;listofattris,attri2;listofmods,mod1;listofmods2,mod2"
+;~ "9;tactics,strength;45ench,2ench,demon;skeleton,fire,illusion|nextgrouphere
+Func CheckOsShield($pItem, $sRules)
+    Local $iType = GetItemType($pItem)
+    If $iType <> $item_type_shield Then Return False ; shield?
+
     Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max armor?
+
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
+    Out("Req: " & $iReq)
+    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
+    Out("ItemAttr: " & $iItemAttribute)
+    Local $aShieldMods = ParseShieldMods($sModStruct)
+
+    ; Split all rule rows
+    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+    Out("ubound rows:" & UBound($aRows))
+
+    ; Process each rule row
+    For $sRow In $aRows
+
+        $sRow = StringStripWS($sRow, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+
+        ; Split row into columns
+        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+
+        ; safety check
+        If UBound($aCols) <> 4 Then ContinueLoop
+        Out("column check")
+        
+        ;========================================
+        ; Column 1: Requirement
+        ;========================================
+
+        Local $iRuleReq = Number($aCols[0])
+
+        If $iReq > $iRuleReq Then ContinueLoop
+        Out("req check")
+
+        ;========================================
+        ; Column 2: Attributes
+        ;========================================
+
+        Local $bAttributeMatch = CheckAttributeShield($iItemAttribute, $aCols[1])
+
+        If Not $bAttributeMatch Then ContinueLoop
+        Out("attribute match check")
+
+        ;========================================
+        ; Column 3: Mod1
+        ;========================================
+
+        Local $bMod1 = CheckModShield($aShieldMods, $aCols[2])
+
+        If Not $bMod1 Then ContinueLoop
+        Out("mod1 check")
+        
+        ;========================================
+        ; Column 4: Mod2
+        ;========================================
+
+        Local $bMod2 = CheckModShield($aShieldMods, $aCols[3])
+
+        If Not $bMod2 Then ContinueLoop
+        Out("mod2 check")
+
+        ;========================================
+        ; Full rule matched
+        ;========================================
+
+        Return True
+    Next
+
+    Return False
 EndFunc ;==>CheckOsShield
 
+Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
+    Local $aAttributes = StringSplit($sAttributeList, ",", $STR_NOCOUNT)
 
-Func IsPerfectShield($pItem)
-    If GetItemType($pItem) <> $item_type_shield Then Return False ; check if shield
-    If Not IsWeaponMaxDmg($pItem) Then Return False
+    For $sAttribute In $aAttributes
+
+        $sAttribute = StringStripWS($sAttribute, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+
+        Switch $sAttribute
+
+            Case "tactics"
+                If $iAttribute = $GC_I_ATTRIBUTE_TACTICS Then Return True
+
+            Case "strength"
+                If $iAttribute = $GC_I_ATTRIBUTE_STRENGTH Then Return True
+
+            Case "command"
+                If $iAttribute = $GC_I_ATTRIBUTE_COMMAND Then Return True
+
+            Case "motivation"
+                If $iAttribute = $GC_I_ATTRIBUTE_MOTIVATION Then Return True
+
+            Case "leadership"
+                If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
+
+            Case Else
+                Return True
+
+        EndSwitch
+    Next
+
+    Return False
+EndFunc ;==>CheckAttributeShield
+
+;~ parsed the ModStruct of the shield and returns an array
+Func ParseShieldMods(ByRef $sModStruct)
+    Local $aShieldMods[12]
+
+    $aShieldMods[$idx_mod_shield_30hp] = CheckModStruct($sModStruct, "001E4823") ; 30hp
+    Out("shield30: " & $aShieldMods[$idx_mod_shield_30hp])
+    $aShieldMods[$idx_mod_shield_45stance] = CheckModStruct($sModStruct, "002D8823") ; 45stance
+    $aShieldMods[$idx_mod_shield_60hex] = CheckModStruct($sModStruct, "003C7823") ; 60hex
+
+    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
+    $aShieldMods[$idx_mod_shield_45ench] = $a45ench[1]
+    Out("shield30: " & $aShieldMods[$idx_mod_shield_45ench])
+
+    $aShieldMods[$idx_mod_shield_2ench] = CheckModStruct($sModStruct, "02008820") ; -2ench
+    $aShieldMods[$idx_mod_shield_2stance] = CheckModStruct($sModStruct, "0200A820") ; -2stance
+    $aShieldMods[$idx_mod_shield_3hex] = CheckModStruct($sModStruct, "03009820") ; -3hex
+
+    Local $aArmor = GetModByIdentifier($sModStruct, '1821') ; blunt/fire/etc
+    $aShieldMods[$idx_mod_shield_armor_value] = $aArmor[0]
+    $aShieldMods[$idx_mod_shield_armor_type] = $aArmor[1]
+
+    $aShieldMods[$idx_mod_shield_monster] = GetModShieldArmorMonster($sModStruct) ; skeleton/demon/etc
+
+    Local $aCondition = GetModByIdentifier($sModStruct, "7824") ; 20% blind/dazed/etc
+    $aShieldMods[$idx_mod_shield_condition] = $aCondition[0]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, "1824") ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+
+    $aShieldMods[$idx_mod_shield_attribute] = $aAttribute[1]
+
+    Return $aShieldMods
+EndFunc ;==>ParseShieldMods
+
+;~ checks if shield contains any requested mod
+Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
+
+    ; Split requested mods
+    Local $aMods = StringSplit(StringLower($sMods), ",", $STR_NOCOUNT)
+
+    ;~ remove whitespace
+    For $i = 0 To UBound($aMods) - 1
+        $aMods[$i] = StringStripWS($aMods[$i], $STR_STRIPLEADING + $STR_STRIPTRAILING)
+        $aMods[$i] = String($aMods[$i])
+        Out($aMods[$i])
+    Next
+
+    ;~ Armor vs damage type
+    If CheckModShieldArmor($aShieldMods[$idx_mod_shield_armor_value], _
+                     $aShieldMods[$idx_mod_shield_armor_type], _
+                     $aMods) Then Return True
+    Out("armor check")
+
+    ;~ Reduced condition duration
+    If CheckModShieldCondition($aShieldMods[$idx_mod_shield_condition], $aMods) Then Return True
+    Out("condition check")
+
+    ;~ +1^20% attribute mods
+    If CheckModAttribute($aShieldMods[$idx_mod_shield_attribute], $aMods) Then Return True
+    Out("attri bonus check")
     
-    Local $lReq = GetItemReq($pItem)
-    Local $lModStruct = GetModStruct($pItem)
-    ; Universal mods
-    Local $Plus30 = StringInStr($lModStruct, "001E4823", 0, 1) ; +30HP
-    Local $Plus45Ench = StringInStr($lModStruct, "002D6823", 0, 1) ; +45^ench
-    Local $Plus44Ench = StringInStr($lModStruct, "002C6823", 0, 1) ; +44^ench
-    Local $Plus43Ench = StringInStr($lModStruct, "002B6823", 0, 1) ; +43^ench
-    Local $Plus42Ench = StringInStr($lModStruct, "002A6823", 0, 1) ; +42^ench
-    Local $Plus41Ench = StringInStr($lModStruct, "00296823", 0, 1) ; +41^ench
-    Local $Minus2Ench = StringInStr($lModStruct, "02008820", 0, 1) ; -2^ench
-    Local $Minus3Hex = StringInStr($lModStruct, "3009820", 0, 1) ; -3^hex
-    Local $Plus60Hex = StringInStr($lModStruct, "003C7823", 0, 1) ; +60^hex
-    Local $Plus45Stance = StringInStr($lModStruct, "002D8823", 0, 1) ; +45^stance
-    ; +1 20% Mods
-    Local $PlusIllusion = StringInStr($lModStruct, "0118240", 0, 1) ; +1 Illu 20%
-    Local $PlusDomination = StringInStr($lModStruct, "0218240", 0, 1) ; +1 Dom 20%
-    Local $PlusInspiration = StringInStr($lModStruct, "0318240", 0, 1) ; +1 Insp 20%
-    Local $PlusBlood = StringInStr($lModStruct, "0418240", 0, 1) ; +1 Blood 20%
-    Local $PlusDeath = StringInStr($lModStruct, "0518240", 0, 1) ; +1 Death 20%
-    Local $PlusSoulReap = StringInStr($lModStruct, "0618240", 0, 1) ; +1 SoulR 20%
-    Local $PlusCurses = StringInStr($lModStruct, "0718240", 0, 1) ; +1 Curses 20%
-    Local $PlusAir = StringInStr($lModStruct, "0818240", 0, 1) ; +1 Air 20%
-    Local $PlusEarth = StringInStr($lModStruct, "0918240", 0, 1) ; +1 Earth 20%
-    Local $PlusFire = StringInStr($lModStruct, "0A18240", 0, 1) ; +1 Fire 20%
-    Local $PlusWater = StringInStr($lModStruct, "0B18240", 0, 1) ; +1 Water 20%
-    Local $PlusHealing = StringInStr($lModStruct, "0D18240", 0, 1) ; +1 Heal 20%
-    Local $PlusSmite = StringInStr($lModStruct, "0E18240", 0, 1) ; +1 Smite 20%
-    Local $PlusProt = StringInStr($lModStruct, "0F18240", 0, 1) ; +1 Prot 20%
-    Local $PlusDivine = StringInStr($lModStruct, "1018240", 0, 1) ; +1 Divine 20%
-    ; +10vsMonster Mods
-    Local $PlusUndead = StringInStr($lModStruct, "0A004821", 0, 1) ; +10vs Undead
-    Local $PlusSkeletons = StringInStr($lModStruct, "0A044821", 0 ,1) ; +10vs Skeletons
-    Local $PlusDemons = StringInStr($lModStruct, "0A084821", 0, 1) ; +10vs Demons
-    ; +10vs Dmg
-    Local $PlusBlunt = StringInStr($lModStruct, "0A001821", 0, 1) ; +10vs Blunt
-    Local $PlusPiercing = StringInStr($lModStruct, "0A011821", 0, 1) ; +10vs Piercing
-    Local $PlusSlashing = StringInStr($lModStruct, "0A021821", 0, 1) ; +10vs Slashing
-    Local $PlusCold = StringInStr($lModStruct, "0A031821", 0, 1) ; +10 vs Cold
-    Local $PlusLightning = StringInStr($lModStruct, "0A041821", 0, 1) ; +10vs Lightning
-    Local $PlusVsFire = StringInStr($lModStruct, "0A051821", 0, 1) ; +10vs Fire
-    Local $PlusVsEarth = StringInStr($lModStruct, "0A0B1821", 0, 1) ; +10vs Earth
 
-    Local $VsBlind = StringInStr($lModStruct, "DF017824", 0, 1) ; +20% vs Blind
+    For $sCurrentMod In $aMods
 
-    If $Plus30 > 0 Then
-        If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
-            Return True
-        EndIf
-        If $lReq <= 9 Then
-            If $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusVsFire > 0 Then
-                Return True
-            ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
-                Return True
-            ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 _
-                Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-                    Return True
-            ElseIf $Minus2Ench > 0 Then
-                Return True
-            EndIf
-        Else
-            Return False
-        EndIf
-    EndIf
-    If $Plus45Ench > 0 Then
-        If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
-            Return True
-        EndIf
-        If $lReq <= 9 Then
-            If $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusVsFire > 0 Then
-                Return True
-            ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
-                Return True
-            ElseIf $PlusDomination > 0 Or $PlusDivine > 0 Or $PlusSmite > 0 Or $PlusHealing > 0 Or $PlusProt > 0 Or $PlusFire > 0 Or $PlusWater > 0 Or $PlusAir > 0 Or $PlusEarth > 0 _
-                Or $PlusDeath > 0 Or $PlusBlood > 0 Or $PlusIllusion > 0 Or $PlusInspiration > 0 Or $PlusSoulReap > 0 Or $PlusCurses > 0 Then
-                    Return True
-            ElseIf $Minus2Ench > 0 Then
-                Return True
-            EndIf
-        EndIf
-    EndIf
-    If $lReq <= 9 And $Minus2Ench > 0 Then
-        If $PlusDemons > 0 Or $PlusUndead > 0 Or $PlusSkeletons > 0 Then
-            Return True
-        ElseIf $PlusLightning > 0 Or $PlusVsEarth > 0 Or $PlusCold > 0 Or $PlusFire > 0 Then
-            Return True
-        ElseIf $PlusBlunt > 0 Or $PlusPiercing > 0 Or $PlusSlashing > 0 Then
-            Return True
-        EndIf
-    EndIf
-    If $lReq <= 9 And ($Plus44Ench > 0 Or $Plus43Ench Or $Plus42Ench Or $Plus41Ench) Then
-        If $PlusDemons > 0 Or $PlusSkeletons > 0 Then
-            Return True
-        EndIf
-    EndIf
-    If $Minus3Hex > 0 Then
-        If $PlusSkeletons > 0 Then
-            Return True
-        ;~ ElseIf $Plus60Hex > 0 Then
-        ;~  Return True
-        EndIf
-    EndIf
-    If $VsBlind > 0 Then
-        If $PlusSkeletons > 0 Or $PlusLightning > 0 Then
-            Return True
-        EndIf
-    EndIf
-    If $PlusDemons > 0 Then
-        If $PlusDomination > 0 Then
-            Return True
-        EndIf
-    EndIf
+        $sCurrentMod = StringStripWS($sCurrentMod, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+        $sCurrendMod = String($sCurrentMod)
+        Out("current: " & $sCurrentMod)
+
+        Switch $sCurrentMod
+            
+            ;========================================
+            ; Basic shield mods
+            ;========================================
+
+            Case "30", "30hp"
+                If $aShieldMods[$idx_mod_shield_30hp] Then Return True
+            Case "45stance"
+                If $aShieldMods[$idx_mod_shield_45stance] Then Return True
+            Case "60hex"
+                If $aShieldMods[$idx_mod_shield_60hex] Then Return True
+
+            Case "45ench"
+                If $aShieldMods[$idx_mod_shield_45ench] >= 45 Then Return True
+            Case "44ench"
+                If $aShieldMods[$idx_mod_shield_45ench] >= 44 Then Return True
+            Case "43ench"
+                If $aShieldMods[$idx_mod_shield_45ench] >= 43 Then Return True
+            Case "42ench"
+                If $aShieldMods[$idx_mod_shield_45ench] >= 42 Then Return True
+            Case "41ench"
+                If $aShieldMods[$idx_mod_shield_45ench] >= 41 Then Return True
+
+            Case "-2ench", "2ench"
+                If $aShieldMods[$idx_mod_shield_2ench] Then Return True
+            Case "-2stance", "2stance"
+                If $aShieldMods[$idx_mod_shield_2stance] Then Return True
+            Case "-3hex", "3hex"
+                If $aShieldMods[$idx_mod_shield_3hex] Then Return True
+
+
+            ;========================================
+            ; Armor vs monster type
+            ;========================================
+
+            Case _
+            "undead", "charr", "troll", "plant", "skeleton", _
+            "giant", "dwarf", "tengu", "demon", "dragon", "ogre"
+                If $aShieldMods[$idx_mod_shield_monster]  == $sCurrentMod Then Return True
+
+        EndSwitch
+    Next
+
     Return False
-EndFunc ;==>IsPerfectShield
+EndFunc ;==>CheckModShield
 
-;~ Description: Check if an OS Weapon has Dual Vamp Mod
-Func IsDualVamp($pItem)
-    If IsWeapon($pItem) = False Or GetRarity($pItem) <> $rarity_gold Then Return False
-    Local $lModstruct = GetModStruct($pItem)
-    Local $lDv15 = StringInStr($lModstruct, "0F0038220100E820")
-    Local $lDv14 = StringInStr($lModstruct, "0E0038220100E820")
-    If $lDv15 > 0 Or $lDv14 > 0 Then Return True
-    Return False
-EndFunc ;==>IsDualVamp
+;~ checks if item contains +10 vsType (blunt/fire/etc)
+Func CheckModShieldArmor($iValue, $iType, ByRef $aMods)
+    Out("armor value: " & $iValue)
+    Out("armor type: " & $iType)
+    If $iValue < 10 Then Return False
 
-Func IsDualZeal($pItem)
-    If IsWeapon($pItem) = False Or GetRarity($pItem) <> $rarity_gold Then Return False
-    Local $lModstruct = GetModStruct($pItem)
-    Local $lDz15 = StringInStr($lModstruct, "0F0038220100C820")
-    Local $lDz14 = StringInStr($lModstruct, "0E0038220100C820")
-    If $lDz15 > 0 Or $lDz14 > 0 Then Return True
+    For $sCurrentMod In $aMods
+
+        Switch $sCurrentMod
+            Case "allarmor"
+                Return True
+            Case "blunt"
+                If $iType = 0x00 Then Return True
+            Case "piercing"
+                If $iType = 0x01 Then Return True
+            Case "slashing"
+                If $iType = 0x02 Then Return True
+            Case "cold"
+                If $iType = 0x03 Then Return True
+            Case "lightning"
+                If $iType = 0x04 Then Return True
+            Case "fire"
+                If $iType = 0x05 Then Return True
+            Case "earth"
+                If $iType = 0x0B Then Return True
+        EndSwitch
+
+    Next
+
+    Return False                
+EndFunc ;==>CheckModShieldArmor
+
+;~ checks if item contains 20% condition mod
+Func CheckModShieldCondition($iCondition, ByRef $aMods)
+    If $iCondition = -1 Then Return False
+
+    For $sCurrentMod In $aMods
+
+        Switch $sCurrentMod
+            Case "allcondition"
+                Return True
+            Case "bleeding"
+                If $iCondition = 0xDE Then Return True
+            Case "blind"
+                If $iCondition = 0xDF Then Return True
+            Case "cripple", "crippled"
+                If $iCondition = 0xE1 Then Return True
+            Case "deepwound"
+                If $iCondition = 0xE2 Then Return True
+            Case "disease"
+                If $iCondition = 0xE3 Then Return True
+            Case "poison"
+                If $iCondition = 0xE4 Then Return True
+            Case "daze", "dazed"
+                If $iCondition = 0xE5 Then Return True
+            Case "weakness"
+                If $iCondition = 0xE6 Then Return True
+        EndSwitch
+
+    Next
+
     Return False
-EndFunc ;==>IsDualZeal
+EndFunc ;==>CheckModShieldCondition
+
+;~ checks if item contains +1^20% attribute mod
+Func CheckModAttribute($iAttribute, ByRef $aMods)
+    If $iAttribute = -1 Then Return False
+
+    For $sCurrentMod In $aMods
+
+        Switch $sCurrentMod
+            Case "allattributes"
+                Return True
+            Case "fastcasting"
+                If $iAttribute = $GC_I_ATTRIBUTE_FAST_CASTING Then Return True
+            Case "illusion", "illusionmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_ILLUSION_MAGIC Then Return True
+            Case "domination", "dominationmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_DOMINATION_MAGIC Then Return True
+            Case "inspiration", "inspirationmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_INSPIRATION_MAGIC Then Return True
+            Case "blood", "bloodmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_BLOOD_MAGIC Then Return True
+            Case "death", "deathmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_DEATH_MAGIC Then Return True
+            Case "soulreaping", "sr"
+                If $iAttribute = $GC_I_ATTRIBUTE_SOUL_REAPING Then Return True
+            Case "curses"
+                If $iAttribute = $GC_I_ATTRIBUTE_CURSES Then Return True
+            Case "airmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_AIR_MAGIC Then Return True
+            Case "earthmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_EARTH_MAGIC Then Return True
+            Case "firemagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_FIRE_MAGIC Then Return True
+            Case "watermagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_WATER_MAGIC Then Return True
+            Case "energystorage", "es"
+                If $iAttribute = $GC_I_ATTRIBUTE_ENERGY_STORAGE Then Return True
+            Case "healing", "healingprayers"
+                If $iAttribute = $GC_I_ATTRIBUTE_HEALING_PRAYERS Then Return True
+            Case "smiting", "smitingprayers"
+                If $iAttribute = $GC_I_ATTRIBUTE_SMITING_PRAYERS Then Return True
+            Case "protection", "protectionprayers"
+                If $iAttribute = $GC_I_ATTRIBUTE_PROTECTION_PRAYERS Then Return True
+            Case "divinefavor", "df"
+                If $iAttribute = $GC_I_ATTRIBUTE_DIVINE_FAVOR Then Return True
+            Case "strength"
+                If $iAttribute = $GC_I_ATTRIBUTE_STRENGTH Then Return True
+            Case "axe", "axemastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_AXE_MASTERY Then Return True
+            Case "hammer", "hammermastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_HAMMER_MASTERY Then Return True
+            Case "sword", "swordsmanship"
+                If $iAttribute = $GC_I_ATTRIBUTE_SWORDSMANSHIP Then Return True
+            Case "tactics"
+                If $iAttribute = $GC_I_ATTRIBUTE_TACTICS Then Return True
+            Case "beastmastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_BEAST_MASTERY Then Return True
+            Case "expertise"
+                If $iAttribute = $GC_I_ATTRIBUTE_EXPERTISE Then Return True
+            Case "wilderness", "wildernesssurvival"
+                If $iAttribute = $GC_I_ATTRIBUTE_WILDERNESS_SURVIVAL Then Return True
+            Case "marksmanship"
+                If $iAttribute = $GC_I_ATTRIBUTE_MARKSMANSHIP Then Return True
+            Case "dagger", "daggermastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_DAGGER_MASTERY Then Return True
+            Case "deadlyarts"
+                If $iAttribute = $GC_I_ATTRIBUTE_DEADLY_ARTS Then Return True
+            Case "shadowarts"
+                If $iAttribute = $GC_I_ATTRIBUTE_SHADOW_ARTS Then Return True
+            Case "communing"
+                If $iAttribute = $GC_I_ATTRIBUTE_COMMUNING Then Return True
+            Case "restoration", "restorationmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_RESTORATION_MAGIC Then Return True
+            Case "channeling", "channelingmagic"
+                If $iAttribute = $GC_I_ATTRIBUTE_CHANNELING_MAGIC Then Return True
+            Case "criticalstrikes", "cs"
+                If $iAttribute = $GC_I_ATTRIBUTE_CRITICAL_STRIKES Then Return True
+            Case "spawningpower", "sp"
+                If $iAttribute = $GC_I_ATTRIBUTE_SPAWNING_POWER Then Return True
+            Case "spear", "spearmastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_SPEAR_MASTERY Then Return True
+            Case "command"
+                If $iAttribute = $GC_I_ATTRIBUTE_COMMAND Then Return True
+            Case "motivation"
+                If $iAttribute = $GC_I_ATTRIBUTE_MOTIVATION Then Return True
+            Case "leadership"
+                If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
+            Case "scythe", "scythemastery"
+                If $iAttribute = $GC_I_ATTRIBUTE_SCYTHE_MASTERY Then Return True
+            Case "windprayers", "wind"
+                If $iAttribute = $GC_I_ATTRIBUTE_WIND_PRAYERS Then Return True
+            Case "earthprayers", "earth"
+                If $iAttribute = $GC_I_ATTRIBUTE_EARTH_PRAYERS Then Return True
+            Case "mysticism"
+                If $iAttribute = $GC_I_ATTRIBUTE_MYSTICISM Then Return True
+        EndSwitch
+
+    Next
+
+    Return False
+EndFunc ;==>CheckModAttribute
+
+;~ checks if item contains +10 vsMonster
+Func GetModShieldArmorMonster(ByRef $sModStruct)
+    Local $aMod = GetModByIdentifier($sModStruct, '4821')
+    If $aMod[0] = -1 Or $aMod[1] = -1 Then Return ""
+
+    If $aMod[0] < 10 Then Return "" ; not +10armor
+
+    Return GetMonsterType($aMod[1])
+EndFunc ;==>GetModShieldArmorMonster
+
+;~ returns string representing monster type
+Func GetMonsterType($iMonsterID)
+    Switch $iMonsterID
+        Case 0
+            Return "undead"
+        Case 1
+            Return "charr"
+        Case 2
+            Return "troll"
+        Case 3
+            Return "plant"
+        Case 4
+            Return "skeleton"
+        Case 5
+            Return "giant"
+        Case 6
+            Return "dwarf"
+        Case 7
+            Return "tengu"
+        Case 8
+            Return "demon"
+        Case 9
+            Return "dragon"
+        Case 10
+            Return "ogre"
+    EndSwitch
+
+    Return ""
+EndFunc ;==>GetMonsterType
 #EndRegion OS Filter
