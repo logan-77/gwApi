@@ -1633,7 +1633,7 @@ EndFunc ;==>GetModStruct
 
 ;~ Description: Returns an array of a the requested mod.
 Func GetModByIdentifier($pItem, $sIdentifier)
-    Local $aReturn[2] = [0, 0]
+    Local $aReturn[2] = [-1, -1]
     Local $sModStruct = StringTrimLeft(GetModStruct($pItem), 2)
 
     For $i = 0 To StringLen($sModStruct) / 8 - 2
@@ -1656,86 +1656,124 @@ EndFunc ;==>CheckModstruct
 #Region Weapons
 ;~ Description: Returns a weapon or shield's minimum required attribute.
 Func GetItemReq($pItem)
-    Local $lMod = GetModByIdentifier($pItem, '9827')
-    Return $lMod[0]
+    Local $aMod = GetModByIdentifier($pItem, '9827')
+    Return $aMod[0]
 EndFunc ;==>GetItemReq
 
 ;~ Description: Returns a weapon or shield's required attribute.
 Func GetItemAttribute($pItem)
-    Local $lMod = GetModByIdentifier($pItem, '9827')
-    Return $lMod[1]
+    Local $aMod = GetModByIdentifier($pItem, '9827')
+    Return $aMod[1]
 EndFunc ;==>GetItemAttribute
 
 ;~ Description: Returns the maximum Dmg/Energy/Armor
 Func GetItemMaxDmg($pItem)
-    Local $lModString = GetModStruct($pItem)
-    Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-    If $lPos = 0 Then Return 0
+    Local $sModStruct = GetModStruct($pItem)
+    Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "B8A7") ; Armor (shield)
+    If $iPos = 0 Then Return -1
 
-    Return Int("0x" & StringMid($lModString, $lPos - 2, 2))
+    Return Int("0x" & StringMid($sModStruct, $iPos - 2, 2))
 EndFunc ;==>GetItemMaxDmg
 
 ;~ Description: Returns the minimum Dmg/Energy/Armor
 Func GetItemMinDmg($pItem)
-    Local $lModString = GetModStruct($pItem)
-    Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-    If $lPos = 0 Then Return 0
+    Local $sModStruct = GetModStruct($pItem)
+    Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "B8A7") ; Armor (shield)
+    If $iPos = 0 Then Return -1
 
-    Return Int("0x" & StringMid($lModString, $lPos - 4, 2))
+    Return Int("0x" & StringMid($sModStruct, $iPos - 4, 2))
 EndFunc ;==>GetItemMinDmg
 
 ;~ Description: Returns Dmg/Energy/Armor
 Func GetItemDmg($pItem)
-    Local $lModString = GetModStruct($pItem)
-    Local $lPos = StringInStr($lModString, "A8A7") ; Weapon Damage
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "C867") ; Energy (focus)
-    If $lPos = 0 Then $lPos = StringInStr($lModString, "B8A7") ; Armor (shield)
-    If $lPos = 0 Then Return 0
+    Local $sModStruct = GetModStruct($pItem)
+    Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
+    If $iPos = 0 Then $iPos = StringInStr($sModStruct, "B8A7") ; Armor (shield)
+    If $iPos = 0 Then Return -1
 
-    Local $lMod[2] = [0, 0]
-    $lMod[0] = Int("0x" & StringMid($lModString, $lPos - 4, 2))
-    $lMod[1] = Int("0x" & StringMid($lModString, $lPos - 2, 2))
-    Return $lMod
+    Local $aMod[2] = [0, 0]
+    $aMod[0] = Int("0x" & StringMid($sModStruct, $iPos - 4, 2))
+    $aMod[1] = Int("0x" & StringMid($sModStruct, $iPos - 2, 2))
+    Return $aMod
 EndFunc ;==>GetItemDmg
 
-Func IsItemMaxDmg($pItem)
-    Local $iType = GetItemType($pItem)
+Func IsWeaponMaxDmg($pItem, $iType = -1)
+    If $iType = -1 And IsPtr($pItem) Then $iType = GetItemType($pItem)
 
     If Not IsWeaponByType($iType) Then Return False
 
-    Local $lDmg = GetItemDmg($pItem)
-    If $lDmg = 0 Then Return False
+    Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+
+    Local $aDmg = GetItemDmg($sModStruct)
+    If $aDmg = -1 Then Return False
+
+    Local $iReq = GetItemReq($sModStruct)
+    If $iReq = -1 Then Return False
     
     Switch $iType
         Case $item_type_axe
-            If $lDmg[0] = 6 And $lDmg[1] = 28 Then Return True
+            If $aDmg[0] >= 7 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aAxeMaxStats) Then Return True
+
         Case $item_type_bow
-            If $lDmg[0] = 15 And $lDmg[1] = 28 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aBowMaxStats) Then Return True
+
         Case $item_type_offhand
-            If $lDmg[1] = 12 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aOffhandMaxStats) Then Return True
+
         Case $item_type_hammer
-            If $lDmg[0] = 19 And $lDmg[1] = 35 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aHammerMaxStats) Then Return True
+
         Case $item_type_wand
-            If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aWandMaxStats) Then Return True
+
         Case $item_type_shield
-            If $lDmg[1] = 16 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aShieldMaxStats) Then Return True
+
         Case $item_type_staff
-            If $lDmg[0] = 11 And $lDmg[1] = 22 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aStaffMaxStats) Then Return True
+
         Case $item_type_sword
-            If $lDmg[0] = 15 And $lDmg[1] = 22 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aSwordMaxStats) Then Return True
+
         Case $item_type_daggers
-            If $lDmg[0] = 7 And $lDmg[1] = 17 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aDaggerMaxStats) Then Return True
+
         Case $item_type_scythe
-            If $lDmg[0] = 9 And $lDmg[1] = 41 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aScytheMaxStats) Then Return True
+
         Case $item_type_spear
-            If $lDmg[0] = 14 And $lDmg[1] = 27 Then Return True
+            If CheckMaxDmg($iReq, $aDmg, $iType, $g_aSpearMaxStats) Then Return True
+
     EndSwitch
+
     Return False
-EndFunc ;==>IsItemMaxDmg
+EndFunc ;==>IsWeaponMaxDmg
+
+;~ checks if weapon has max damage/armor/energy stats
+Func CheckMaxDmg($iReq, $aDmg, $iType, ByRef $aMaxStats)
+    If $iReq > 9 Then $iReq = 9 ; normalize all req's 9-13, they all got same stats
+
+    For $i = 0 To UBound($aMaxStats) - 1
+        If $iReq <> $aMaxStats[$i][$item_req] Then ContinueLoop
+        
+        If $iType = $item_type_offhand Or $iType = $item_type_shield Then
+            If $aDmg[1] >= $aMaxStats[$i][$item_max_dmg] Then Return True
+        Else
+            If $aDmg[0] >= $aMaxStats[$i][$item_min_dmg] And $aDmg[1] >= $aMaxStats[$i][$item_max_dmg] Then Return True
+        EndIf
+
+        Return False ; there can only be one match, so we can safely exit
+    Next
+
+    Return False
+EndFunc ;==>CheckMaxDmg
 
 ;~ Returns True if the Item is of a Weapon Type
 Func IsWeapon($pItem)
@@ -2240,7 +2278,7 @@ EndFunc ;==>Is60HpHex
 Func IsVampiric($pItem, $iWeaponType = -1)
     Local $sModStruct = GetModStruct($pItem)
     Local $aMod = GetModByIdentifier($sModStruct, '2825')
-    If $aMod[1] = 0 Then Return False
+    If $aMod[1] < 3 Then Return False
 
     If $iWeaponType = -1 Then Return True
 
@@ -2252,7 +2290,7 @@ EndFunc ;==>IsVampiric
 Func IsZealous($pItem, $iWeaponType = -1)
     Local $sModStruct = GetModStruct($pItem)
     Local $aMod = GetModByIdentifier($sModStruct, '1825')
-    If $aMod[0] = 0 Then Return False
+    If $aMod[0] < 1 Then Return False
 
     If $iWeaponType = -1 Then Return True
 
@@ -2420,7 +2458,7 @@ EndFunc ;==>CheckOsShield
 
 Func IsPerfectShield($pItem)
     If GetItemType($pItem) <> $item_type_shield Then Return False ; check if shield
-    If Not IsItemMaxDmg($pItem) Then Return False
+    If Not IsWeaponMaxDmg($pItem) Then Return False
     
     Local $lReq = GetItemReq($pItem)
     Local $lModStruct = GetModStruct($pItem)
