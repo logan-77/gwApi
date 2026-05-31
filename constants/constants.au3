@@ -308,10 +308,6 @@ Global Enum $Backpack = 1, $BeltPouch, $Bag1, $Bag2, $EquipmentPack, _
             $UnclaimedItems = 7, $Storage1, $Storage2, $Storage3, $Storage4, _
             $Storage5, $Storage6, $Storage7, $Storage8, $Storage9, _
             $Storage10, $Storage11, $Storage12, $Storage13, $StorageAnniversary
-Global Const $HERO_ID[38][2] = [ [37, 1], [1, "Norgu"], [2, "Goren"], [3, "Tahlkora"], [4, "Master"], [5, "Jin"], [6, "Koss"], [7, "Dunkoro"], [8, "Sousuke"], [9, "Melonni"], [10, "Zhed"], [11, "Morgahn"], [12, "Margrid"], [13, "Zenmai"], [14, "Olias"], [15, "Razah"], [16, "Mox"], [17, "Keiran"], [18, "Jora"], [19, "Pyre"], [20, "Anton"], [21, "Livia"], [22, "Hayda"], [23, "Kahmu"], [24, "Gwen"], [25, "Xandra"], [26, "Vekk"], [27, "Ogden"], [28, "Mercenary Hero 1"], [29, "Mercenary Hero 2"], [30, "Mercenary Hero 3"], [31, "Mercenary Hero 4"], [32, "Mercenary Hero 5"], [33, "Mercenary Hero 6"], [34, "Mercenary Hero 7"], [35, "Mercenary Hero 8"], [36, "Miku"], [37, "Zei Ri"] ]
-Global Const $item_type_ID [12] = [$item_type_STAFF, $item_type_WAND, $item_type_OFFHAND, $item_type_SHIELD, $item_type_AXE, $item_type_BOW, $item_type_HAMMER, $item_type_DAGGERS, $item_type_SCYTHE, $item_type_SPEAR, $item_type_SWORD, $item_type_SALVAGE]
-Global Const $GH_Array[16] = [4, 5, 6, 51, 176, 177, 178, 179, 275, 276, 359, 360, 529, 530, 537, 538]
-#Endregion
 
 #Region Tomes
 ; all tomes
