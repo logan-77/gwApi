@@ -11,11 +11,42 @@ Global Enum _
     $idx_mod_shield_2ench, _
     $idx_mod_shield_2stance, _
     $idx_mod_shield_3hex, _
-    $idx_mod_shield_armor_value, _
     $idx_mod_shield_armor_type, _
-    $idx_mod_shield_monster, _
+    $idx_mod_shield_armor_monster, _
     $idx_mod_shield_condition, _
-    $idx_mod_shield_attribute
+    $idx_mod_shield_attribute, _
+    $idx_mod_shield_size
+
+Global Enum _
+    $idx_mod_wand_5_50, _
+    $idx_mod_wand_5_ench, _
+    $idx_mod_wand_10_hct, _
+    $idx_mod_wand_10_hsr, _
+    $idx_mod_wand_20_hct_attribute, _
+    $idx_mod_wand_20_hct_value, _
+    $idx_mod_wand_20_hsr_attribute, _
+    $idx_mod_wand_20_hsr_value, _
+    $idx_mod_wand_high_energy, _
+    $idx_mod_wand_attribute, _
+    $idx_mod_wand_size
+
+Global Enum _
+    $idx_mod_offhand_30hp, _
+    $idx_mod_offhand_45stance, _
+    $idx_mod_offhand_60hex, _
+    $idx_mod_offhand_45ench, _
+    $idx_mod_offhand_armor_enchanted, _
+    $idx_mod_offhand_armor_monster_type, _
+    $idx_mod_offhand_armor_monster_value, _
+    $idx_mod_offhand_10_hct, _
+    $idx_mod_offhand_10_hsr, _
+    $idx_mod_offhand_20_hct_attribute, _
+    $idx_mod_offhand_20_hct_value, _
+    $idx_mod_offhand_20_hsr_attribute, _
+    $idx_mod_offhand_20_hsr_value, _
+    $idx_mod_offhand_high_energy, _
+    $idx_mod_offhand_attribute, _
+    $idx_mod_offhand_size
 
 #Region Items
 Func GetItemExists($pItem)
@@ -2228,19 +2259,6 @@ Func IsDontThinkTwice($pItem)
     Return CheckModStruct(GetModStruct($pItem), "BA033225000A0822")
 EndFunc ;==>IsDontThinkTwice
 
-
-;~ checks for +30Hp upgrade (any)
-Func Is30Hp($pItem, $iWeaponType = -1)
-    Local $sModStruct = GetModStruct($pItem)
-    Local $aMod = GetModByIdentifier($sModStruct, '4823')
-    If $aMod[1] < 30 Then Return False
-
-    If $iWeaponType = -1 Then Return True
-
-    ;~ Switch for selective weapon type is missing
-    Return False
-EndFunc ;==>Is30Hp
-
 ;~ checks for hale staff head (+30hp prefix)
 Func IsHaleStaffHead($pItem)
     Return CheckModStruct(GetModStruct($pItem), "3A013025001E4823")
@@ -2250,42 +2268,6 @@ EndFunc ;==>IsHaleStaffHead
 Func IsStaffWrappingOfFortitude($pItem)
     Return CheckModStruct(GetModStruct($pItem), "B9013025001E4823")
 EndFunc ;==>IsStaffWrappingOfFortitude
-
-;~ checks for +45^ench upgrade (any)
-Func Is45HpEnch($pItem, $iWeaponType = -1)
-    Local $sModStruct = GetModStruct($pItem)
-    Local $aMod = GetModByIdentifier($sModStruct, '6823')
-    If $aMod[1] < 45 Then Return False
-
-    If $iWeaponType = -1 Then Return True
-
-    ;~ Switch for selective weapon type is missing
-    Return False
-EndFunc ;==>Is45HpEnch
-
-;~ checks for +45^stance upgrade (any)
-Func Is45HpStance($pItem, $iWeaponType = -1)
-    Local $sModStruct = GetModStruct($pItem)
-    Local $aMod = GetModByIdentifier($sModStruct, '8823')
-    If $aMod[1] < 45 Then Return False
-
-    If $iWeaponType = -1 Then Return True
-
-    ;~ Switch for selective weapon type is missing
-    Return False
-EndFunc ;==>Is45HpStance
-
-;~ checks for +60^hex upgrade (any)
-Func Is60HpHex($pItem, $iWeaponType = -1)
-    Local $sModStruct = GetModStruct($pItem)
-    Local $aMod = GetModByIdentifier($sModStruct, '7823')
-    If $aMod[1] < 60 Then Return False
-
-    If $iWeaponType = -1 Then Return True
-
-    ;~ Switch for selective weapon type is missing
-    Return False
-EndFunc ;==>Is60HpHex
 
 
 ;~ checks for vampiric upgrade
@@ -2427,36 +2409,38 @@ Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
     Local $aMods = StringSplit(StringLower($sMods), "|", $STR_NOCOUNT)
 
     For $sCurrentMod In $aMods
+
         Switch $sCurrentMod
+
             Case "1550"
-                Return CheckModStruct($sModStruct, "0F327822")
+                If CheckModStruct($sModStruct, "0F327822") Then Return True
 
             Case "15ench"
-                Return CheckModStruct($sModStruct, "0F006822")
+                If CheckModStruct($sModStruct, "0F006822") Then Return True
 
             Case "15stance"
-                Return CheckModStruct($sModStruct, "0F00A822")
+                If CheckModStruct($sModStruct, "0F00A822") Then Return True
 
             Case "15vshexed"
-                Return CheckModStruct($sModStruct, "0F005822")
+                If CheckModStruct($sModStruct, "0F005822") Then Return True
 
             Case "15-5e"
-                Return CheckModStruct($sModStruct, "0F0038220500B820")
+                If CheckModStruct($sModStruct, "0F0038220500B820") Then Return True
 
             Case "15-10a"
-                Return CheckModStruct($sModStruct, "0F0038220A001820")
+                If CheckModStruct($sModStruct, "0F0038220A001820") Then Return True
 
             Case "5e"
-                Return CheckModStruct($sModStruct, "0500D822")
+                If CheckModStruct($sModStruct, "0500D822") Then Return True
 
             Case "2050"
-                Return CheckModStruct($sModStruct, "14009822")
+                If CheckModStruct($sModStruct, "14009822") Then Return True
 
             Case "dualvamp"
-                Return CheckModStruct($sModStruct, "0F0038220100E820")
+                If CheckModStruct($sModStruct, "0F0038220100E820") Then Return True
 
             Case "dualzeal"
-                Return CheckModStruct($sModStruct, "0F0038220100C820")
+                If CheckModStruct($sModStruct, "0F0038220100C820") Then Return True
 
         EndSwitch
     Next
@@ -2465,25 +2449,207 @@ Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
 EndFunc ;==>CheckOsMartialWeapon
 
 ;~ filter for OS wand
-Func CheckOsWand($pItem)
+Func CheckOsWand($pItem, ByRef $sRules)
+    Local $iType = GetItemType($pItem)
+    If $iType <> $item_type_wand Then Return False ; wand?
+
     Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max dmg?
+
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
+    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
+    Local $aWandMods = ParseWandMods($sModStruct)
+
+    ; Split all rule rows
+    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+
+    ; Process each rule row
+    For $sRow In $aRows
+
+        ; Split row into columns
+        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+
+        ; safety check
+        If UBound($aCols) <> 4 Then
+            Out("Row is wrongly formatted.")
+            ContinueLoop
+        EndIf
+
+        ;========================================
+        ; Column 1: Requirement
+        ;========================================
+
+        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+
+        If $iReq > $iRuleReq Then ContinueLoop
+
+        ;========================================
+        ; Column 2: Attribute
+        ;========================================
+
+        Local $bAttributeMatch = CheckWeaponAttribute($iItemAttribute, $aCols[1])
+
+        If Not $bAttributeMatch Then ContinueLoop
+
+    Next
+
+    Return False
 EndFunc ;==>CheckOsWand
 
 ;~ filter for OS focus
-Func CheckOsFocus($pItem)
+Func CheckOsOffhand($pItem, ByRef $sRules)
+    Local $iType = GetItemType($pItem)
+    If $iType <> $item_type_offhand Then Return False ; focus?
+
     Local $sModStruct = GetModStruct($pItem)
-EndFunc ;==>CheckOsFocus
+    If $sModStruct = 0 Then Return False
+
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max energy?
+
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
+    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
+    Local $aOffhandMods = ParseOffhandMods($sModStruct)
+
+    ; Split all rule rows
+    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+
+    ; Process each rule row
+    For $sRow In $aRows
+
+        ; Split row into columns
+        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+
+        ; safety check
+        If UBound($aCols) <> 4 Then
+            Out("Row is wrongly formatted.")
+            ContinueLoop
+        EndIf
+
+        ;========================================
+        ; Column 1: Requirement
+        ;========================================
+
+        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+
+        If $iReq > $iRuleReq Then ContinueLoop
+
+        ;========================================
+        ; Column 2: Attribute
+        ;========================================
+
+        Local $bAttributeMatch = CheckWeaponAttribute($iItemAttribute, $aCols[1])
+
+        If Not $bAttributeMatch Then ContinueLoop
+
+    Next
+
+    Return False
+EndFunc ;==>CheckOsOffhand
 
 ;~ filter for OS staff
-Func CheckOsStaff($pItem)
+Func CheckOsStaff($pItem, ByRef $sRules)
+    Local $iType = GetItemType($pItem)
+    If $iType <> $item_type_staff Then Return False ; focus?
+
     Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max dmg?
+    ;~ check inherent mods for max stats here
+
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
+    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
+    Local $aStaffMods = ParseStaffMods($sModStruct)
+
+    ; Split all rule rows
+    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+
+    ; Process each rule row
+    For $sRow In $aRows
+
+        ; Split row into columns
+        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+
+        ; safety check
+        If UBound($aCols) <> 4 Then
+            Out("Row is wrongly formatted.")
+            ContinueLoop
+        EndIf
+
+        ;========================================
+        ; Column 1: Requirement
+        ;========================================
+
+        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+
+        If $iReq > $iRuleReq Then ContinueLoop
+
+        ;========================================
+        ; Column 2: Attribute
+        ;========================================
+
+        Local $bAttributeMatch = CheckWeaponAttribute($iItemAttribute, $aCols[1])
+
+        If Not $bAttributeMatch Then ContinueLoop
+
+    Next
+
+    Return False
 EndFunc ;==>CheckOsStaff
 
 ;~ filter or OS shield
-;~ template for $sRules:
-;~ "highestattribute;listofattris,attri2;listofmods,mod1;listofmods2,mod2"
-;~ "9;tactics,strength;45ench,2ench,demon;skeleton,fire,illusion|nextgrouphere
-Func CheckOsShield($pItem, $sRules)
+Func CheckOsShield($pItem, ByRef $sRules)
+    Local Static $bFirstCall = True
+    Local Static $aRuleReq[0]
+    Local Static $aRuleAttribute[0]
+    Local Static $aRuleMod1[0]
+    Local Static $aRuleMod2[0]
+
+    If $bFirstCall Then
+
+        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
+
+        Local $iRows = UBound($aRows), $iValidRows = 0
+
+        ReDim $aRuleReq[$iRows]
+        ReDim $aRuleAttribute[$iRows]
+        ReDim $aRuleMod1[$iRows]
+        ReDim $aRuleMod2[$iRows]
+
+        For $sMod In $aRows
+
+            Local $aCols = StringSplit($sMod, ";", $STR_NOCOUNT) ; split columns
+
+            If UBound($aCols) <> 4 Then
+                Out("Shield rule is wrongly formatted: " & $sMod)
+                ContinueLoop
+            EndIf
+
+            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+            $aRuleAttribute[$iValidRows] = $aCols[1]
+            $aRuleMod1[$iValidRows] = $aCols[2]
+            $aRuleMod2[$iValidRows] = $aCols[3]
+
+            $iValidRows += 1
+        Next
+
+        If $iValidRows < $iRows Then
+            Redim $aRuleReq[$iValidRows]
+            Redim $aRuleAttribute[$iValidRows]
+            Redim $aRuleMod1[$iValidRows]
+            Redim $aRuleMod2[$iValidRows]
+        EndIf
+        
+        $bFirstCall = False
+    EndIf
+
+    If UBound($aRuleReq) = 0 Then
+        Out("No valid shield rules found.")
+        Return False
+    EndIf
+
     Local $iType = GetItemType($pItem)
     If $iType <> $item_type_shield Then Return False ; shield?
 
@@ -2493,44 +2659,38 @@ Func CheckOsShield($pItem, $sRules)
     If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max armor?
 
     Local $iReq = GetItemReq($sModStruct) ; check against 1st column
-    Out("Req: " & $iReq)
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
-    Out("ItemAttr: " & $iItemAttribute)
     Local $aShieldMods = ParseShieldMods($sModStruct)
 
-    ; Split all rule rows
-    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
-    Out("ubound rows:" & UBound($aRows))
+    
 
     ; Process each rule row
     For $sRow In $aRows
-
-        $sRow = StringStripWS($sRow, $STR_STRIPLEADING + $STR_STRIPTRAILING)
 
         ; Split row into columns
         Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
 
         ; safety check
-        If UBound($aCols) <> 4 Then ContinueLoop
-        Out("column check")
+        If UBound($aCols) <> 4 Then
+            Out("Row is wrongly formatted.")
+            ContinueLoop
+        EndIf
         
         ;========================================
         ; Column 1: Requirement
         ;========================================
 
-        Local $iRuleReq = Number($aCols[0])
+        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
 
         If $iReq > $iRuleReq Then ContinueLoop
-        Out("req check")
 
         ;========================================
-        ; Column 2: Attributes
+        ; Column 2: Attribute
         ;========================================
 
         Local $bAttributeMatch = CheckAttributeShield($iItemAttribute, $aCols[1])
 
         If Not $bAttributeMatch Then ContinueLoop
-        Out("attribute match check")
 
         ;========================================
         ; Column 3: Mod1
@@ -2539,7 +2699,6 @@ Func CheckOsShield($pItem, $sRules)
         Local $bMod1 = CheckModShield($aShieldMods, $aCols[2])
 
         If Not $bMod1 Then ContinueLoop
-        Out("mod1 check")
         
         ;========================================
         ; Column 4: Mod2
@@ -2548,7 +2707,6 @@ Func CheckOsShield($pItem, $sRules)
         Local $bMod2 = CheckModShield($aShieldMods, $aCols[3])
 
         If Not $bMod2 Then ContinueLoop
-        Out("mod2 check")
 
         ;========================================
         ; Full rule matched
@@ -2559,6 +2717,78 @@ Func CheckOsShield($pItem, $sRules)
 
     Return False
 EndFunc ;==>CheckOsShield
+
+;~ parses the modstruct of the wand and returns an array
+Func ParseWandMods(ByRef $sModStruct)
+    Local $aWandMods[$idx_mod_wand_size]
+
+    $aWandMods[$idx_mod_wand_5_50] = CheckModStruct($sModStruct, "05320823")
+    $aWandMods[$idx_mod_wand_5_ench] = CheckModStruct($sModStruct, "0500F822")
+    $aWandMods[$idx_mod_wand_10_hct] = CheckModStruct($sModStruct, "000A0822")
+    $aWandMods[$idx_mod_wand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
+    $aWandMods[$idx_mod_wand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
+
+    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
+    $aWandMods[$idx_mod_wand_20_hct_attribute] = $aHct20[0]
+    $aWandMods[$idx_mod_wand_20_hct_value] = $aHct20[1]
+
+    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
+    $aWandMods[$idx_mod_wand_20_hsr_attribute] = $aHsr20[0]
+    $aWandMods[$idx_mod_wand_20_hsr_value] = $aHsr20[1]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+    $aWandMods[$idx_mod_wand_attribute] = $aAttribute[1]
+EndFunc ;==>ParseWandMods
+
+;~ checks if wand contains any requested mod
+Func CheckModWand(ByRef $aWandMods, ByRef $sMods)
+
+EndFunc ;==>CheckModWand
+
+;~ parses the modstruct of the focus and returns an array
+Func ParseOffhandMods(ByRef $sModStruct)
+    Local $aOffhandMods[$idx_mod_offhand_size]
+
+    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
+    $aOffhandMods[$idx_mod_offhand_30hp] = $a30hp[1]
+
+    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
+    $aOffhandMods[$idx_mod_offhand_45ench] = $a45ench[1]
+    
+    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
+    $aOffhandMods[$idx_mod_offhand_45stance] = $a45stance[1]
+
+    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
+    $aOffhandMods[$idx_mod_offhand_60hex] = $a60hex[1]
+
+    $aOffhandMods[$idx_mod_offhand_armor_enchanted] = CheckModStruct($sModStruct, "05009821")
+    $aOffhandMods[$idx_mod_offhand_10_hct] = CheckModStruct($sModStruct, "000A0822")
+    $aOffhandMods[$idx_mod_offhand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
+    $aOffhandMods[$idx_mod_offhand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
+
+    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
+    $aOffhandMods[$idx_mod_offhand_20_hct_attribute] = $aHct20[0]
+    $aOffhandMods[$idx_mod_offhand_20_hct_value] = $aHct20[1]
+
+    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
+    $aOffhandMods[$idx_mod_offhand_20_hsr_attribute] = $aHsr20[0]
+    $aOffhandMods[$idx_mod_offhand_20_hsr_value] = $aHsr20[1]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+    $aOffhandMods[$idx_mod_offhand_attribute] = $aAttribute[1]
+
+    Local $aMonster = GetModByIdentifier($sModStruct, '8080') ; +monster type
+    $aOffhandMods[$idx_mod_offhand_armor_monster_type] = $aMonster[1]
+
+    If $aOffhandMods[$idx_mod_offhand_armor_monster_type] <> -1 Then
+        $aMonster = GetModByIdentifier($sModStruct, 'F8A0') ; armor vs monster value
+        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = $aMonster[1]
+    Else
+        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = -1
+    EndIf
+EndFunc ;==>ParseOffhandMods
 
 Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
     Local $aAttributes = StringSplit($sAttributeList, ",", $STR_NOCOUNT)
@@ -2593,35 +2823,37 @@ Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
     Return False
 EndFunc ;==>CheckAttributeShield
 
-;~ parsed the ModStruct of the shield and returns an array
+;~ parses the ModStruct of the shield and returns an array
 Func ParseShieldMods(ByRef $sModStruct)
-    Local $aShieldMods[12]
+    Local $aShieldMods[$idx_mod_shield_size]
 
-    $aShieldMods[$idx_mod_shield_30hp] = CheckModStruct($sModStruct, "001E4823") ; 30hp
-    Out("shield30: " & $aShieldMods[$idx_mod_shield_30hp])
-    $aShieldMods[$idx_mod_shield_45stance] = CheckModStruct($sModStruct, "002D8823") ; 45stance
-    $aShieldMods[$idx_mod_shield_60hex] = CheckModStruct($sModStruct, "003C7823") ; 60hex
+    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
+    $aShieldMods[$idx_mod_shield_30hp] = $a30hp[1]
 
     Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
     $aShieldMods[$idx_mod_shield_45ench] = $a45ench[1]
-    Out("shield30: " & $aShieldMods[$idx_mod_shield_45ench])
+    
+    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
+    $aShieldMods[$idx_mod_shield_45stance] = $a45stance[1]
+
+    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
+    $aShieldMods[$idx_mod_shield_60hex] = $a60hex[1]
 
     $aShieldMods[$idx_mod_shield_2ench] = CheckModStruct($sModStruct, "02008820") ; -2ench
     $aShieldMods[$idx_mod_shield_2stance] = CheckModStruct($sModStruct, "0200A820") ; -2stance
     $aShieldMods[$idx_mod_shield_3hex] = CheckModStruct($sModStruct, "03009820") ; -3hex
 
     Local $aArmor = GetModByIdentifier($sModStruct, '1821') ; blunt/fire/etc
-    $aShieldMods[$idx_mod_shield_armor_value] = $aArmor[0]
+    If $aArmor[0] < 10 Then $aArmor[1] = -1
     $aShieldMods[$idx_mod_shield_armor_type] = $aArmor[1]
 
-    $aShieldMods[$idx_mod_shield_monster] = GetModShieldArmorMonster($sModStruct) ; skeleton/demon/etc
+    $aShieldMods[$idx_mod_shield_armor_monster] = GetModArmorMonster($sModStruct) ; skeleton/demon/etc
 
     Local $aCondition = GetModByIdentifier($sModStruct, "7824") ; 20% blind/dazed/etc
     $aShieldMods[$idx_mod_shield_condition] = $aCondition[0]
 
     Local $aAttribute = GetModByIdentifier($sModStruct, "1824") ; +1^20% attribute
     If $aAttribute[0] < 20 Then $aAttribute[1] = -1
-
     $aShieldMods[$idx_mod_shield_attribute] = $aAttribute[1]
 
     Return $aShieldMods
@@ -2631,88 +2863,149 @@ EndFunc ;==>ParseShieldMods
 Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
 
     ; Split requested mods
-    Local $aMods = StringSplit(StringLower($sMods), ",", $STR_NOCOUNT)
+    Local $aMods = StringSplit($sMods, ",", $STR_NOCOUNT)
 
     ;~ remove whitespace
     For $i = 0 To UBound($aMods) - 1
         $aMods[$i] = StringStripWS($aMods[$i], $STR_STRIPLEADING + $STR_STRIPTRAILING)
-        $aMods[$i] = String($aMods[$i])
-        Out($aMods[$i])
     Next
 
-    ;~ Armor vs damage type
-    If CheckModShieldArmor($aShieldMods[$idx_mod_shield_armor_value], _
-                     $aShieldMods[$idx_mod_shield_armor_type], _
-                     $aMods) Then Return True
-    Out("armor check")
-
-    ;~ Reduced condition duration
-    If CheckModShieldCondition($aShieldMods[$idx_mod_shield_condition], $aMods) Then Return True
-    Out("condition check")
-
-    ;~ +1^20% attribute mods
-    If CheckModAttribute($aShieldMods[$idx_mod_shield_attribute], $aMods) Then Return True
-    Out("attri bonus check")
-    
-
     For $sCurrentMod In $aMods
-
-        $sCurrentMod = StringStripWS($sCurrentMod, $STR_STRIPLEADING + $STR_STRIPTRAILING)
-        $sCurrendMod = String($sCurrentMod)
-        Out("current: " & $sCurrentMod)
-
         Switch $sCurrentMod
-            
-            ;========================================
-            ; Basic shield mods
-            ;========================================
-
-            Case "30", "30hp"
-                If $aShieldMods[$idx_mod_shield_30hp] Then Return True
-            Case "45stance"
-                If $aShieldMods[$idx_mod_shield_45stance] Then Return True
-            Case "60hex"
-                If $aShieldMods[$idx_mod_shield_60hex] Then Return True
-
-            Case "45ench"
-                If $aShieldMods[$idx_mod_shield_45ench] >= 45 Then Return True
-            Case "44ench"
-                If $aShieldMods[$idx_mod_shield_45ench] >= 44 Then Return True
-            Case "43ench"
-                If $aShieldMods[$idx_mod_shield_45ench] >= 43 Then Return True
-            Case "42ench"
-                If $aShieldMods[$idx_mod_shield_45ench] >= 42 Then Return True
-            Case "41ench"
-                If $aShieldMods[$idx_mod_shield_45ench] >= 41 Then Return True
-
             Case "-2ench", "2ench"
                 If $aShieldMods[$idx_mod_shield_2ench] Then Return True
             Case "-2stance", "2stance"
                 If $aShieldMods[$idx_mod_shield_2stance] Then Return True
             Case "-3hex", "3hex"
                 If $aShieldMods[$idx_mod_shield_3hex] Then Return True
-
-
-            ;========================================
-            ; Armor vs monster type
-            ;========================================
-
-            Case _
-            "undead", "charr", "troll", "plant", "skeleton", _
-            "giant", "dwarf", "tengu", "demon", "dragon", "ogre"
-                If $aShieldMods[$idx_mod_shield_monster]  == $sCurrentMod Then Return True
-
         EndSwitch
     Next
+
+    ;~ +30Hp
+    If CheckMod30Hp($aShieldMods[$idx_mod_shield_30hp], $aMods) Then Return True
+
+    ;~ +45Hp^ench
+    If CheckMod45Ench($aShieldMods[$idx_mod_shield_45ench], $aMods) Then Return True
+
+    ;~ +45Hp^stance
+    If CheckMod45Stance($aShieldMods[$idx_mod_shield_45stance], $aMods) Then Return True
+
+    ;~ +60Hp^hex
+    If CheckMod45Ench($aShieldMods[$idx_mod_shield_60hex], $aMods) Then Return True
+
+
+    ;~ armor vs monster type
+    If CheckModMonster($aShieldMods[$idx_mod_shield_armor_monster], $aMods) Then Return True
+
+    ;~ Armor vs damage type
+    If CheckModArmor($aShieldMods[$idx_mod_shield_armor_type], $aMods) Then Return True
+
+    ;~ Reduced condition duration
+    If CheckModCondition($aShieldMods[$idx_mod_shield_condition], $aMods) Then Return True
+
+    ;~ +1^20% attribute mods
+    If CheckModAttribute($aShieldMods[$idx_mod_shield_attribute], $aMods) Then Return True
 
     Return False
 EndFunc ;==>CheckModShield
 
+;~ checks if item contains +30Hp
+Func CheckMod30Hp($iHp, ByRef $aMods)
+    If $iHp = -1 Then Return False
+
+    For $sCurrendMod In $aMods
+
+        Switch $sCurrendMod
+            Case "30", "30hp"
+                If $iHp >= 30 Then Return True
+            Case "29", "29hp"
+                If $iHp >= 29 Then Return True
+            Case "28", "28hp"
+                If $iHp >= 28 Then Return True
+            Case "27", "27hp"
+                If $iHp >= 27 Then Return True
+        EndSwitch
+
+    Next
+    
+    Return False
+EndFunc ;==>CheckMod30Hp
+
+;~ checks if item contains +45Hp^ench
+Func CheckMod45Ench($iHp, ByRef $aMods)
+    If $iHp = -1 Then Return False
+
+    For $sCurrendMod In $aMods
+
+        Switch $sCurrendMod
+            Case "45ench"
+                If $iHp >= 45 Then Return True
+            Case "44ench"
+                If $iHp >= 44 Then Return True
+            Case "43ench"
+                If $iHp >= 43 Then Return True
+            Case "42ench"
+                If $iHp >= 42 Then Return True
+            Case "41ench"
+                If $iHp >= 41 Then Return True
+        EndSwitch
+
+    Next
+    
+    Return False
+EndFunc ;==>CheckMod45Ench
+
+;~ checks if item contains +45Hp^stance
+Func CheckMod45Stance($iHp, ByRef $aMods)
+    If $iHp = -1 Then Return False
+
+    For $sCurrendMod In $aMods
+
+        Switch $sCurrendMod
+            Case "45stance"
+                If $iHp >= 45 Then Return True
+            Case "44stance"
+                If $iHp >= 44 Then Return True
+            Case "43stance"
+                If $iHp >= 43 Then Return True
+            Case "42stance"
+                If $iHp >= 42 Then Return True
+            Case "41stance"
+                If $iHp >= 41 Then Return True
+        EndSwitch
+
+    Next
+    
+    Return False
+EndFunc ;==>CheckMod45Stance
+
+;~ checks if item contains +60Hp^hex
+Func CheckMod60Hex($iHp, ByRef $aMods)
+    If $iHp = -1 Then Return False
+
+    For $sCurrendMod In $aMods
+
+        Switch $sCurrendMod
+            Case "60hex"
+                If $iHp >= 60 Then Return True
+            Case "59hex"
+                If $iHp >= 59 Then Return True
+            Case "58hex"
+                If $iHp >= 58 Then Return True
+            Case "57hex"
+                If $iHp >= 57 Then Return True
+            Case "56hex"
+                If $iHp >= 56 Then Return True
+        EndSwitch
+
+    Next
+    
+    Return False
+EndFunc ;==>CheckMod60Hex
+
 ;~ checks if item contains +10 vsType (blunt/fire/etc)
-Func CheckModShieldArmor($iValue, $iType, ByRef $aMods)
-    Out("armor value: " & $iValue)
-    Out("armor type: " & $iType)
-    If $iValue < 10 Then Return False
+Func CheckModArmor($iArmorType, ByRef $aMods)
+    If $iArmorType = -1 Then Return False
 
     For $sCurrentMod In $aMods
 
@@ -2720,28 +3013,28 @@ Func CheckModShieldArmor($iValue, $iType, ByRef $aMods)
             Case "allarmor"
                 Return True
             Case "blunt"
-                If $iType = 0x00 Then Return True
+                If $iArmorType = 0x00 Then Return True
             Case "piercing"
-                If $iType = 0x01 Then Return True
+                If $iArmorType = 0x01 Then Return True
             Case "slashing"
-                If $iType = 0x02 Then Return True
+                If $iArmorType = 0x02 Then Return True
             Case "cold"
-                If $iType = 0x03 Then Return True
+                If $iArmorType = 0x03 Then Return True
             Case "lightning"
-                If $iType = 0x04 Then Return True
+                If $iArmorType = 0x04 Then Return True
             Case "fire"
-                If $iType = 0x05 Then Return True
+                If $iArmorType = 0x05 Then Return True
             Case "earth"
-                If $iType = 0x0B Then Return True
+                If $iArmorType = 0x0B Then Return True
         EndSwitch
 
     Next
 
     Return False                
-EndFunc ;==>CheckModShieldArmor
+EndFunc ;==>CheckModArmor
 
 ;~ checks if item contains 20% condition mod
-Func CheckModShieldCondition($iCondition, ByRef $aMods)
+Func CheckModCondition($iCondition, ByRef $aMods)
     If $iCondition = -1 Then Return False
 
     For $sCurrentMod In $aMods
@@ -2770,7 +3063,7 @@ Func CheckModShieldCondition($iCondition, ByRef $aMods)
     Next
 
     Return False
-EndFunc ;==>CheckModShieldCondition
+EndFunc ;==>CheckModCondition
 
 ;~ checks if item contains +1^20% attribute mod
 Func CheckModAttribute($iAttribute, ByRef $aMods)
@@ -2872,15 +3165,39 @@ Func CheckModAttribute($iAttribute, ByRef $aMods)
     Return False
 EndFunc ;==>CheckModAttribute
 
+;~ checks if item contains +10 vsMonster (demon/skeleton/etc)
+Func CheckModMonster($iMonster, ByRef $aMods)
+    If $iMonster == "" Then Return False
+
+    For $sCurrentMod In $aMods
+
+        Switch $sCurrentMod
+
+            Case "allmonster"
+                If $iMonster <> "" Then Return True
+
+            Case "demon", "skeleton", "undead"
+                If $iMonster == $sCurrentMod Then Return True
+
+            Case "charr", "troll", "plant", "giant", "dwarf", "tengu",  "dragon", "ogre"
+                If $iMonster == $sCurrentMod Then Return True
+
+        EndSwitch
+
+    Next
+
+    Return False
+EndFunc ;==>CheckModMonster
+
 ;~ checks if item contains +10 vsMonster
-Func GetModShieldArmorMonster(ByRef $sModStruct)
+Func GetModArmorMonster(ByRef $sModStruct)
     Local $aMod = GetModByIdentifier($sModStruct, '4821')
     If $aMod[0] = -1 Or $aMod[1] = -1 Then Return ""
 
     If $aMod[0] < 10 Then Return "" ; not +10armor
 
     Return GetMonsterType($aMod[1])
-EndFunc ;==>GetModShieldArmorMonster
+EndFunc ;==>GetModArmorMonster
 
 ;~ returns string representing monster type
 Func GetMonsterType($iMonsterID)
