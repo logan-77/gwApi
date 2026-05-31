@@ -1124,36 +1124,86 @@ EndFunc ;==>FindExpertSalvageKit
 ;~ Buys Salvage Kit
 Func BuySalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
-    Merchant_BuyItem($model_id_salvage_kit, $iQuantity)
-    Other_PingSleep(1000)
+
+    While $iQuantity > 10
+        Merchant_BuyItem($model_id_salvage_kit, 10)
+        Other_PingSleep(1000)
+
+        $iQuantity -= 10
+    WEnd
+
+    If $iQuantity > 0 Then
+        Merchant_BuyItem($model_id_salvage_kit, $iQuantity)
+        Other_PingSleep(1000)
+    EndIf
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys Expert Salvage Kit
 Func BuyExpertSalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
-    Merchant_BuyItem($model_id_expert_salvage_kit, $iQuantity)
-    Other_PingSleep(1000)
+
+    While $iQuantity > 10
+        Merchant_BuyItem($model_id_expert_salvage_kit, 10)
+        Other_PingSleep(1000)
+
+        $iQuantity -= 10
+    WEnd
+
+    If $iQuantity > 0 Then
+        Merchant_BuyItem($model_id_expert_salvage_kit, $iQuantity)
+        Other_PingSleep(1000)
+    EndIf
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys Superior Salvage Kit
 Func BuySuperiorSalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
-    Merchant_BuyItem($model_id_superior_salvage_kit, $iQuantity)
-    Other_PingSleep(1000)
+
+    While $iQuantity > 10
+        Merchant_BuyItem($model_id_superior_salvage_kit, 10)
+        Other_PingSleep(1000)
+
+        $iQuantity -= 10
+    WEnd
+
+    If $iQuantity > 0 Then
+        Merchant_BuyItem($model_id_superior_salvage_kit, $iQuantity)
+        Other_PingSleep(1000)
+    EndIf
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys an ID kit.
 Func BuyIDKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
-    Merchant_BuyItem($model_id_identification_kit, $iQuantity)
-    Other_PingSleep(1000)
+
+    While $iQuantity > 10
+        Merchant_BuyItem($model_id_identification_kit, 10)
+        Other_PingSleep(1000)
+
+        $iQuantity -= 10
+    WEnd
+
+    If $iQuantity > 0 Then
+        Merchant_BuyItem($model_id_identification_kit, $iQuantity)
+        Other_PingSleep(1000)
+    EndIf
 EndFunc ;==>BuyIDKit
 
 ;~ Buys Superior ID kit.
 Func BuySuperiorIDKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
-    Merchant_BuyItem($model_id_superior_identification_kit, $iQuantity)
-    Other_PingSleep(1000)
+
+    While $iQuantity > 10
+        Merchant_BuyItem($model_id_superior_identification_kit, 10)
+        Other_PingSleep(1000)
+
+        $iQuantity -= 10
+    WEnd
+
+    If $iQuantity > 0 Then
+        Merchant_BuyItem($model_id_superior_identification_kit, $iQuantity)
+        Other_PingSleep(1000)
+    EndIf
 EndFunc ;==>BuySuperiorIDKit
 #EndRegion Buy and Sell
 
@@ -2908,6 +2958,14 @@ Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
 
     Return False
 EndFunc ;==>CheckModShield
+
+Func ParseStaffMods(ByRef $sModStruct)
+    Return True
+EndFunc ;==>ParseStaffMods
+
+Func CheckWeaponAttribute($iAttribute, ByRef $aMods)
+    Return True
+EndFunc ;==>CheckWeaponAttribute
 
 ;~ checks if item contains +30Hp
 Func CheckMod30Hp($iHp, ByRef $aMods)
