@@ -2486,10 +2486,10 @@ Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
             Case "2050"
                 If CheckModStruct($sModStruct, "14009822") Then Return True
 
-            Case "dualvamp"
+            Case "dualvamp", "vampiricstrength"
                 If CheckModStruct($sModStruct, "0F0038220100E820") Then Return True
 
-            Case "dualzeal"
+            Case "dualzeal", "zealousstrength"
                 If CheckModStruct($sModStruct, "0F0038220100C820") Then Return True
 
         EndSwitch
@@ -2668,12 +2668,12 @@ Func CheckOsShield($pItem, ByRef $sRules)
         ReDim $aRuleMod1[$iRows]
         ReDim $aRuleMod2[$iRows]
 
-        For $sMod In $aRows
+        For $sCurrentRow In $aRows
 
-            Local $aCols = StringSplit($sMod, ";", $STR_NOCOUNT) ; split columns
+            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
 
             If UBound($aCols) <> 4 Then
-                Out("Shield rule is wrongly formatted: " & $sMod)
+                Out("Shield rule is wrongly formatted: " & $sCurrentRow)
                 ContinueLoop
             EndIf
 
@@ -2712,55 +2712,16 @@ Func CheckOsShield($pItem, ByRef $sRules)
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
     Local $aShieldMods = ParseShieldMods($sModStruct)
 
-    
 
-    ; Process each rule row
-    For $sRow In $aRows
+    For $i = 0 To UBound($aRuleReq) - 1
 
-        ; Split row into columns
-        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
 
-        ; safety check
-        If UBound($aCols) <> 4 Then
-            Out("Row is wrongly formatted.")
-            ContinueLoop
-        EndIf
-        
-        ;========================================
-        ; Column 1: Requirement
-        ;========================================
+        If Not CheckAttributeShield($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
 
-        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+        If Not CheckModShield($aShieldMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
 
-        If $iReq > $iRuleReq Then ContinueLoop
-
-        ;========================================
-        ; Column 2: Attribute
-        ;========================================
-
-        Local $bAttributeMatch = CheckAttributeShield($iItemAttribute, $aCols[1])
-
-        If Not $bAttributeMatch Then ContinueLoop
-
-        ;========================================
-        ; Column 3: Mod1
-        ;========================================
-
-        Local $bMod1 = CheckModShield($aShieldMods, $aCols[2])
-
-        If Not $bMod1 Then ContinueLoop
-        
-        ;========================================
-        ; Column 4: Mod2
-        ;========================================
-
-        Local $bMod2 = CheckModShield($aShieldMods, $aCols[3])
-
-        If Not $bMod2 Then ContinueLoop
-
-        ;========================================
-        ; Full rule matched
-        ;========================================
+        If Not CheckModShield($aShieldMods, $aRuleMod2[$i]) Then ContinueLoop ; mod2
 
         Return True
     Next
