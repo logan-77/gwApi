@@ -572,7 +572,15 @@ EndFunc   ;==>GetIsAttacking
 #EndRegion AgentInfo
 
 #Region Effects
-; === Effects ====
+;~ checks if an agent is dead and output 
+Func CheckIsDead($pAgent = -2, $sIsDead = "")
+    Local $bDead = BitAND(Memory_Read(Agent_GetAgentPtr($pAgent) + 0x13C, "dword"), 0x0010) > 0
+
+    If $bDead And $sIsDead <> "" Then Out("Died at: " & $sIsDead)
+
+    Return $bDead
+EndFunc ;==>CheckIsDead
+
 ;~ Description: Tests if an agent is dead.
 Func GetIsDead($iAgent = -2)
     Return BitAND(Memory_Read(Agent_GetAgentPtr($iAgent) + 0x13C, "dword"), 0x0010) > 0
