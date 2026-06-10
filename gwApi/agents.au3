@@ -5,17 +5,19 @@ Functions for retrieving information from the Agent Struct.
 ;~ Case 0: all agents
 ;~ Case 1: agents by: $iType (use only this for 0x200/0x400)
 ;~ Case 2: agents by: $iType + $iAllegiance
-;~ Case 3: agents by $iType + $iAllegiance + exclude Minions/Spirits + optional: PlayerNumber, Effect, $aRange ($iAgent or $aX/$aY)
+;~ Case 3: agents by $iType + $iAllegiance + exclude Minions/Spirits + optional: PlayerNumber, Effect, $iRange ($iAgent or $aX/$aY)
 ;~ Case 5: only for Feather Farm
 ;~ Case 6: only for CoF
 ;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
-Func GetAgentPtrArray($iMode = 0, $iType = 0xDB, $iAllegiance = 3, $aRange = 1320, $iAgent = Agent_GetAgentPtr(-2), $aPlayerNumber = 0, $aEffect = 0, $aX = X($iAgent), $aY = Y($iAgent))
+Func GetAgentPtrArray($iMode = 0, $iType = 0xDB, $iAllegiance = 3, $iRange = 1320, $iAgent = Agent_GetAgentPtr(-2), $aPlayerNumber = 0, $aEffect = 0, $aX = X($iAgent), $aY = Y($iAgent))
     Local $iMaxAgents = Agent_GetMaxAgents()
     Local $lAgentPtrStruct = DllStructCreate("ptr[" & $iMaxAgents & "]")
     DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, "ptr", Memory_Read($g_p_AgentBase), "struct*", $lAgentPtrStruct, "ulong_ptr", $iMaxAgents * 4, "ulong_ptr*", 0)
     Local $lTempPtr, $iModelID
     Local $lAgentArray[$iMaxAgents + 1]
     $lAgentArray[0] = 0
+
+    $iRange = $iRange * $iRange ; dist squared
 
     For $i = 1 To $iMaxAgents
         $lTempPtr = DllStructGetData($lAgentPtrStruct, 1, $i)
@@ -24,7 +26,7 @@ Func GetAgentPtrArray($iMode = 0, $iType = 0xDB, $iAllegiance = 3, $aRange = 132
         If $iMode >= 2 And Memory_Read($lTempPtr + 0x1B5, 'byte') <> $iAllegiance Then ContinueLoop
         If $iMode >= 3 Then
             If $aEffect <> 0x0010 And GetIsDead($lTempPtr) Then ContinueLoop ; HP > 0
-            If $aRange <> 0 And GetDistanceToXY($aX, $aY, $lTempPtr) > $aRange Then ContinueLoop ; is in $aRange
+            If $iRange <> 0 And GetPseudoDistanceToXY($aX, $aY, $lTempPtr) > $iRange Then ContinueLoop ; is in $iRange
             
             If $iAllegiance = 0x03 Or $aPlayerNumber <> 0 Then
                 $iModelID = Memory_Read($lTempPtr + 0xF4, "short")
@@ -46,116 +48,133 @@ EndFunc ;==>GetAgentPtrArray
 
 #Region AgentControls
 ; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
-Func GetNumberOfEnemiesNearAgent($iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $iAgent, $aPlayerNumber)
+Func GetNumberOfEnemiesNearAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfEnemiesNearAgent
 
 ; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
-Func GetNumberOfEnemiesNearAgent2(ByRef $aAgentPtrArray, $iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
+Func GetNumberOfEnemiesNearAgent2(ByRef $aAgentPtr, $iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
     Local $lAgentPtr = Agent_GetAgentPtr($iAgent), $lCount = 0
+
+    $iRange = $iRange * $iRange ; dist squared
     
-    For $i = 1 To $aAgentPtrArray[0]
-        If GetIsDead($aAgentPtrArray[$i]) Then ContinueLoop
-        If GetDistance($aAgentPtrArray[$i], $lAgentPtr) > $aRange Then ContinueLoop
-        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtrArray[$i]) <> $aPlayerNumber Then ContinueLoop
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetPseudoDistance($aAgentPtr[$i], $lAgentPtr) > $iRange Then ContinueLoop
+        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
+
         $lCount += 1
     Next
+
     Return $lCount
 EndFunc   ;==>GetNumberOfEnemiesNearAgent
 
 ; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
-Func GetNumberOfEnemiesNearXY($aX, $aY, $aRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, -2, $aPlayerNumber, 0, $aX, $aY)
+Func GetNumberOfEnemiesNearXY($aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, -2, $aPlayerNumber, 0, $aX, $aY)
     Return UBound($aAgentPtr) - 1
 EndFunc ;==>GetNumberOfEnemiesNearXY
 
 ; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
-Func GetNumberOfEnemiesNearXY2(ByRef $aAgentPtrArray, $aX, $aY, $aRange = 1250, $aPlayerNumber = 0)
+Func GetNumberOfEnemiesNearXY2(ByRef $aAgentPtr, $aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
     Local $lCount = 0
+
+    $iRange = $iRange * $iRange ; dist squared
     
-    For $i = 1 To $aAgentPtrArray[0]
-        If GetIsDead($aAgentPtrArray[$i]) Then ContinueLoop
-        If GetDistanceToXY($aX, $aY, $aAgentPtrArray[$i]) > $aRange Then ContinueLoop
-        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtrArray[$i]) <> $aPlayerNumber Then ContinueLoop
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetPseudoDistanceToXY($aX, $aY, $aAgentPtr[$i]) > $iRange Then ContinueLoop
+        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
+
         $lCount += 1
     Next
+
     Return $lCount
 EndFunc   ;==>GetNumberOfEnemiesNearXY
 
 ; Returns the number of living allies in range of an agent
-Func GetNumberOfDeadAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0010)
+Func GetNumberOfDeadAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0010)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfDeadAllies
 
 ;~ Returns the number of living allies in range of an agent. (include npc, pet, spirit)
-Func GetNumberOfAlliesInRangeOfAgent($iAgent = -2, $aRange = 1250)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, $iAgent)
+Func GetNumberOfAlliesInRangeOfAgent($iAgent = -2, $iRange = 1250)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, $iAgent)
     Return UBound($aAgentPtr) - 1
 EndFunc ;==>GetNumberOfAlliesInRangeOfAgent
 
 ; Returns the number of allies with a condition
-Func GetNumberOfConditionedAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0002)
+Func GetNumberOfConditionedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0002)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfConditionedAllies
 
 ; Returns the number of bleeding allies
-Func GetNumberOfBleedingAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0001)
+Func GetNumberOfBleedingAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0001)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfBleedingAllies
 
 ; Returns the number of poisoned allies
-Func GetNumberOfPoisonedAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0040)
+Func GetNumberOfPoisonedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0040)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfPoisonedAllies
 
 ; Returns the number of deep-wounded allies
-Func GetNumberOfDeepWoundedAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $aRange, Agent_GetAgentPtr(-2), 0, 0x0020)
+Func GetNumberOfDeepWoundedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0020)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfDeepWoundedAllies
 
 ;~ Description: Returns Highest HP Enemy in Range. optional: PlayerNumber
-Func GetHighestHPEnemyPtrToAgent($iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $iAgent, $aPlayerNumber)
+Func GetHighestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
     Local $fHighestHP = 0, $pHighestHPAgent = 0, $fHP
     
     For $i = 1 To $aAgentPtr[0]
         $fHP = GetHP($aAgentPtr[$i])
+
         If $fHP > $fHighestHP Then
             $fHighestHP = $fHP
             $pHighestHPAgent = $aAgentPtr[$i]
         EndIf
     Next
+
     Return $pHighestHPAgent
-    EndFunc ;==>GetHighestHPEnemyPtr
+EndFunc ;==>GetHighestHPEnemyPtr
 
 ;~ Description: Returns Lowest HP Enemy in Range. optional: PlayerNumber
-Func GetLowestHPEnemyPtrToAgent($iAgent = -2, $aRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $aRange, $iAgent, $aPlayerNumber)
+Func GetLowestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
     Local $fLowestHP = 2, $pLowestHPAgent = 0, $fHP
     
     For $i = 1 To $aAgentPtr[0]
         $fHP = GetHP($aAgentPtr[$i])
+
         If $fHP < $fLowestHP Then
             $fLowestHP = $fHP
             $pLowestHPAgent = $aAgentPtr[$i]
         EndIf
     Next
+
     Return $pLowestHPAgent
 EndFunc ;==>GetLowestHPEnemyPtr
 
-Func GetAgentPtrByPlayerNumber($aPlayerNumber, $aRange = 5000)
+Func GetAgentPtrByPlayerNumber($aPlayerNumber, $iRange = 5000)
     Local $aAgentPtr = GetAgentPtrArray(1, 0xDB)
+
+    $iRange = $iRange * $iRange
+
     For $i = 1 To $aAgentPtr[0]
         If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-        If GetDistance($aAgentPtr[$i]) > $aRange Then ContinueLoop
+        If GetPseudoDistance($aAgentPtr[$i]) > $iRange Then ContinueLoop
+
         If Memory_Read($aAgentPtr[$i] + 0xF4, "short") = $aPlayerNumber Then Return $aAgentPtr[$i]
     Next
+
     Return 0
 EndFunc   ;==>GetAgentPtrByPlayerNumber
 #EndRegion AgentControls
@@ -195,11 +214,8 @@ EndFunc ;==>GetNearestAgentPtr
 ;~ Returns distance of nearest Agent. param: Allegiance
 Func GetNearestDistance($iAgent = -2, $iAllegiance = 3)
     Local $pNearestAgent = GetNearestAgentPtr($iAgent, 0xDB, $iAllegiance)
-    If $pNearestAgent <> 0 Then
-        Return GetDistance($pNearestAgent, $iAgent)
-    Else
-        Return 10000
-    EndIf
+
+    Return $pNearestAgent <> 0 ? GetDistance($pNearestAgent, $iAgent) : 10000
 EndFunc   ;==>GetNearestDistance
 
 ;~ Description: Returns pointer variable for the nearest enemy to an agent.
@@ -208,17 +224,22 @@ Func GetNearestEnemyPtrToAgent($iAgent = -2, $aPlayerNumber = 0)
 EndFunc ;==>GetNearestEnemyPtrToAgent
 
 ;~ Description: Returns pointer variable for the nearest enemy to an agent.
-Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtrArray, $iAgent = -2, $aPlayerNumber = 0) 
-    Local $pAgent = Agent_GetAgentPtr($iAgent), $pNearestAgent = 0, $iNearestDistance = 100000000, $iDistance
-    For $i = 1 To $aAgentPtrArray[0]
-        If GetIsDead($aAgentPtrArray[$i]) Then ContinueLoop
-        If $aPlayerNumber <> 0 And Memory_Read($aAgentPtrArray[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
-        $iDistance = GetPseudoDistance($aAgentPtrArray[$i], $pAgent)
+Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtr, $iAgent = -2, $aPlayerNumber = 0) 
+    Local $pAgent = Agent_GetAgentPtr($iAgent)
+    Local $pNearestAgent = 0, $iNearestDistance = 100000000, $iDistance
+    
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If $aPlayerNumber <> 0 And Memory_Read($aAgentPtr[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
+        
+        $iDistance = GetPseudoDistance($aAgentPtr[$i], $pAgent)
+        
         If $iDistance < $iNearestDistance Then
             $iNearestDistance = $iDistance
-            $pNearestAgent = $aAgentPtrArray[$i]
+            $pNearestAgent = $aAgentPtr[$i]
         EndIf
     Next
+
     Return $pNearestAgent
 EndFunc ;==>GetNearestEnemyPtrToAgent
 
@@ -260,11 +281,13 @@ Func GetNearestDeadAllyPtrToAgent($iAgent = -2)
         If $aAgentPtr[$i] = $lPtr Then ContinueLoop
 
         $iDistance = GetPseudoDistance($aAgentPtr[$i], $lPtr)
+        
         If $iDistance < $iNearestDistance Then
             $pNearestAgent = $aAgentPtr[$i]
             $iNearestDistance = $iDistance
         EndIf
     Next
+
     Return $pNearestAgent
 EndFunc   ;==>GetNearestDeadAllyPtrToAgent
 
@@ -805,14 +828,14 @@ Func GetMinionPtrArray() ; Not tested yet
 EndFunc   ;==>GetMinionPtrArray
 
 ; Returns the number of minions in range of an agent
-Func GetNumberOfMinionAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
+Func GetNumberOfMinionAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $iRange)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfMinionAllies
 
 ; Returns the number of minions I control in range of an agent
-Func GetMyMinionCount($aRange = 5000)
-    Local $lCount, $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $aRange)
+Func GetMyMinionCount($iRange = 5000)
+    Local $lCount, $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x05, $iRange)
     For $i = 1 To $aAgentPtr[0]
         If Memory_Read($aAgentPtr[$i] + 0x2C, "long") <> GetMyID() Then ContinueLoop ; minion owner
         $lCount += 1
@@ -821,8 +844,8 @@ Func GetMyMinionCount($aRange = 5000)
 EndFunc   ;==>GetMyMinionCount
 
 ; Returns the number of spirits in range of an agent
-Func GetNumberOfSpiritAllies($aRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x04, $aRange)
+Func GetNumberOfSpiritAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x04, $iRange)
     Return UBound($aAgentPtr) - 1
 EndFunc   ;==>GetNumberOfSpiritAllies
 
@@ -833,21 +856,21 @@ Func GetMySpiritCount_()
     Return Memory_Read($lPtr[0], 'long') - 1
 EndFunc   ;==>GetMySpiritCount
 
-Func GetMySpiritCount($aRange = 2500)
+Func GetMySpiritCount($iRange = 2500)
     Local $lCount, $MinionPtrArray = GetMinionPtrArray()
     ;_ArrayDisplay($MinionPtrArray)
     If $MinionPtrArray = 0 Then Return 0
     For $i = 1 To $MinionPtrArray[0]
-        If GetDistance($MinionPtrArray[$i]) > $aRange Then ContinueLoop
+        If GetDistance($MinionPtrArray[$i]) > $iRange Then ContinueLoop
         $lCount += 1
     Next
     Return $lCount
 EndFunc   ;==>GetMySpiritCount_
 
 ; Returns the number of offensive and/or defensive ritualist spirits in range of an agent
-;~ Func GetNumberOfSpirits($aRange = 5000, $Offensive = True, $Defensive = True)
+;~ Func GetNumberOfSpirits($iRange = 5000, $Offensive = True, $Defensive = True)
 ;~  Local $lCount = 0
-;~  Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $aRange)
+;~  Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $iRange)
 
 ;~  For $i = 1 To $aAgentPtr[0]
 ;~   Switch Memory_Read($aAgentPtr[$i] + 244, 'word')    ; check on player number
@@ -865,12 +888,12 @@ EndFunc   ;==>GetMySpiritCount_
 ;~ EndFunc   ;==>GetNumberOfSpirits
 
 ; Returns the number of ritualist pressure spirits in range of an agent
-;~ Func NumberOfPressureSpirits($aRange = 5000)
-;~  Return GetNumberOfSpirits($aRange, True, False)
+;~ Func NumberOfPressureSpirits($iRange = 5000)
+;~  Return GetNumberOfSpirits($iRange, True, False)
 ;~ EndFunc   ;==>NumberOfPressureSpirits
 
 ;~ ; Returns the number of ritualist survival spirits in range of an agent
-;~ Func NumberOfSurvivalSpirits($aRange = 5000)
-;~  Return GetNumberOfSpirits($aRange, False, True)
+;~ Func NumberOfSurvivalSpirits($iRange = 5000)
+;~  Return GetNumberOfSpirits($iRange, False, True)
 ;~ EndFunc   ;==>NumberOfSurvivalSpirits
 #EndRegion Minions & Spirits
