@@ -99,7 +99,7 @@ Global $g_iBagStructSize = DllStructGetSize($g_tBagStruct)
 
 ;~ item struct
 Global Const $ITEM_STRUCT_TEMPLATE = _
-'dword ItemID;      dword AgentID;      ptr BagEquiped;     ptr Bag;'               & _
+'dword ID;          dword AgentID;      ptr BagEquiped;     ptr BagPtr;'            & _
 'ptr ModStruct;     dword ModStructSize;ptr Customized;     dword ModelFileID;'     & _
 'byte Type;         byte Dye1;          byte ExtraID;       byte Dye3;'             & _
 'short Value;       short h0026;        dword Interaction;  dword ModelID;'         & _
