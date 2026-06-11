@@ -304,39 +304,6 @@ Global Enum $hero_id_norgu = 1, $hero_id_goren, $hero_id_tahlkora, $hero_id_mast
             $hero_id_vekk, $hero_id_ogden, $hero_id_mercenary_1, $hero_id_mercenary_2, $hero_id_mercenary_3, _
             $hero_id_mercenary_4, $hero_id_mercenary_5, $hero_id_mercenary_6, $hero_id_mercenary_7, $hero_id_mercenary_8, _
             $hero_id_miku , $hero_id_zei_ri
-Global Enum $Backpack = 1, $BeltPouch, $Bag1, $Bag2, $EquipmentPack, _
-            $UnclaimedItems = 7, $Storage1, $Storage2, $Storage3, $Storage4, _
-            $Storage5, $Storage6, $Storage7, $Storage8, $Storage9, _
-            $Storage10, $Storage11, $Storage12, $Storage13, $StorageAnniversary
-
-#Region Tomes
-; all tomes
-global $tomes[20] = [21786, 21787, 21788, 21789, 21790, 21791, 21792, 21793, 21794, 21795, 21796, 21797, 21798, 21799, 21800, 21801, 21802, 21803, 21804, 21805]
-;~ elite tomes
-global $elite_tomes[10] = [21786, 21787, 21788, 21789, 21790, 21791, 21792, 21793, 21794, 21795]
-Global Const $model_id_elite_tome_assassin   = 21786
-Global Const $model_id_elite_tome_mesmer   = 21787
-Global Const $model_id_elite_tome_necromancer  = 21788
-Global Const $model_id_elite_tome_elementalist = 21789
-Global Const $model_id_elite_tome_monk   = 21790
-Global Const $model_id_elite_tome_warrior  = 21791
-Global Const $model_id_elite_tome_ranger  = 21792
-Global Const $model_id_elite_tome_dervish  = 21793
-Global Const $model_id_elite_tome_ritualist  = 21794
-Global Const $model_id_elite_tome_paragon  = 21795
-;~ normal tomes
-global $regular_tomes[10] = [21796, 21797, 21798, 21799, 21800, 21801, 21802, 21803, 21804, 21805]
-Global Const $model_id_tome_assassin  = 21796
-Global Const $model_id_tome_mesmer   = 21797
-Global Const $model_id_tome_necromancer = 21798
-Global Const $model_id_tome_elementalist= 21799
-Global Const $model_id_tome_monk  = 21800
-Global Const $model_id_tome_warrior  = 21801
-Global Const $model_id_tome_ranger  = 21802
-Global Const $model_id_tome_dervish  = 21803
-Global Const $model_id_tome_ritualist = 21804
-Global Const $model_id_tome_paragon  = 21805
-#EndRegion Tomes
 
 #Region All Skill Infos
 ; SKILL TYPES
