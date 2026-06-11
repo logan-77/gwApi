@@ -4,7 +4,7 @@
     Also custom partial structs.
 #ce
 
-;~ complete agent struct
+;~ agent struct
 Global Const $AGENT_STRUCT_TEMPLATE = _
 'ptr vtable;                    dword h0004[4];         dword Timer;            dword Timer2;'              & _
 'ptr NextAgent;                 dword h0020[3];         long ID;                float Z;'                   & _
@@ -50,6 +50,8 @@ Global Const $IDX_AGENT_SKILL = 94
 Global $g_tAgentStruct = DllStructCreate($AGENT_STRUCT_TEMPLATE)
 Global $g_iAgentStructSize = DllStructGetSize($g_tAgentStruct)
 
+
+;~ effect struct
 Global Const $EFFECT_STRUCT_TEMPLATE = _
 'long SkillID;      dword AttributeLevel;' & _
 'long EffectID;     dword CasterID;' & _
@@ -65,6 +67,8 @@ Global $g_tEffectArray = DllStructCreate( _
     "ptr EffectArray; dword _padding; long EffectArraySize")
 Global $g_iEffectArrayStructSize = DllStructGetSize($g_tEffectArray)
 
+
+;~ skillbar struct
 Global Const $SKILLBAR_STRUCT_TEMPLATE = _
 'long AgentID;' & _
 'dword AdrenalineA1; dword AdrenalineB1; dword Recharge1; dword SkillID1; dword Event1;' & _
@@ -79,3 +83,29 @@ Global Const $SKILLBAR_STRUCT_TEMPLATE = _
 
 Global $g_tSkillbarStruct = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
 Global $g_iSkillbarStructSize = DllStructGetSize($g_tSkillbarStruct)
+
+
+;~ bag struct
+Global Const $BAG_STRUCT_TEMPLATE = _
+'dword BagType;         dword Index;        dword BagID;'   & _
+'dword ContainerItem;   dword ItemCount;    ptr BagArray;'  & _
+'ptr ItemArray;         long FakeSlots;     dword Slots;'
+
+Global $g_tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
+Global $g_iBagStructSize = DllStructGetSize($g_tBagStruct)
+
+;~ BagType: 1=IsInventoryBag, 2=IsEquipped, 3=IsNotCollected, 4=IsStorage, 5=IsMaterialStorage
+
+
+;~ item struct
+Global Const $ITEM_STRUCT_TEMPLATE = _
+'dword ItemID;      dword AgentID;      ptr BagEquiped;     ptr Bag;'               & _
+'ptr ModStruct;     dword ModStructSize;ptr Customized;     dword ModelFileID;'     & _
+'byte Type;         byte Dye1;          byte ExtraID;       byte Dye3;'             & _
+'short Value;       short h0026;        dword Interaction;  dword ModelID;'         & _
+'ptr InfoString;    ptr Name;           ptr CompleteName;   ptr SingleItemName;'    & _
+'long h0040[2];     short ItemFormula;  byte IsSalvageable; byte h004B;'            & _
+'short Quantity;    byte Equipped;      byte Profession;    byte Slot;'
+
+Global $g_tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+Global $g_iItemStructSize = DllStructGetSize($g_tItemStruct)
