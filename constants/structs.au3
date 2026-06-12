@@ -1,10 +1,9 @@
 #include-once
 #cs 
     Contains all Structs GW uses.
-    Also custom partial structs.
 #ce
 
-;~ agent struct
+;~ agent struct, size = 452 / 0x1C4 (probably incomplete)
 Global Const $AGENT_STRUCT_TEMPLATE = _
 'ptr vtable;                    dword h0004[4];         dword Timer;            dword Timer2;'              & _
 'ptr NextAgent;                 dword h0020[3];         long ID;                float Z;'                   & _
@@ -51,7 +50,7 @@ Global $g_tAgentStruct = DllStructCreate($AGENT_STRUCT_TEMPLATE)
 Global $g_iAgentStructSize = DllStructGetSize($g_tAgentStruct)
 
 
-;~ effect struct
+;~ effect struct, size = 24 / 0x18
 Global Const $EFFECT_STRUCT_TEMPLATE = _
 'long SkillID;      dword AttributeLevel;' & _
 'long EffectID;     dword CasterID;' & _
@@ -68,7 +67,7 @@ Global $g_tEffectArray = DllStructCreate( _
 Global $g_iEffectArrayStructSize = DllStructGetSize($g_tEffectArray)
 
 
-;~ skillbar struct
+;~ skillbar struct, size = 188 / 0xBC
 Global Const $SKILLBAR_STRUCT_TEMPLATE = _
 'long AgentID;' & _
 'dword AdrenalineA1; dword AdrenalineB1; dword Recharge1; dword SkillID1; dword Event1;' & _
@@ -85,7 +84,7 @@ Global $g_tSkillbarStruct = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
 Global $g_iSkillbarStructSize = DllStructGetSize($g_tSkillbarStruct)
 
 
-;~ bag struct
+;~ bag struct, size = 36 / 0x24 (probably complete)
 Global Const $BAG_STRUCT_TEMPLATE = _
 'dword BagType;         dword Index;        dword BagID;'   & _
 'dword ContainerItem;   dword ItemCount;    ptr BagArray;'  & _
@@ -97,7 +96,7 @@ Global $g_iBagStructSize = DllStructGetSize($g_tBagStruct)
 ;~ BagType: 1=IsInventoryBag, 2=IsEquipped, 3=IsNotCollected, 4=IsStorage, 5=IsMaterialStorage
 
 
-;~ item struct
+;~ item struct, size = 84 / 0x54 (probably complete)
 Global Const $ITEM_STRUCT_TEMPLATE = _
 'dword ID;          dword AgentID;      ptr BagEquiped;     ptr BagPtr;'            & _
 'ptr ModStruct;     dword ModStructSize;ptr Customized;     dword ModelFileID;'     & _
