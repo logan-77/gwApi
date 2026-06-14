@@ -7,11 +7,11 @@ Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north,
 Global Const $mMaxGoldStorage = 1000000
 
 ; === rarity ===
-Global Const $rarity_green = 2627
-Global Const $rarity_gold = 2624
+Global Const $rarity_green = 2627 ; item unique
+Global Const $rarity_gold = 2624 ; item rare
 Global Const $rarity_purple = 2626
-Global Const $rarity_blue = 2623
-Global Const $rarity_white = 2621
+Global Const $rarity_blue = 2623 ; item enhance
+Global Const $rarity_white = 2621 ; item common
 
 ; === dye ===
 Global Const $model_id_dye = 146
