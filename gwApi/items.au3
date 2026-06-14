@@ -49,81 +49,259 @@ Global Enum _
     $idx_mod_offhand_size
 
 #Region Items
+Func GetItemPtr($iItemID, $pItemArray = 0, $pItemContext = 0)
+    If IsPtr($iItemID) Then Return $iItemID
+
+    $iItemID = GetItemID($iItemID)
+
+    If Not IsPtr($pItemArray) Then
+        If Not IsPtr($pItemContext) Then $pItemContext = Item_GetItemContextPtr()
+
+        $pItemArray = Memory_Read($pItemContext + 0xB8, 'ptr')
+    EndIf
+
+    Return Memory_Read($pItemArray + (0x4 * $iItemID), 'ptr')
+EndFunc ;==>GetItemPtr
+
 ;~ reads whole item struct
-Func GetItemStruct()
-    Return
+Func GetItemStruct(ByRef $tItemStruct, $pItem, $pItemArray = 0, $pItemContext = 0)
+    ;~ If Not IsDllStruct($tItemStruct) Then Return SetError(3, 0, False) ; not sure if it is useful to keep this
+
+    $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+
+    If Not IsPtr($pItem) Or $pItem = 0 Then Return SetError(1, 0, False)
+
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pItem, _
+                    "struct*", $tItemStruct, _
+                    "ulong_ptr", $g_iItemStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, False)
+    
+    Return True
 EndFunc ;==>GetItemStruct
 
-Func GetItemExists($pItem)
-    Return Item_GetItemPtr($pItem) <> 0
+;~ pointer to the *global* Item Array, which contains *all* Items in the instance
+Func GetItemArrayPtr()
+    Local $l_ai_Offset[4] = [0, 0x18, 0x40, 0xB8]
+    Local $l_ap_ItemContextPtr = Memory_ReadPtr($g_p_BasePointer, $l_ai_Offset, 'ptr')
+    Return SetExtended($l_ap_ItemContextPtr[0], $l_ap_ItemContextPtr[1])
+EndFunc ;==>GetItemArrayPtr
+
+;~ Item Count of *all* Items in the instance (use in combo with GetItemArrayPtr)
+Func GetMaxItems($pItemContext = 0)
+    If Not IsPtr($pItemContext) Then $pItemContext = Item_GetItemContextPtr()
+
+    Return Memory_Read($pItemContext + 0xB8 + 0x8, 'dword')
+EndFunc ;==>GetMaxItems
+
+;~ only pass ItemID, passing pointer is pointless
+Func GetItemExists($iItemID)
+    Return GetItemPtr($iItemID) <> 0
 EndFunc ;==>GetItemExists
 
+Func GetItemID(ByRef $pItem)
+    If IsPtr($pItem) Then
+        Return Memory_Read($pItem, 'dword')
+    ElseIf IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'ID')
+    Else
+        Return $pItem
+    EndIf
+EndFunc ;==>GetItemID
+
 ;~ Description: Returns the AgentID of Item; $pItem = Ptr/Struct/ID
-Func GetItemAgentID($pItem) 
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x4, 'dword')
+Func GetItemAgentID(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'AgentID')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+
+        Return Memory_Read($pItem + 0x4, 'dword')
+    EndIf
 EndFunc ;==>GetItemAgentID
-
-;~ Description: Returns the Type of Item; $pItem = Ptr/Struct/ID
-Func GetItemType($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x20, 'byte')
-EndFunc ;==>GetItemType
-
-;~ Description: Returns the ExtraID of Item; $pItem = Ptr/Struct/ID
-Func GetItemExtraID($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x22, 'byte')
-EndFunc ;==>GetItemExtraID
-
-;~ Description: Returns the Value of Item; $pItem = Ptr/Struct/ID
-Func GetItemValue($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x24, 'short')
-EndFunc ;==>GetItemValue
-
-;~ Description: Returns the ModelID of Item; $pItem = Ptr/Struct/ID
-Func GetItemModelID($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x2C, 'dword')
-EndFunc ;==>GetItemModelID
-
-;~ Description: Returns rarity (name color) of an item; $pItem = Ptr/Struct/ID
-Func GetRarity($pItem)
-    Local $lNameString = Memory_Read(Item_GetItemPtr($pItem) + 0x38, "ptr")
-    If $lNameString = 0 Then Return
-    Return Memory_Read($lNameString, "ushort")
-EndFunc ;==>GetRarity
-
-;~ Description: Returns quantity of an item; $pItem = Ptr/Struct/ID
-Func GetItemQuantity($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0x4C, 'short')
-EndFunc ;==>GetQuantity
-
-;~ Description: Tests if an item is identified.
-Func GetIsIDed($pItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x1) > 0
-EndFunc ;==>GetIsIDed
-
-Func GetIsIdentified($pItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x1) > 0
-EndFunc ;==>GetIsIdentified
-
-;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
-Func GetCanBeIdentified($pItem)
-    Return BitAND(Memory_Read(Item_GetItemPtr($pItem) + 0x28, 'dword'), 0x00800000) > 0
-EndFunc ;==>GetCanBeIdentified
-
-;~ Description: Tests if an Item can be salvaged into Materials.
-Func GetIsSalvageable($pItem)
-    Return (Memory_Read(Item_GetItemPtr($pItem) + 0x4A, "byte") <> 0)
-EndFunc ;==>GetIsSalvageable
 
 ;~ Description: Returns the Bag of an item by ItemID/ItemPtr/ItemStruct
 ;~ Is Zero if the item has been destroyed(e.g. IdKit)
-Func GetItemBagPtr($pItem)
-    Return Memory_Read(Item_GetItemPtr($pItem) + 0xC, 'ptr')
+Func GetItemBagPtr(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'BagPtr')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Return Memory_Read($pItem + 0xC, 'ptr')
+    EndIf
 EndFunc ;==>GetItemBagPtr
 
-Func GetItemPtrBySlot($aBag, $aSlot)
-    Local $pBag = Item_GetBagPtr($aBag)
-    Local $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-    Return Memory_Read($lItemArrayPtr + 4 * ($aSlot - 1), 'ptr')
+;~ Description: Returns the Type of Item; $pItem = Ptr/Struct/ID
+Func GetItemType(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'Type')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+
+        Return Memory_Read($pItem + 0x20, 'byte')
+    EndIf
+EndFunc ;==>GetItemType
+
+;~ Description: Returns the ExtraID of Item; $pItem = Ptr/Struct/ID
+Func GetItemExtraID(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'ExtraID')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+
+        Return Memory_Read($pItem + 0x22, 'byte')
+    EndIf
+EndFunc ;==>GetItemExtraID
+
+;~ Description: Returns the Value of Item; $pItem = Ptr/Struct/ID
+Func GetItemValue(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'Value')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+
+        Return Memory_Read($pItem + 0x24, 'short')
+    EndIf
+EndFunc ;==>GetItemValue
+
+;~ Description: Returns the ModelID of Item; $pItem = Ptr/Struct/ID
+Func GetItemModelID(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'ModelID')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Return Memory_Read($pItem + 0x2C, 'dword')
+    EndIf
+EndFunc ;==>GetItemModelID
+
+;~ Description: Returns rarity (name color) of an item; $pItem = Ptr/Struct/ID
+Func GetItemRarity(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Local $pName = DllStructGetData($pItem, 'CompleteName')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Local $pName = Memory_Read($pItem + 0x38, 'ptr')
+    EndIf
+
+    If $pName = 0 Then Return 0
+
+    Return Memory_Read($pName, "ushort")
+EndFunc ;==>GetItemRarity
+
+Func GetItemName(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Local $pName = DllStructGetData($pItem, 'Name')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Local $pName = Memory_Read($pItem + 0x34, 'ptr')
+    EndIf
+
+    If $pName = 0 Then Return 0
+
+    Return Utils_DecodeEncStringAsync($pName)
+EndFunc ;==>GetItemName
+
+Func GetItemNameComplete(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Local $pName = DllStructGetData($pItem, 'CompleteName')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Local $pName = Memory_Read($pItem + 0x38, 'ptr')
+    EndIf
+
+    If $pName = 0 Then Return 0
+
+    Return Utils_DecodeEncStringAsync($pName)
+EndFunc ;==>GetItemNameComplete
+
+Func GetItemNameSingle(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Local $pName = DllStructGetData($pItem, 'SingleItemName')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Local $pName = Memory_Read($pItem + 0x3C, 'ptr')
+    EndIf
+
+    If $pName = 0 Then Return 0
+
+    Return Utils_DecodeEncStringAsync($pName)
+EndFunc ;==>GetItemNameSingle
+
+;~ Description: Tests if an Item can be salvaged into Materials.
+Func GetIsSalvageable(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'IsSalvageable') <> 0
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return False
+            
+        Return Memory_Read($pItem + 0x4A, 'byte') <> 0
+    EndIf
+EndFunc ;==>GetIsSalvageable
+
+;~ Description: Returns quantity of an item; $pItem = Ptr/Struct/ID
+Func GetItemQuantity(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'Quantity')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Return Memory_Read($pItem + 0x4C, 'short')
+    EndIf
+EndFunc ;==>GetQuantity
+
+Func GetItemInteraction(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'Interaction')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Return Memory_Read($pItem + 0x28, 'dword')
+    EndIf
+EndFunc ;==>GetItemInteraction
+
+;~ Description: Tests if an item is identified.
+Func GetIsIDed(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    Return BitAND(GetItemInteraction($pItem, $pItemArray, $pItemContext), 0x01) > 0
+EndFunc ;==>GetIsIDed
+
+Func GetIsIdentified(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    Return BitAND(GetItemInteraction($pItem, $pItemArray, $pItemContext), 0x01) > 0
+EndFunc ;==>GetIsIdentified
+
+;~ Description: Tests if an item is unidentfied and can be identified. (IsNotButCanBeIdentified )
+Func GetCanBeIdentified(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    Return BitAND(GetItemInteraction($pItem, $pItemArray, $pItemContext), 0x00800000) > 0
+EndFunc ;==>GetCanBeIdentified
+
+Func GetItemPtrBySlot($iBag, $iSlot, $pInventory = 0)
+    Local $pBag = GetBagPtr($iBag, $pInventory)
+    If $pBag = 0 Then Return 0
+    
+    Local $pItemArray = Memory_Read($pBag + 0x18, 'ptr')
+
+    Return Memory_Read($pItemArray + 4 * ($iSlot - 1), 'ptr')
 EndFunc   ;==>GetItemPtrBySlot
 
 ; Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
@@ -491,7 +669,7 @@ EndFunc ;==>DropItemsByModelID
 Func DestroyItem($pItem)
     Item_DestroyItem($pItem)
     Other_PingSleep(100)
-EndFunc   ;==>DestroyItem
+EndFunc ;==>DestroyItem
 
 ;~ Description: Moves an Item and can split up a Stack
 Func MoveItemEx($pItemSource, $iBag, $iSlot, $iAmount = 0)
@@ -513,6 +691,8 @@ Func PickUpLootEx($iMaxDist = 2500)
     Local $lAgentPtr, $lAgentID, $pItem, $lOwner
     Local $lAgentPtrArray = GetAgentPtrArray(1, 0x400)
 
+    $iMaxDist = $iMaxDist * $iMaxDist
+
     For $i = 1 To $lAgentPtrArray[0]
         $lAgentPtr = $lAgentPtrArray[$i]
         $pItem = GetItemPtrByAgentPtr($lAgentPtr)
@@ -520,9 +700,9 @@ Func PickUpLootEx($iMaxDist = 2500)
 
         $lAgentID = ID($lAgentPtr)
         $lOwner = Memory_Read($lAgentPtr + 0xC4, 'long')
-        If $lOwner <> 0 And $lOwner <> GetMyID() Then ContinueLoop ; assigned to another player
+        If $lOwner <> 0 And $lOwner <> Agent_GetMyID() Then ContinueLoop ; assigned to another player
         
-        If CanPickUpEx($pItem) And GetDistance($lAgentPtr) < $iMaxDist Then
+        If CanPickUpEx($pItem) And GetPseudoDistance($lAgentPtr) < $iMaxDist Then
             If GetDistanceToXY(X($lAgentPtr), Y($lAgentPtr)) > 250 Then MoveTo(X($lAgentPtr), Y($lAgentPtr))
 
             $hDeadlock = TimerInit()
@@ -532,19 +712,19 @@ Func PickUpLootEx($iMaxDist = 2500)
             Until Agent_GetAgentPtr($lAgentID) <> $lAgentPtr Or GetIsDead(-2) Or TimerDiff($hDeadlock) > 2000
         EndIf
     Next
-EndFunc   ;==>PickupLootEx
+EndFunc ;==>PickupLootEx
 
 ;~ Description: Returns Itemptr by agentid.
 Func GetItemPtrByAgentID($iAgentID)
     $iAgentID = Agent_GetAgentPtr($iAgentID)
     If $iAgentID = 0 Then Return 0
     Return Item_GetItemPtr(Memory_Read($iAgentID + 0xC8, 'dword'))
-EndFunc   ;==>GetItemPtrByAgentID
+EndFunc ;==>GetItemPtrByAgentID
 
 Func GetItemPtrByAgentPtr($pAgent)
     If Not IsPtr($pAgent) Then Return 0
     Return Item_GetItemPtr(Memory_Read($pAgent + 0xC8, 'dword'))
-EndFunc   ;==>GetItemPtrByAgentPtr
+EndFunc ;==>GetItemPtrByAgentPtr
 
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
@@ -765,6 +945,7 @@ Func StoreItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
        
     Local $aFreeSlots = GetFreeSlotsStorage()
     If $aFreeSlots = 0 Then Return False
+
     Local $pItemDest = GetItemInChest($aModelID, True)
     Local $iFreeSlotsMax = UBound($aFreeSlots), $iCountSlots = 0
     Local $pItem, $pBag, $iModelID, $iQuantity, $iQuantityMerge, $iModelIDFound
@@ -1325,6 +1506,54 @@ Func GetBagItemArrayPtr(ByRef $pBag)
     EndIf
 EndFunc ;==>GetBagItemArrayPtr
 
+;~ returns the complete ItemPtr Array of the specified bags
+Func GetBagItemArray($iBagMin, $iBagMax)
+    Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
+
+    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
+
+    Local $pInventory = Item_GetInventoryPtr()
+
+    Local $iCountBags = $iBagMax - $iBagMin + 1
+    Local $iSlotsMax = $iCountBags * 25
+
+    Local $aItemPtr[$iSlotsMax][3] ; $bag, $slot, $ItemPtr
+    
+    Local $iCount = 0
+
+    For $bag = $iBagMin To $iBagMax
+
+        If GetBagStruct($tBagStruct, $bag, $pInventory) = False Then ContinueLoop
+
+        Local $iSlots = GetBagSlots($tBagStruct)
+        Local $pItemArray = GetBagItemArrayPtr($tBagStruct)
+        Local $tBuffer = DllStructCreate("ptr[" & $iSlots & "]")
+
+        Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, _
+                        "ptr", $pItemArray, _
+                        "struct*", $tBuffer, _
+                        "ulong_ptr", DllStructGetSize($tBuffer), _
+                        "ulong_ptr*", 0)
+        If @error Or Not $aCall[0] Then ContinueLoop
+
+
+        For $slot = 1 To $iSlots
+
+            $aItemPtr[$iCount][0] = $bag
+            $aItemPtr[$iCount][1] = $slot
+            $aItemPtr[$iCount][2] = DllStructGetData($tBuffer, 1, $slot)
+
+            $iCount += 1
+        Next
+
+    Next
+
+    If $iCount = 0 Then Return 0
+
+    Redim $aItemPtr[$iCount][3]
+    Return $aItemPtr
+EndFunc ;==>GetBagItemArray
+
 ;~ returns amount of slots the bag has
 Func GetBagSlots(ByRef $pBag)
     If IsDllStruct($pBag) Then
@@ -1334,8 +1563,12 @@ Func GetBagSlots(ByRef $pBag)
     EndIf
 EndFunc ;==>GetBagSlots
 
+;~ counts free slots in specified bags
 Func CountFreeSlots($iBagMin, $iBagMax)
     Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
+
+    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
+
     Local $pInventory = Item_GetInventoryPtr()
     Local $iCount = 0
 
@@ -1351,17 +1584,20 @@ Func CountFreeSlots($iBagMin, $iBagMax)
 EndFunc ;==>CountFreeSlots
 
 ;~ returns the number of free slots in inventory
-Func CountFreeSlotsInventory($iBagMin = $GC_I_INVENTORY_BACKPACK, $iBagMax = $GC_I_INVENTORY_BAG2)
-    Return CountFreeSlots($iBagMin, $iBagMax)
+Func CountFreeSlotsInventory()
+    Return CountFreeSlots($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
 EndFunc ;==>CountFreeSlotsInventory
 
 ;~ returns the number of free slots in storage
-Func CountFreeSlotsStorage($iBagMin = $GC_I_INVENTORY_STORAGE1, $iBagMax = $GC_I_INVENTORY_STORAGE4)
-    Return CountFreeSlots($iBagMin, $iBagMax)
+Func CountFreeSlotsStorage()
+    Return CountFreeSlots($GC_I_INVENTORY_STORAGE1, $GC_I_INVENTORY_STORAGE4)
 EndFunc ;==>CountFreeSlotsStorage
+
 
 Func GetFreeSlots($iBagMin, $iBagMax)
     Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
+
+    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
 
     While TimerDiff($g_hTimerMoveItem) < $g_iTimeoutMoveItem
         Sleep(100)
@@ -1369,19 +1605,32 @@ Func GetFreeSlots($iBagMin, $iBagMax)
     
     Local $pInventory = Item_GetInventoryPtr()
     
-    Local $aFreeSlots[200][2]
-    Local $pItemArray, $pItem, $iCount = 0
+    Local $iCountBags = $iBagMax - $iBagMin + 1
+    Local $iFreeSlotsMax = $iCountBags * 25
+
+    Local $aFreeSlots[$iFreeSlotsMax][2] 
+
+    Local $pItem, $iCount = 0
 
     For $bag = $iBagMin To $iBagMax
 
         If GetBagStruct($tBagStruct, $bag, $pInventory) = False Then ContinueLoop
 
-        $pItemArray = GetBagItemArrayPtr($tBagStruct)
+        Local $iSlots = GetBagSlots($tBagStruct)
+        Local $pItemArray = GetBagItemArrayPtr($tBagStruct)
+        Local $tBuffer = DllStructCreate("ptr[" & $iSlots & "]")
 
-        For $slot = 0 To GetBagSlots($tBagStruct) - 1
+        Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, _
+                        "ptr", $pItemArray, _
+                        "struct*", $tBuffer, _
+                        "ulong_ptr", DllStructGetSize($tBuffer), _
+                        "ulong_ptr*", 0)
+        If @error Or Not $aCall[0] Then ContinueLoop
 
-            $pItem = Memory_Read($pItemArray + (4 * $slot), 'ptr')
+        For $slot = 1 To $iSlots
             
+            $pItem = DllStructGetData($tBuffer, 1, $slot)
+
             If $pItem = 0 Then
                 $aFreeSlots[$iCount][0] = $bag
                 $aFreeSlots[$iCount][1] = $slot
@@ -1398,14 +1647,91 @@ Func GetFreeSlots($iBagMin, $iBagMax)
     Return $aFreeSlots
 EndFunc ;==>GetFreeSlots
 
-Func GetFreeSlotsInventory($iBagMin = $GC_I_INVENTORY_BACKPACK, $iBagMax = $GC_I_INVENTORY_BAG2)
-    Return GetFreeSlots($iBagMin, $iBagMax)
+Func GetFreeSlotsInventory()
+    Return GetFreeSlots($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
 EndFunc ;==>GetFreeSlotsInventory
 
-Func GetFreeSlotsStorage($iBagMin = $GC_I_INVENTORY_STORAGE1, $iBagMax = $GC_I_INVENTORY_STORAGE4)
-    Return GetFreeSlots($iBagMin, $iBagMax)
+Func GetFreeSlotsStorage()
+    Return GetFreeSlots($GC_I_INVENTORY_STORAGE1, $GC_I_INVENTORY_STORAGE4)
 EndFunc ;==>GetFreeSlotsStorage
 #EndRegion Bag
+
+#Region Inventory
+Func GetInventoryStruct(ByRef $tInventorySruct, $pInventory = 0)
+
+    If Not IsPtr($pInventory) Then $pInventory = Item_GetInventoryPtr()
+
+    If Not IsPtr($pInventory) Or $pInventory = 0 Then Return SetError(1, 0, False)
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pInventory, _
+                    "struct*", $tInventorySruct, _
+                    "ulong_ptr", $g_iInventoryStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, False)
+
+    Return True
+EndFunc ;==>GetInventoryStruct
+
+;~ Description: Have always Platin in inventory, but not to much
+Func MinMaxGold()
+    If Not GetIsOutpost() Then Return
+
+    Local $iGoldCharacter = GetGoldCharacter()
+    
+    If $iGoldCharacter < 30000 Then
+        Out("Withdrawing Gold.")
+        Item_WithdrawGold(30000)
+        Other_PingSleep(100)
+    ElseIf $iGoldCharacter > 70000 Then
+        Out("Depositing Gold.")
+        Item_DepositGold(25000)
+        Other_PingSleep(100)
+    EndIf
+EndFunc ;==>MinMaxGold
+
+;~ Description: Returns amount of gold being carried.
+;~ @extended = gold in storage
+Func GetGoldCharacter()
+    Local $iGoldCharacter, $iGoldStorage
+
+    If Not GetGoldInfo($iGoldCharacter, $iGoldStorage) Then Return SetError(@error, 0, 0)
+
+    Return SetExtended($iGoldStorage, $iGoldCharacter)
+EndFunc ;==>GetGoldCharacter
+
+;~ Description: Returns amount of gold in storage.
+;~ @extended = gold being carried
+Func GetGoldStorage()
+    Local $iGoldCharacter, $iGoldStorage
+
+    If Not GetGoldInfo($iGoldCharacter, $iGoldStorage) Then Return SetError(@error, 0, 0)
+
+    Return SetExtended($iGoldCharacter, $iGoldStorage)
+EndFunc ;==>GetGoldStorage
+
+Func GetGoldInfo(ByRef $iGoldCharacter, ByRef $iGoldStorage)
+    Local Static $tGoldInfo = DllStructCreate("dword GoldCharacter; dword GoldStorage")
+    Local Static $iStructSize = DllStructGetSize($tGoldInfo)
+
+    Local $pInventory = Item_GetInventoryPtr()
+    If Not IsPtr($pInventory) Or $pInventory = 0 Then Return SetError(1, 0, False)
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pInventory + 0x90, _
+                    "struct*", $tGoldInfo, _
+                    "ulong_ptr", $iStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, False)
+
+    $iGoldCharacter = DllStructGetData($tGoldInfo, "GoldCharacter")
+    $iGoldStorage   = DllStructGetData($tGoldInfo, "GoldStorage")
+
+    Return True
+EndFunc ;==>GetGoldInfo
+#EndRegion Inventory
 
 #Region Equipment
 ;~ Description: Unequips item to $abag, $aslot (1-based).
@@ -1415,39 +1741,6 @@ Func UnequipItem($aEquipmentSlot, $aBag, $aSlot)
     Return Core_SendPacket(0x10, $GC_I_HEADER_ITEM_UNEQUIP, $aEquipmentSlot - 1, GetBagID($aBag), $aSlot - 1)
 EndFunc   ;==>UnequipItem
 #EndRegion Equipment
-
-#Region Gold
-;~ Description: Have always Platin in inventory, but not to much
-Func MinMaxGold()
-    If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return 0
-    Local $lCharacter = GetGoldCharacter()
-    
-    If $lCharacter < 30000 Then
-        Out("Withdrawing Gold.")
-        Item_WithdrawGold(30000)
-        Other_PingSleep(100)
-    ElseIf $lCharacter > 70000 Then
-        Out("Depositing Gold.")
-        Item_DepositGold(25000)
-        Other_PingSleep(100)
-    EndIf
-    Return 1
-EndFunc ;==>MinMaxGold
-
-;~ Description: Returns amount of gold being carried.
-Func GetGoldCharacter()
-    Local $lOffset[5] = [0, 0x18, 0x40, 0xF8, 0x90]
-    Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-    Return $lReturn[1]
-EndFunc   ;==>GetGoldCharacter
-
-;~ Description: Returns amount of gold in storage.
-Func GetGoldStorage()
-    Local $lOffset[5] = [0, 0x18, 0x40, 0xF8, 0x94]
-    Local $lReturn = Memory_ReadPtr($g_p_BasePointer, $lOffset)
-    Return $lReturn[1]
-EndFunc   ;==>GetGoldStorage
-#EndRegion Gold
 
 #Region Custom
 ;~ Return the Name of a Common or Rare Material by ModelID
@@ -1763,7 +2056,7 @@ Func IsInsignia($pItem)
 EndFunc ;==>IsInsignia
 
 Func IsRune($pItem)
-    Local $sModstruct = GetModStruct($pItem), $lRarity = GetRarity($pItem)
+    Local $sModstruct = GetModStruct($pItem), $lRarity = GetItemRarity($pItem)
 
     Switch $lRarity
         Case $rarity_blue
@@ -1797,25 +2090,52 @@ EndFunc ;==>IsRune
 
 #Region ModStruct
 ;~ Description: Returns modstruct of an item.
-Func GetModStruct($pItem)
+Func GetModStruct(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
     If IsString($pItem) Then Return $pItem
 
-    $pItem = Item_GetItemPtr($pItem)
-    If $pItem = 0 Then Return 0
+    Local $pModStruct = 0, $iModStructSize = 0
 
-    Local $lModStructPtr = Item_GetItemInfoByPtr($pItem, "ModStruct")
-    If $lModStructPtr = 0 Then Return 0
+    If IsDllStruct($pItem) Then
+        $pModStruct = DllStructGetData($pItem, 'ModStruct')
+        $iModStructSize = DllStructGetData($pItem, 'ModStructSize')
+    Else
+        Local $pItemTmp = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItemTmp = 0 Then Return 0
 
-    Local $lModStructSize = Item_GetItemInfoByPtr($pItem, "ModStructSize")
-    If $lModStructSize = 0 Then Return 0
+        If GetItemModInfo($pItemTmp, $pModStruct, $iModStructSize) = False Then Return 0
+    EndIf
+
+    If $pModStruct = 0 Or $iModStructSize = 0 Then Return 0
     
-    Return String(Memory_Read($lModStructPtr, 'Byte[' & $lModStructSize * 4 & ']'))
+    Return String(Memory_Read($pModStruct, 'Byte[' & 4 * $iModStructSize & ']'))
 EndFunc ;==>GetModStruct
 
+Func GetItemModInfo($pItem, ByRef $pModStruct, ByRef $iModStructSize)
+    Local Static $tModInfo = DllStructCreate("ptr ModPtr; dword Size")
+    Local Static $iStructSize = DllStructGetSize($tModInfo)
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pItem + 0x10, _
+                    "struct*", $tModInfo, _
+                    "ulong_ptr", $iStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(1, 0, False)
+
+    $pModStruct     = DllStructGetData($tModInfo, "ModPtr")
+    $iModStructSize = DllStructGetData($tModInfo, "Size")
+
+    Return True
+EndFunc ;==>GetItemModInfo
+
 ;~ Description: Returns an array of a the requested mod.
-Func GetModByIdentifier($pItem, $sIdentifier)
+Func GetModByIdentifier(ByRef $pItem, $sIdentifier)
+   
+    Local $sModStruct = GetModStruct($pItem)
+
+    $sModStruct = StringTrimLeft($sModStruct, 2)
+
     Local $aReturn[2] = [-1, -1]
-    Local $sModStruct = StringTrimLeft(GetModStruct($pItem), 2)
 
     For $i = 0 To StringLen($sModStruct) / 8 - 2
         If StringMid($sModStruct, 8 * $i + 5, 4) == $sIdentifier Then
@@ -1957,7 +2277,7 @@ Func CheckMaxDmg($iReq, $aDmg, $iType, ByRef Const $aMaxStats)
 EndFunc ;==>CheckMaxDmg
 
 ;~ Returns True if the Item is of a Weapon Type
-Func IsWeapon($pItem)
+Func IsWeapon(ByRef $pItem)
     Switch GetItemType($pItem)
         Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
                 $item_type_hammer, $item_type_wand, $item_type_shield, _
@@ -1993,7 +2313,7 @@ EndFunc ;==>HasWeaponsInInventory
 
 #Region Weapon Mods
 ;~ checks for 'of the Profession' upgrade
-Func HasUpgradeOfTheProfession($pItem, $sMods)
+Func HasUpgradeOfTheProfession(ByRef $pItem, $sMods)
     If $sMods = "" Then Return False
     
     Local $sModStruct = GetModStruct($pItem)
@@ -2038,7 +2358,7 @@ Func HasUpgradeOfTheProfession($pItem, $sMods)
 EndFunc ;==>HasUpgradeOfTheProfession
 
 ;~ checks if item contains selected prefix
-Func HasUpgradePrefix($pItem, $sMods)
+Func HasUpgradePrefix(ByRef $pItem, $sMods)
     If $sMods = "" Then Return False
 
     Local $sModStruct = GetModStruct($pItem)
@@ -2094,7 +2414,7 @@ Func HasUpgradePrefix($pItem, $sMods)
 EndFunc ;==>HasUpgradePrefix
 
 ;~ checks if item contains selected suffix
-Func HasUpgradeSuffix($pItem, $sMods)
+Func HasUpgradeSuffix(ByRef $pItem, $sMods)
     If $sMods = "" Then Return False
     
     Local $sModStruct = GetModStruct($pItem)
@@ -2179,7 +2499,7 @@ Func HasUpgradeSuffix($pItem, $sMods)
 EndFunc ;==>HasUpgradeSuffix
 
 ;~ checks if item contains selected inscription
-Func HasInscription($pItem, $sMods)
+Func HasInscription(ByRef $pItem, $sMods)
     If $sMods = "" Then Return False
     
     Local $sModStruct = GetModStruct($pItem)
