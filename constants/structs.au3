@@ -108,3 +108,24 @@ Global Const $ITEM_STRUCT_TEMPLATE = _
 
 Global $g_tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 Global $g_iItemStructSize = DllStructGetSize($g_tItemStruct)
+
+
+;~ inventory struct
+Global Const $INVENTORY_STRUCT_TEMPLATE = _
+"dword h0000;" & _
+"ptr Backpack;          ptr BeltPouch;          ptr Bag1;                   ptr Bag2;"                          & _
+"ptr EquipmentPack;     ptr MaterialStorage;    ptr UnclaimedItems;"                                        & _
+"ptr Storage1;          ptr Storage2;           ptr Storage3;           ptr Storage4;   ptr Storage5;"      & _
+"ptr Storage6;          ptr Storage7;           ptr Storage8;           ptr Storage9;   ptr Storage10;"     & _
+"ptr Storage11;         ptr Storage12;          ptr Storage13;          ptr Storage14;  ptr EquippedItems;" & _
+"ptr Bundle;            ptr h0060;"             & _
+"ptr WeaponSet0Weapon;  ptr WeaponSet0Offhand;" & _
+"ptr WeaponSet1Weapon;  ptr WeaponSet1Offhand;" & _
+"ptr WeaponSet2Weapon;  ptr WeaponSet2Offhand;" & _
+"ptr WeaponSet3Weapon;  ptr WeaponSet3Offhand;" & _
+"long ActiveWeaponSet;"                         & _
+"dword h0088;           dword h008C;"           & _
+"dword GoldCharacter;   dword GoldStorage;"
+
+Global $g_tInventoryStruct = DllStructCreate($INVENTORY_STRUCT_TEMPLATE)
+Global $g_iInventoryStructSize = DllStructGetSize($g_tInventoryStruct)
