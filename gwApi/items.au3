@@ -2853,21 +2853,114 @@ EndFunc ;==>IsLuckOfTheDraw
 
 #Region OS Filter
 ;~ filter for any OS martial weapon
-Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
-    If $sMods = "" Then Return False
+Func CheckOsMartialWeapon(ByRef $pItem, ByRef $sRules)
+    Local Static $bFirstCall = True
+
+    Local Static $aRuleReq[0]
+    Local Static $aRuleWeapon[0]
+    Local Static $aRuleMods[0]
+
+    If $bFirstCall Then
+
+        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
+
+        Local $iRows = UBound($aRows), $iValidRows = 0
+
+        ReDim $aRuleReq[$iRows]
+        ReDim $aRuleWeapon[$iRows]
+        ReDim $aRuleMods[$iRows]
+
+        For $sCurrentRow In $aRows
+
+            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
+
+            If UBound($aCols) <> 3 Then
+                Out("Martial rule is wrongly formatted: " & $sCurrentRow)
+                ContinueLoop
+            EndIf
+
+            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+            $aRuleWeapon[$iValidRows] = $aCols[1]
+            $aRuleMods[$iValidRows] = $aCols[2]
+
+            $iValidRows += 1
+        Next
+
+        If $iValidRows < $iRows Then
+            Redim $aRuleReq[$iValidRows]
+            Redim $aRuleWeapon[$iValidRows]
+            Redim $aRuleMods[$iValidRows]
+        EndIf
+        
+        $bFirstCall = False
+    EndIf
+
+    If UBound($aRuleReq) = 0 Then
+        Out("No valid martial rules found.")
+        Return False
+    EndIf
+
+    Local $iType = GetItemType($pItem)
+    If Not IsWeaponByType($iType) Then Return False ; not a weapon?
 
     Local $sModStruct = GetModStruct($pItem)
     If $sModStruct = 0 Then Return False
     
-    ;~ dismiss all bigger req's
-    If GetItemReq($sModStruct) > $iReq Then Return False
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max dmg?
 
-    Local $aMods = StringSplit(StringLower($sMods), "|", $STR_NOCOUNT)
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
 
-    For $sCurrentMod In $aMods
+    For $i = 0 To UBound($aRuleReq) - 1
 
-        Switch $sCurrentMod
+        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
 
+        If Not CheckTypeMartial($iType, $aRuleWeapon[$i]) Then ContinueLoop ; type
+
+        If Not CheckModMartial($sModStruct, $aRuleMods[$i]) Then ContinueLoop ; mods
+
+        Return True
+
+    Next
+
+    Return False
+EndFunc ;==>CheckOsMartialWeapon
+
+Func CheckTypeMartial($iType, ByRef $sWeapons)
+    Local $aWeapons = StringSplit($sWeapons, ",", $STR_NOCOUNT)
+
+    For $sWeapon In $aWeapons
+
+        $sWeapon = StringStripWS($sWeapon, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+
+        Switch $sWeapon
+            Case "allweapons"
+                Return True
+            Case "axe"
+                If $iType = $GC_I_TYPE_AXE Then Return True
+            Case "bow"
+                If $iType = $GC_I_TYPE_BOW Then Return True
+            Case "daggers", "dagger"
+                If $iType = $GC_I_TYPE_DAGGERS Then Return True
+            Case "hammer"
+                If $iType = $GC_I_TYPE_HAMMER Then Return True
+            Case "sword"
+                If $iType = $GC_I_TYPE_SWORD Then Return True
+        EndSwitch
+
+    Next
+
+    Return False
+EndFunc ;==>CheckTypeMartial
+
+Func CheckModMartial(ByRef $sModStruct, ByRef $sMods)
+    Local $aMods = StringSplit($sMods, ",", $STR_NOCOUNT)
+
+    For $sMod In $aMods
+
+        $sMod = StringStripWS($sMod, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+
+        Switch $sMod
+            
             Case "1550"
                 If CheckModStruct($sModStruct, "0F327822") Then Return True
 
@@ -2899,10 +2992,11 @@ Func CheckOsMartialWeapon($pItem, $sMods = "", $iReq = 9)
                 If CheckModStruct($sModStruct, "0F0038220100C820") Then Return True
 
         EndSwitch
+
     Next
 
     Return False
-EndFunc ;==>CheckOsMartialWeapon
+EndFunc ;==>CheckModMartial
 
 ;~ filter for OS wand
 Func CheckOsWand($pItem, ByRef $sRules)
@@ -3055,86 +3149,6 @@ Func CheckOsStaff($pItem, ByRef $sRules)
     Return False
 EndFunc ;==>CheckOsStaff
 
-;~ filter or OS shield
-Func CheckOsShield($pItem, ByRef $sRules)
-    Local Static $bFirstCall = True
-    Local Static $aRuleReq[0]
-    Local Static $aRuleAttribute[0]
-    Local Static $aRuleMod1[0]
-    Local Static $aRuleMod2[0]
-
-    If $bFirstCall Then
-
-        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
-
-        Local $iRows = UBound($aRows), $iValidRows = 0
-
-        ReDim $aRuleReq[$iRows]
-        ReDim $aRuleAttribute[$iRows]
-        ReDim $aRuleMod1[$iRows]
-        ReDim $aRuleMod2[$iRows]
-
-        For $sCurrentRow In $aRows
-
-            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
-
-            If UBound($aCols) <> 4 Then
-                Out("Shield rule is wrongly formatted: " & $sCurrentRow)
-                ContinueLoop
-            EndIf
-
-            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
-            $aRuleAttribute[$iValidRows] = $aCols[1]
-            $aRuleMod1[$iValidRows] = $aCols[2]
-            $aRuleMod2[$iValidRows] = $aCols[3]
-
-            $iValidRows += 1
-        Next
-
-        If $iValidRows < $iRows Then
-            Redim $aRuleReq[$iValidRows]
-            Redim $aRuleAttribute[$iValidRows]
-            Redim $aRuleMod1[$iValidRows]
-            Redim $aRuleMod2[$iValidRows]
-        EndIf
-        
-        $bFirstCall = False
-    EndIf
-
-    If UBound($aRuleReq) = 0 Then
-        Out("No valid shield rules found.")
-        Return False
-    EndIf
-
-    Local $iType = GetItemType($pItem)
-    If $iType <> $item_type_shield Then Return False ; shield?
-
-    Local $sModStruct = GetModStruct($pItem)
-    If $sModStruct = 0 Then Return False
-
-    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max armor?
-
-    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
-    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
-    Local $aShieldMods = ParseShieldMods($sModStruct)
-
-
-    For $i = 0 To UBound($aRuleReq) - 1
-
-        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
-
-        If Not CheckAttributeShield($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
-
-        If Not CheckModShield($aShieldMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
-
-        If Not CheckModShield($aShieldMods, $aRuleMod2[$i]) Then ContinueLoop ; mod2
-
-        Return True
-    Next
-
-    Return False
-EndFunc ;==>CheckOsShield
-
 ;~ parses the modstruct of the wand and returns an array
 Func ParseWandMods(ByRef $sModStruct)
     Local $aWandMods[$idx_mod_wand_size]
@@ -3207,6 +3221,88 @@ Func ParseOffhandMods(ByRef $sModStruct)
     EndIf
 EndFunc ;==>ParseOffhandMods
 
+;~ filter or OS shield
+Func CheckOsShield(ByRef $pItem, ByRef $sRules)
+    Local Static $bFirstCall = True
+
+    Local Static $aRuleReq[0]
+    Local Static $aRuleAttribute[0]
+    Local Static $aRuleMod1[0]
+    Local Static $aRuleMod2[0]
+
+    If $bFirstCall Then
+
+        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
+
+        Local $iRows = UBound($aRows), $iValidRows = 0
+
+        ReDim $aRuleReq[$iRows]
+        ReDim $aRuleAttribute[$iRows]
+        ReDim $aRuleMod1[$iRows]
+        ReDim $aRuleMod2[$iRows]
+
+        For $sCurrentRow In $aRows
+
+            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
+
+            If UBound($aCols) <> 4 Then
+                Out("Shield rule is wrongly formatted: " & $sCurrentRow)
+                ContinueLoop
+            EndIf
+
+            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+            $aRuleAttribute[$iValidRows] = $aCols[1]
+            $aRuleMod1[$iValidRows] = $aCols[2]
+            $aRuleMod2[$iValidRows] = $aCols[3]
+
+            $iValidRows += 1
+        Next
+
+        If $iValidRows < $iRows Then
+            Redim $aRuleReq[$iValidRows]
+            Redim $aRuleAttribute[$iValidRows]
+            Redim $aRuleMod1[$iValidRows]
+            Redim $aRuleMod2[$iValidRows]
+        EndIf
+        
+        $bFirstCall = False
+    EndIf
+
+    If UBound($aRuleReq) = 0 Then
+        Out("No valid shield rules found.")
+        Return False
+    EndIf
+
+    Local $iType = GetItemType($pItem)
+    If $iType <> $GC_I_TYPE_SHIELD Then Return False ; shield?
+
+    Local $sModStruct = GetModStruct($pItem)
+    If $sModStruct = 0 Then Return False
+
+    If Not IsWeaponMaxDmg($sModStruct, $iType) Then Return False ; max armor?
+
+    Local $iReq = GetItemReq($sModStruct) ; check against 1st column
+    Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
+    Local $aShieldMods = ParseShieldMods($sModStruct)
+
+
+    For $i = 0 To UBound($aRuleReq) - 1
+
+        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
+
+        If Not CheckAttributeShield($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
+
+        If Not CheckModShield($aShieldMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
+
+        If Not CheckModShield($aShieldMods, $aRuleMod2[$i]) Then ContinueLoop ; mod2
+
+        Return True
+
+    Next
+
+    Return False
+EndFunc ;==>CheckOsShield
+
 Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
     Local $aAttributes = StringSplit($sAttributeList, ",", $STR_NOCOUNT)
 
@@ -3232,7 +3328,7 @@ Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
                 If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
 
             Case Else
-                Return True
+                Out("Unknown shield attribute: " & $sAttribute)
 
         EndSwitch
     Next
@@ -3308,7 +3404,7 @@ Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
     If CheckMod45Stance($aShieldMods[$idx_mod_shield_45stance], $aMods) Then Return True
 
     ;~ +60Hp^hex
-    If CheckMod45Ench($aShieldMods[$idx_mod_shield_60hex], $aMods) Then Return True
+    If CheckMod60Hex($aShieldMods[$idx_mod_shield_60hex], $aMods) Then Return True
 
 
     ;~ armor vs monster type
