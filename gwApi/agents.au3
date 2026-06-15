@@ -870,7 +870,7 @@ EndFunc   ;==>GetMySpiritCount_
 ; Returns the number of offensive and/or defensive ritualist spirits in range of an agent
 ;~ Func GetNumberOfSpirits($iRange = 5000, $Offensive = True, $Defensive = True)
 ;~  Local $lCount = 0
-;~  Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, $allegiance_spirit, $iRange)
+;~  Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, $GC_I_ALLEGIANCE_SPIRIT, $iRange)
 
 ;~  For $i = 1 To $aAgentPtr[0]
 ;~   Switch Memory_Read($aAgentPtr[$i] + 244, 'word')    ; check on player number

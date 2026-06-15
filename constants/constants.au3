@@ -6,68 +6,10 @@ Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north,
 ; === gold related ==
 Global Const $mMaxGoldStorage = 1000000
 
-; === rarity ===
-Global Const $rarity_green = 2627 ; item unique
-Global Const $rarity_gold = 2624 ; item rare
-Global Const $rarity_purple = 2626
-Global Const $rarity_blue = 2623 ; item enhance
-Global Const $rarity_white = 2621 ; item common
-
-; === dye ===
-Global Const $model_id_dye = 146
-Global Const $item_extraid_black_dye = 10
-Global Const $item_extraid_white_dye = 12
-
-; === weapon sets ===
-Global Const $weapon_set_1 = 1
-Global Const $weapon_set_2 = 2
-Global Const $weapon_set_3 = 3
-Global Const $weapon_set_4 = 4
-
-; === item type ===
-Global Const $item_type_salvage    = 0
-Global Const $item_type_leadhand   = 1
-Global Const $item_type_axe     = 2
-Global Const $item_type_bag     = 3
-Global Const $item_type_boots    = 4
-Global Const $item_type_bow     = 5
-Global Const $item_type_bundle    = 6
-Global Const $item_type_chestpiece   = 7
-Global Const $item_type_rune_and_mod  = 8
-Global Const $item_type_usable    = 9  ; includes tomes
-Global Const $item_type_dye     = 10
-Global Const $item_type_material_and_zcoins = 11
-Global Const $item_type_offhand    = 12
-Global Const $item_type_gloves    = 13
-Global Const $item_type_celestial_sigil  = 14
-Global Const $item_type_hammer    = 15
-Global Const $item_type_headpiece   = 16
-Global Const $item_type_trophy_2   = 17 ; salvageitem / cc shards?
-Global Const $item_type_key     = 18 ; includes lockpicks
-Global Const $item_type_leggins    = 19
-Global Const $item_type_gold_coins   = 20 ; includes platinum
-Global Const $item_type_quest_item   = 21
-Global Const $item_type_wand    = 22
-Global Const $item_type_shield    = 24
-Global Const $item_type_staff    = 26
-Global Const $item_type_sword    = 27
-Global Const $item_type_kit     = 29 ; + keg ale
-Global Const $item_type_trophy    = 30 ; includes polyymock pieces
-Global Const $item_type_scroll    = 31
-Global Const $item_type_daggers    = 32
-Global Const $item_type_present    = 33
-Global Const $item_type_minipet    = 34
-Global Const $item_type_scythe    = 35
-Global Const $item_type_spear    = 36
-Global Const $item_type_books    = 43 ; encrypted charr battle plan/decoder, golem user manual, books
-Global Const $item_type_costume_body  = 44
-Global Const $item_type_costume_headpice = 45
-Global Const $item_type_not_equipped  = 46
-
 Global Const $g_aWeaponType[] = [ _
-    $item_type_axe, $item_type_bow, $item_type_offhand, $item_type_hammer, _
-    $item_type_wand, $item_type_shield, $item_type_staff, $item_type_sword, _
-    $item_type_daggers, $item_type_scythe, $item_type_spear]
+    $GC_I_TYPE_AXE, $GC_I_TYPE_BOW, $GC_I_TYPE_OFFHAND, $GC_I_TYPE_HAMMER, _
+    $GC_I_TYPE_WAND, $GC_I_TYPE_SHIELD, $GC_I_TYPE_STAFF, $GC_I_TYPE_SWORD, _
+    $GC_I_TYPE_DAGGERS, $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR]
 
 ; === Material ===
 Global Const $model_id_bones  = 921
@@ -131,137 +73,7 @@ Global Const $model_id_superior_salvage_kit = 5900
 Global Const $model_id_identification_kit   = 2989
 Global Const $model_id_superior_identification_kit = 5899
 
-; === Scroll ModelID's ===
-Global Const $model_id_uw_scroll  = 3746
-Global Const $model_id_fow_scroll  = 22280
-
-Global Const $XP_Scrolls[7][2]    = [[5594,765], [5595, 767], [5611, 768], [5853,857], [5975, 894], [5976, 895], [21233, 1887]]
-Global Const $Scroll_Heros_Insight   = 5594 ; $Heros_Insight = 765
-Global Const $Scroll_Berserkers_Insight = 5595 ; $Berserkers_Insight = 767
-Global Const $Scroll_Slayers_Insight  = 5611 ; $Slayers_Insight = 768
-Global Const $Scroll_Adventurers_Insight= 5853 ; $Adventurers_Insight = 857
-Global Const $Scroll_Rampagers_Insight  = 5975 ; $Rampagers_Insight = 894
-Global Const $Scroll_Hunters_Insight  = 5976 ; $Hunters_Insight = 895
-Global Const $Scroll_Lightbringer_Scroll= 21233 ; $Lightbringers_Insight = 1887
-
-;Summoning Stone ModelID's
-Global Const $Summoning_Stones[21]   = [30847, 37810, 31156, 30846, 30959, 30961, 30962, 30963, 30964, 30965, 30966 _
-                                              ,31022, 31023, 32557, 34176, 30960, 31155, 35126, 30210, 30209, 21154]
-Global Const $Stone_Igneous     = 30847
-Global Const $Stone_Legionnaire    = 37810
-Global Const $Stone_Zaishen     = 31156
-Global Const $Stone_Automaton    = 30846
-Global Const $Stone_Chitinous    = 30959
-Global Const $Stone_Amber     = 30961
-Global Const $Stone_Artic     = 30962
-Global Const $Stone_Demonic     = 30963
-Global Const $Stone_Geletinous    = 30964
-Global Const $Stone_Fossilized    = 30965
-Global Const $Stone_Jadeite     = 30966
-Global Const $Stone_Mischievous    = 31022
-Global Const $Stone_Frosty     = 31023
-Global Const $Stone_Ghastly     = 32557
-Global Const $Stone_Celestial    = 34176
-Global Const $Stone_Mystical    = 30960
-Global Const $Stone_Mysterious    = 31155
-Global Const $Stone_Shining_Blade   = 35126 ; may be incorrect
-Global Const $Stone_Imperial_Guard   = 30210
-Global Const $Stone_Tengu     = 30209
-Global Const $Stone_Merchant    = 21154
-
-;Cons ModelID's (effect ID included in array)
-Global Const $Consets[3][2]     = [[24859, 2520], [24860, 2521], [24861, 2522]]
-Global Const $model_id_essence_of_celerity  = 24859 ;2520 (effect ID)
-Global Const $model_id_armor_of_salvation = 24860 ;2521
-Global Const $model_id_grail_of_might  = 24861 ;2522
-Global Const $model_id_powerstone   = 24862
-Global Const $model_id_scroll_of_resurrection = 26501
-
-;Pcons ModelID's (effect ID included in array)
-Global Const $Pcons[12][2]    = [[17060,1680],[22269,1945],[28436,2649],[22752,1934], [28432,2604], [28431,2605], [21833,1926], [29434,1926],[35121,3174],[31151,2972],[31152,2972],[31152,31153]]
-Global Const $model_id_drake_kabob  = 17060 ; $drake_skin = 1680
-Global Const $model_id_skalefin_soup = 17061 ; $skale_vigor = 1681
-Global Const $model_id_pahnai_salad  = 17062 ; $pahnai_salad_item_effect = 1682
-Global Const $model_id_cupcake   = 22269 ; $birthday_cupcake_skill = 1945
-Global Const $model_id_pumpkin_pie  = 28436 ; $pie_induced_ecstasy = 2649
-Global Const $model_id_golden_egg  = 22752 ; $golden_egg_skill = 1934
-Global Const $model_id_candy_corn  = 28432 ; $candy_corn_skill = 2604
-Global Const $model_id_candy_apple  = 28431 ; $candy_apple_skill = 2605
-Global Const $model_id_war_supplies  = 35121 ; $well_supplied = 3174
-Global Const $model_id_blue_rock  = 31151 ; $blue_rock_candy_rush = 2971
-Global Const $model_id_green_rock  = 31152 ; $green_rock_candy_rush = 2972
-Global Const $model_id_red_rock   = 31153 ; $red_rock_candy_rush = 2973
-Global Const $model_id_lunar_fortune_pig = 29424
-Global Const $model_id_lunar_fortune_rat = 29425
-Global Const $model_id_lunar_fortune_ox = 29426
-Global Const $model_id_lunar_fortune_tiger = 29427
-Global Const $model_id_lunar_fortune_rabbit = 29428
-Global Const $model_id_lunar_fortune_dragon = 29429
-Global Const $model_id_lunar_fortune_snake = 29430
-Global Const $model_id_lunar_fortune_horse = 29431
-Global Const $model_id_lunar_fortune_sheep = 29432
-Global Const $model_id_lunar_fortune_monkey = 29433
-Global Const $model_id_lunar_fortune_rooster = 29434
-Global Const $model_id_lunar_fortune_dog = 29435
-
-;DP Removal ModelID's
-Global Const $dp_removal[4]      = [22191, 22191, 28433]
-Global Const $model_id_clover     = 22191
-Global Const $model_id_honeycomb    = 26784
-Global Const $model_id_pumpkin_cookie   = 28433
-Global Const $model_id_shining_blade_ration  = 35127
-Global Const $model_id_refined_jelly   = 19039
-Global Const $model_id_wintergreen_candy_cane   = 21488
-Global Const $model_id_rainbow_candy_cane  = 21489
-Global Const $model_id_peppermint_candy_cane = 6370
-
-; == sweets ==
-Global Const $model_id_delicious_cake = 36681
-Global Const $model_id_chocolate_bunny = 22644
-Global Const $model_id_sugary_blue_drink= 21812
-Global Const $model_id_fruitcake  = 21492
-Global Const $model_id_jar_of_honey = 31150
-Global Const $model_id_creme_brulee = 15528
-Global Const $model_id_krytan_lokum = 35125
-
-; == party ==
-Global Const $model_id_party_beacon  = 36683
-Global Const $model_id_champagne_popper = 21810
-Global Const $model_id_bottle_rocket = 21809
-Global Const $model_id_sparkler   = 21813
-Global Const $model_id_squash_serum  = 6369
-Global Const $model_id_snowman_summoner = 6376
-
-; == alcohol ==
-Global Const $model_id_iced_tea   = 36682
-Global Const $model_id_keg_of_aged_hunters_ale = 31146
-Global Const $model_id_aged_hunters_ale = 31145
-Global Const $model_id_grog    = 30855
-Global Const $model_id_krytan_brandy = 35124
-Global Const $model_id_firewater  = 2513
-Global Const $model_id_spiked_eggnog = 6366
-
-Global Const $model_id_shamrock_ale  = 22190
-Global Const $model_id_hard_apple_cider = 28435
-Global Const $model_id_hunters_ale  = 910
-Global Const $model_id_eggnog   = 6375
-Global Const $model_id_vial_of_absinthe = 6367
-Global Const $model_id_witchs_brew  = 6049
-
-; == tonics ==
-Global Const $model_id_frosty_tonic   = 30648
-Global Const $model_id_mischievous_tonic = 31020
-Global Const $model_id_yuletide_tonic  = 21490
-Global Const $model_id_transmogrifier_tonic = 15837
-
 ; == Misc Mode's ==
-Global Const $model_id_gold_coins  = 2511
-Global Const $model_id_lockpick   = 22751
-Global Const $model_id_krytan_key  = 5964
-Global Const $model_id_obsidian_key  = 5971
-Global Const $model_id_phantom_key  = 5882
-Global Const $model_id_shing_jea_key = 6537
-Global Const $model_id_istani_key  = 15557
 Global Const $model_id_diessa_chalice = 24353
 Global Const $model_id_golden_rin_relic = 24354
 Global Const $model_id_mobstopper  = 32558
@@ -345,13 +157,6 @@ Global $Dervish = 10
 ; === Range ===
 Global Enum $range_adjacent   = 156,       $range_nearby    = 240,       $range_area    = 312,       $range_earshot   = 1000,        $range_spellcast   = 1085,        $range_spirit   = 2500,        $range_nature_ritual   = 3500,        $range_compass   = 5000
 Global Enum $range_adjacent_2 = 156 * 156, $range_nearby_2  = 240 * 240, $range_area_2  = 312 * 312, $range_earshot_2 = 1000 * 1000, $range_spellcast_2 = 1085 * 1085, $range_spirit_2 = 2500 * 2500, $range_nature_ritual_2 = 3500 * 3500, $range_compass_2 = 5000 * 5000
-
-;Allegiance
-Global Const $allegiance_ally   = 0x01  ; ally/non-attackable
-Global Const $allegiance_enemy  = 0x03  ; enemy
-Global Const $allegiance_spirit = 0x04  ; spirit or pet or summon stone (not all summons)
-Global Const $allegiance_minion = 0x05  ; minion
-Global Const $allegiance_npc    = 0x06  ; npc/minipet
 
 ;TypeMap
 Global Const $typemap_boss    = 3072  ; 0xC00  Boss

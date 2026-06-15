@@ -18,7 +18,7 @@ Func GetPartyIDArray()
     Local $aPartyID[$iPlayerCount + 1]
     $aPartyID[0] = $iPlayerCount
 
-    Local $aAgentPtr = GetAgentPtrArray(2, 0xDB, $allegiance_ally)
+    Local $aAgentPtr = GetAgentPtrArray(2, 0xDB, $GC_I_ALLEGIANCE_ALLY)
     Local $iLoginNumber, $iMyLoginNumber = Agent_GetAgentInfo(-2, "LoginNumber")
 
     For $i = 1 To $iPlayerCount

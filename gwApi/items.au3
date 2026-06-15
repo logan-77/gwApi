@@ -1824,7 +1824,7 @@ Func GetMaterialName($aModelID)
 EndFunc ;==>GetMaterialName
 
 Func IsBlackDye($aModelID, $aExtraID)
-    If $aModelID = $model_id_dye And $aExtraID = $item_extraid_black_dye Then Return True
+    If $aModelID = $GC_I_MODELID_DYE And $aExtraID = $GC_I_EXTRAID_DYE_BLACK Then Return True
     Return False
 EndFunc ;==>IsBlackDye
 
@@ -1872,13 +1872,13 @@ EndFunc ;==>UseAlc
 ;~ Description: Checks if ModelID belongs to an Alcohol Item
 Func CheckIsAlc($aModelID)
     Switch $aModelID
-        Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnog ; 1min
+        Case $GC_I_MODELID_HARD_APPLE_CIDER, $GC_I_MODELID_HUNTERS_ALE, $GC_I_MODELID_EGGNOG ; 1min
             Return True
-        Case $model_id_witchs_brew, $model_id_vial_of_absinthe, $model_id_shamrock_ale
+        Case $GC_I_MODELID_WITCHS_BREW, $GC_I_MODELID_VIAL_OF_ABSINTHE, $GC_I_MODELID_SHAMROCK_ALE
             Return True
-        Case $model_id_keg_of_aged_hunters_ale, $model_id_firewater, $model_id_aged_hunters_ale ; 3min
+        Case $GC_I_MODELID_KEG_OF_AGED_HUNTERS_ALE, $GC_I_MODELID_FLASK_OF_FIREWATER, $GC_I_MODELID_AGED_HUNTERS_ALE ; 3min
             Return True
-        Case $model_id_krytan_brandy, $model_id_spiked_eggnog, $model_id_grog
+        Case $GC_I_MODELID_KRYTAN_BRANDY, $GC_I_MODELID_SPIKED_EGGNOGG, $GC_I_MODELID_BOTTLE_OF_GROG
             Return True
         Case Else
             Return False
@@ -1889,9 +1889,9 @@ EndFunc ;==>CheckIsAlc
 ;~ Description: Checks if ModelID belongs to an Alcohol Item
 Func CheckIsOneMinAlc($aModelID)
     Switch $aModelID
-        Case $model_id_hard_apple_cider, $model_id_hunters_ale, $model_id_eggnog ; 1min
+        Case $GC_I_MODELID_HARD_APPLE_CIDER, $GC_I_MODELID_HUNTERS_ALE, $GC_I_MODELID_EGGNOG ; 1min
             Return True
-        Case $model_id_witchs_brew, $model_id_vial_of_absinthe, $model_id_shamrock_ale
+        Case $GC_I_MODELID_WITCHS_BREW, $GC_I_MODELID_VIAL_OF_ABSINTHE, $GC_I_MODELID_SHAMROCK_ALE
             Return True
         Case Else
             Return False
@@ -1902,9 +1902,9 @@ EndFunc ;==>CheckIsAlc
 ;~ Description: Checks if ModelID belongs to a City Speed Item
 Func CheckIsCitySpeed($aModelID)
     Switch $aModelID
-        Case $model_id_sugary_blue_drink, $model_id_chocolate_bunny, $model_id_fruitcake
+        Case $GC_I_MODELID_SUGARY_BLUE_DRINK, $GC_I_MODELID_CHOCOLATE_BUNNY, $GC_I_MODELID_FRUITCAKE
             Return True
-        Case $model_id_creme_brulee, $model_id_jar_of_honey, $model_id_krytan_lokum
+        Case $GC_I_MODELID_CREME_BRULEE, $GC_I_MODELID_JAR_OF_HONEY, $GC_I_MODELID_KRYTAN_LOKUM
             Return True
         Case Else
             Return False
@@ -1958,7 +1958,7 @@ Func SellJunk()
             $lModelID = GetItemModelID($pItem)
             $iQuantity = GetItemQuantity($pItem)   
             Switch $lModelID
-                Case $model_id_shing_jea_key, $model_id_istani_key, $model_id_krytan_key, $model_id_obsidian_key
+                Case $GC_I_MODELID_SHING_JEA_KEY, $GC_I_MODELID_ISTANI_KEY, $GC_I_MODELID_KRYTAN_KEY, $GC_I_MODELID_OBSIDIAN_KEY
                     ContinueCase
                 Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
                     ContinueCase
@@ -1978,32 +1978,32 @@ Func IsEventItem($aModelID)
     
     ; Canthan New Year
     ;~ If $aModelID = $model_id_lunar_token Then Return True
-    ;~ If $aModelID = $model_id_lunar_fortune_horse Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_LUNAR_FORTUNE_HORSE Then Return True
     
     ; Lucky Treats Week
-    ;~ If $aModelID = $model_id_clover Then Return True
-    ;~ If $aModelID = $model_id_shamrock_ale Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_FOUR_LEAF_CLOVER Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_SHAMROCK_ALE Then Return True
     
     ; Sweet Treats Week
-    ;~ If $aModelID = $model_id_golden_egg Then Return True
-    ;~ If $aModelID = $model_id_chocolate_bunny Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_GOLDEN_EGG Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_CHOCOLATE_BUNNY Then Return True
     
     ;~ === Anniversary Celebration ===
-    ;~ If $aModelID = $model_id_cupcake Then Return True
-    ;~ If $aModelID = $model_id_honeycomb Then Return True
-    ;~ If $aModelID = $model_id_sugary_blue_drink Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_CUPCAKE Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_HONEYCOMB Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_SUGARY_BLUE_DRINK Then Return True
     ;~ ;~ Alcohol
-    ;~ If $aModelID = $model_id_hard_apple_cider Then Return True
-    ;~ If $aModelID = $model_id_hunters_ale Then Return True
-    ;~ If $aModelID = $model_id_krytan_brandy Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_HARD_APPLE_CIDER Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_HUNTERS_ALE Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_KRYTAN_BRANDY Then Return True
     ;~ ;~ Party Points
-    ;~ If $aModelID = $model_id_champagne_popper Then Return True
-    ;~ If $aModelID = $model_id_bottle_rocket Then Return True
-    ;~ If $aModelID = $model_id_sparkler Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_CHAMPAGNE_POPPER Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_BOTTLE_ROCKET Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_SPARKLER Then Return True
     ;~ ;~ 50 Point Boss Items
-    ;~ If $aModelID = $model_id_delicious_cake Then Return True
-    ;~ If $aModelID = $model_id_iced_tea Then Return True
-    ;~ If $aModelID = $model_id_party_beacon Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_DELICIOUS_CAKE Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_BATTLE_ISLE_ICED_TEA Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_PARTY_BEACON Then Return True
     
     ; Dragon Festival
     If $aModelID = $model_id_victory_token Then Return True ; also anniversary
@@ -2015,28 +2015,28 @@ Func IsEventItem($aModelID)
     ; If $aModelID = $model_id_wayfarers_mark Then Return True ; this ID is WRONG in constants.au3
     
     ; Pirate Week
-    ; If $aModelID = $model_id_grog Then Return True
+    ; If $aModelID = $GC_I_MODELID_BOTTLE_OF_GROG Then Return True
     
     ; Halloween
     ;~ If $aModelID = $model_id_tot_bag Then Return True
     
     ; Special Treats Week
-    ;~ If $aModelID = $model_id_pumpkin_pie Then Return True ; + Hard Apple Cider, see above
+    ;~ If $aModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
     
     ; Wintersday
     ;~ If $aModelID = $model_id_candy_cane_shard Then Return True
-    ;~ If $aModelID = $model_id_eggnog Then Return True
-    ;~ If $aModelID = $model_id_spiked_eggnog Then Return True
-    ;~ If $aModelID = $model_id_fruitcake Then Return True
-    ;~ If $aModelID = $model_id_snowman_summoner Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_EGGNOG Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_SPIKED_EGGNOGG Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_FRUITCAKE Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_SNOWMAN_SUMMONER Then Return True
         
-    ;~ If $aModelID = $model_id_frosty_tonic Then Return True
-    ;~ If $aModelID = $model_id_mischievous_tonic Then Return True
-    ;~ If $aModelID = $model_id_yuletide_tonic Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_FROSTY_TONIC Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_MISCHIEVOUS_TONIC Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_YULETIDE_TONIC Then Return True
     
-    ;~ If $aModelID = $model_id_wintergreen_candy_cane Then Return True
-    ;~ If $aModelID = $model_id_rainbow_candy_cane Then Return True
-    ;~ If $aModelID = $model_id_peppermint_candy_cane Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_WINTERGREEN_CC Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_RAINBOW_CC Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_PEPPERMINT_CC Then Return True
     
     Return False
 EndFunc ;==>IsEventItem
@@ -2059,7 +2059,7 @@ Func IsRune($pItem)
     Local $sModstruct = GetModStruct($pItem), $lRarity = GetItemRarity($pItem)
 
     Switch $lRarity
-        Case $rarity_blue
+        Case $GC_I_RARITY_BLUE
             For $i = 0 To UBound($array_rune_minor) - 1
                 If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
                 If StringInStr($sModstruct, $array_rune_minor[$i][$rune_mod_string]) > 0 Then
@@ -2067,7 +2067,7 @@ Func IsRune($pItem)
                     Return $array_rune_minor[$i][$rune_value]
                 EndIf
             Next
-        Case $rarity_purple
+        Case $GC_I_RARITY_PURPLE
             For $i = 0 To UBound($array_rune_major) - 1
                 If $array_rune_major[$i][$rune_value] = 0 Then ContinueLoop
                 If StringInStr($sModstruct, $array_rune_major[$i][$rune_mod_string]) > 0 Then
@@ -2075,7 +2075,7 @@ Func IsRune($pItem)
                     Return $array_rune_major[$i][$rune_value]
                 EndIf
             Next
-        Case $rarity_gold
+        Case $GC_I_RARITY_GOLD
             For $i = 0 To UBound($array_rune_superior) - 1
                 If $array_rune_superior[$i][$rune_value] = 0 Then ContinueLoop
                 If StringInStr($sModstruct, $array_rune_superior[$i][$rune_mod_string]) > 0 Then
@@ -2218,38 +2218,38 @@ Func IsWeaponMaxDmg($pItem, $iType = -1)
     If $iReq = -1 Then Return False
     
     Switch $iType
-        Case $item_type_axe
+        Case $GC_I_TYPE_AXE
             If $aDmg[0] >= 7 Then Return True
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aAxeMaxStats) Then Return True
 
-        Case $item_type_bow
+        Case $GC_I_TYPE_BOW
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aBowMaxStats) Then Return True
 
-        Case $item_type_offhand
+        Case $GC_I_TYPE_OFFHAND
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aOffhandMaxStats) Then Return True
 
-        Case $item_type_hammer
+        Case $GC_I_TYPE_HAMMER
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aHammerMaxStats) Then Return True
 
-        Case $item_type_wand
+        Case $GC_I_TYPE_WAND
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aWandMaxStats) Then Return True
 
-        Case $item_type_shield
+        Case $GC_I_TYPE_SHIELD
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aShieldMaxStats) Then Return True
 
-        Case $item_type_staff
+        Case $GC_I_TYPE_STAFF
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aStaffMaxStats) Then Return True
 
-        Case $item_type_sword
+        Case $GC_I_TYPE_SWORD
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aSwordMaxStats) Then Return True
 
-        Case $item_type_daggers
+        Case $GC_I_TYPE_DAGGERS
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aDaggerMaxStats) Then Return True
 
-        Case $item_type_scythe
+        Case $GC_I_TYPE_SCYTHE
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aScytheMaxStats) Then Return True
 
-        Case $item_type_spear
+        Case $GC_I_TYPE_SPEAR
             If CheckMaxDmg($iReq, $aDmg, $iType, $g_aSpearMaxStats) Then Return True
 
     EndSwitch
@@ -2264,7 +2264,7 @@ Func CheckMaxDmg($iReq, $aDmg, $iType, ByRef Const $aMaxStats)
     For $i = 0 To UBound($aMaxStats) - 1
         If $iReq <> $aMaxStats[$i][$item_req] Then ContinueLoop
         
-        If $iType = $item_type_offhand Or $iType = $item_type_shield Then
+        If $iType = $GC_I_TYPE_OFFHAND Or $iType = $GC_I_TYPE_SHIELD Then
             If $aDmg[1] >= $aMaxStats[$i][$item_max_dmg] Then Return True
         Else
             If $aDmg[0] >= $aMaxStats[$i][$item_min_dmg] And $aDmg[1] >= $aMaxStats[$i][$item_max_dmg] Then Return True
@@ -2279,10 +2279,10 @@ EndFunc ;==>CheckMaxDmg
 ;~ Returns True if the Item is of a Weapon Type
 Func IsWeapon(ByRef $pItem)
     Switch GetItemType($pItem)
-        Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
-                $item_type_hammer, $item_type_wand, $item_type_shield, _
-                $item_type_staff, $item_type_sword, $item_type_daggers, _
-                $item_type_scythe, $item_type_spear
+        Case    $GC_I_TYPE_AXE, $GC_I_TYPE_BOW, $GC_I_TYPE_OFFHAND, _
+                $GC_I_TYPE_HAMMER, $GC_I_TYPE_WAND, $GC_I_TYPE_SHIELD, _
+                $GC_I_TYPE_STAFF, $GC_I_TYPE_SWORD, $GC_I_TYPE_DAGGERS, _
+                $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR
                     Return True
     EndSwitch
     Return False
@@ -2291,10 +2291,10 @@ EndFunc ;==>IsWeapon
 ;~ Returns True if the Item is of a Weapon Type
 Func IsWeaponByType($iType)
     Switch $iType
-        Case    $item_type_axe, $item_type_bow, $item_type_offhand, _
-                $item_type_hammer, $item_type_wand, $item_type_shield, _
-                $item_type_staff, $item_type_sword, $item_type_daggers, _
-                $item_type_scythe, $item_type_spear
+        Case    $GC_I_TYPE_AXE, $GC_I_TYPE_BOW, $GC_I_TYPE_OFFHAND, _
+                $GC_I_TYPE_HAMMER, $GC_I_TYPE_WAND, $GC_I_TYPE_SHIELD, _
+                $GC_I_TYPE_STAFF, $GC_I_TYPE_SWORD, $GC_I_TYPE_DAGGERS, _
+                $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR
                     Return True
     EndSwitch
     Return False
@@ -3001,7 +3001,7 @@ EndFunc ;==>CheckModMartial
 ;~ filter for OS wand
 Func CheckOsWand($pItem, ByRef $sRules)
     Local $iType = GetItemType($pItem)
-    If $iType <> $item_type_wand Then Return False ; wand?
+    If $iType <> $GC_I_TYPE_WAND Then Return False ; wand?
 
     Local $sModStruct = GetModStruct($pItem)
     If $sModStruct = 0 Then Return False
@@ -3048,10 +3048,38 @@ Func CheckOsWand($pItem, ByRef $sRules)
     Return False
 EndFunc ;==>CheckOsWand
 
+;~ checks if wand contains any requested mod
+Func CheckModWand(ByRef $aWandMods, ByRef $sMods)
+
+EndFunc ;==>CheckModWand
+
+;~ parses the modstruct of the wand and returns an array
+Func ParseWandMods(ByRef $sModStruct)
+    Local $aWandMods[$idx_mod_wand_size]
+
+    $aWandMods[$idx_mod_wand_5_50] = CheckModStruct($sModStruct, "05320823")
+    $aWandMods[$idx_mod_wand_5_ench] = CheckModStruct($sModStruct, "0500F822")
+    $aWandMods[$idx_mod_wand_10_hct] = CheckModStruct($sModStruct, "000A0822")
+    $aWandMods[$idx_mod_wand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
+    $aWandMods[$idx_mod_wand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
+
+    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
+    $aWandMods[$idx_mod_wand_20_hct_attribute] = $aHct20[0]
+    $aWandMods[$idx_mod_wand_20_hct_value] = $aHct20[1]
+
+    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
+    $aWandMods[$idx_mod_wand_20_hsr_attribute] = $aHsr20[0]
+    $aWandMods[$idx_mod_wand_20_hsr_value] = $aHsr20[1]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+    $aWandMods[$idx_mod_wand_attribute] = $aAttribute[1]
+EndFunc ;==>ParseWandMods
+
 ;~ filter for OS focus
-Func CheckOsOffhand($pItem, ByRef $sRules)
+Func CheckOsFocus($pItem, ByRef $sRules)
     Local $iType = GetItemType($pItem)
-    If $iType <> $item_type_offhand Then Return False ; focus?
+    If $iType <> $GC_I_TYPE_OFFHAND Then Return False ; focus?
 
     Local $sModStruct = GetModStruct($pItem)
     If $sModStruct = 0 Then Return False
@@ -3060,7 +3088,7 @@ Func CheckOsOffhand($pItem, ByRef $sRules)
 
     Local $iReq = GetItemReq($sModStruct) ; check against 1st column
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
-    Local $aOffhandMods = ParseOffhandMods($sModStruct)
+    Local $aOffhandMods = ParseFocusMods($sModStruct)
 
     ; Split all rule rows
     Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
@@ -3096,12 +3124,61 @@ Func CheckOsOffhand($pItem, ByRef $sRules)
     Next
 
     Return False
-EndFunc ;==>CheckOsOffhand
+EndFunc ;==>CheckOsFocus
+
+;~ checks if focus contains any requested mod
+Func CheckModFocus(ByRef $aWandMods, ByRef $sMods)
+
+EndFunc ;==>CheckModFocus
+
+;~ parses the modstruct of the focus and returns an array
+Func ParseFocusMods(ByRef $sModStruct)
+    Local $aOffhandMods[$idx_mod_offhand_size]
+
+    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
+    $aOffhandMods[$idx_mod_offhand_30hp] = $a30hp[1]
+
+    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
+    $aOffhandMods[$idx_mod_offhand_45ench] = $a45ench[1]
+    
+    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
+    $aOffhandMods[$idx_mod_offhand_45stance] = $a45stance[1]
+
+    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
+    $aOffhandMods[$idx_mod_offhand_60hex] = $a60hex[1]
+
+    $aOffhandMods[$idx_mod_offhand_armor_enchanted] = CheckModStruct($sModStruct, "05009821")
+    $aOffhandMods[$idx_mod_offhand_10_hct] = CheckModStruct($sModStruct, "000A0822")
+    $aOffhandMods[$idx_mod_offhand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
+    $aOffhandMods[$idx_mod_offhand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
+
+    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
+    $aOffhandMods[$idx_mod_offhand_20_hct_attribute] = $aHct20[0]
+    $aOffhandMods[$idx_mod_offhand_20_hct_value] = $aHct20[1]
+
+    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
+    $aOffhandMods[$idx_mod_offhand_20_hsr_attribute] = $aHsr20[0]
+    $aOffhandMods[$idx_mod_offhand_20_hsr_value] = $aHsr20[1]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+    $aOffhandMods[$idx_mod_offhand_attribute] = $aAttribute[1]
+
+    Local $aMonster = GetModByIdentifier($sModStruct, '8080') ; +monster type
+    $aOffhandMods[$idx_mod_offhand_armor_monster_type] = $aMonster[1]
+
+    If $aOffhandMods[$idx_mod_offhand_armor_monster_type] <> -1 Then
+        $aMonster = GetModByIdentifier($sModStruct, 'F8A0') ; armor vs monster value
+        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = $aMonster[1]
+    Else
+        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = -1
+    EndIf
+EndFunc ;==>ParseFocusMods
 
 ;~ filter for OS staff
 Func CheckOsStaff($pItem, ByRef $sRules)
     Local $iType = GetItemType($pItem)
-    If $iType <> $item_type_staff Then Return False ; focus?
+    If $iType <> $GC_I_TYPE_STAFF Then Return False ; focus?
 
     Local $sModStruct = GetModStruct($pItem)
     If $sModStruct = 0 Then Return False
@@ -3148,78 +3225,6 @@ Func CheckOsStaff($pItem, ByRef $sRules)
 
     Return False
 EndFunc ;==>CheckOsStaff
-
-;~ parses the modstruct of the wand and returns an array
-Func ParseWandMods(ByRef $sModStruct)
-    Local $aWandMods[$idx_mod_wand_size]
-
-    $aWandMods[$idx_mod_wand_5_50] = CheckModStruct($sModStruct, "05320823")
-    $aWandMods[$idx_mod_wand_5_ench] = CheckModStruct($sModStruct, "0500F822")
-    $aWandMods[$idx_mod_wand_10_hct] = CheckModStruct($sModStruct, "000A0822")
-    $aWandMods[$idx_mod_wand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
-    $aWandMods[$idx_mod_wand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
-
-    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
-    $aWandMods[$idx_mod_wand_20_hct_attribute] = $aHct20[0]
-    $aWandMods[$idx_mod_wand_20_hct_value] = $aHct20[1]
-
-    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
-    $aWandMods[$idx_mod_wand_20_hsr_attribute] = $aHsr20[0]
-    $aWandMods[$idx_mod_wand_20_hsr_value] = $aHsr20[1]
-
-    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
-    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
-    $aWandMods[$idx_mod_wand_attribute] = $aAttribute[1]
-EndFunc ;==>ParseWandMods
-
-;~ checks if wand contains any requested mod
-Func CheckModWand(ByRef $aWandMods, ByRef $sMods)
-
-EndFunc ;==>CheckModWand
-
-;~ parses the modstruct of the focus and returns an array
-Func ParseOffhandMods(ByRef $sModStruct)
-    Local $aOffhandMods[$idx_mod_offhand_size]
-
-    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
-    $aOffhandMods[$idx_mod_offhand_30hp] = $a30hp[1]
-
-    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
-    $aOffhandMods[$idx_mod_offhand_45ench] = $a45ench[1]
-    
-    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
-    $aOffhandMods[$idx_mod_offhand_45stance] = $a45stance[1]
-
-    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
-    $aOffhandMods[$idx_mod_offhand_60hex] = $a60hex[1]
-
-    $aOffhandMods[$idx_mod_offhand_armor_enchanted] = CheckModStruct($sModStruct, "05009821")
-    $aOffhandMods[$idx_mod_offhand_10_hct] = CheckModStruct($sModStruct, "000A0822")
-    $aOffhandMods[$idx_mod_offhand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
-    $aOffhandMods[$idx_mod_offhand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
-
-    Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
-    $aOffhandMods[$idx_mod_offhand_20_hct_attribute] = $aHct20[0]
-    $aOffhandMods[$idx_mod_offhand_20_hct_value] = $aHct20[1]
-
-    Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
-    $aOffhandMods[$idx_mod_offhand_20_hsr_attribute] = $aHsr20[0]
-    $aOffhandMods[$idx_mod_offhand_20_hsr_value] = $aHsr20[1]
-
-    Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
-    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
-    $aOffhandMods[$idx_mod_offhand_attribute] = $aAttribute[1]
-
-    Local $aMonster = GetModByIdentifier($sModStruct, '8080') ; +monster type
-    $aOffhandMods[$idx_mod_offhand_armor_monster_type] = $aMonster[1]
-
-    If $aOffhandMods[$idx_mod_offhand_armor_monster_type] <> -1 Then
-        $aMonster = GetModByIdentifier($sModStruct, 'F8A0') ; armor vs monster value
-        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = $aMonster[1]
-    Else
-        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = -1
-    EndIf
-EndFunc ;==>ParseOffhandMods
 
 ;~ filter or OS shield
 Func CheckOsShield(ByRef $pItem, ByRef $sRules)
