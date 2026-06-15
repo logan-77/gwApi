@@ -5,6 +5,14 @@ Func CheckDisconnected()
     Return True
 EndFunc ;==>CheckDisconnected
 
+Func IsChecked($hCbx)
+    Return GUICtrlRead($hCbx) = $GUI_CHECKED
+EndFunc ;==>IsChecked
+
+Func IsUnchecked($hCbx)
+    Return GUICtrlRead($hCbx) = $GUI_UNCHECKED
+EndFunc ;==>IsUnchecked
+
 ; Converts an Input in Seconds to a HH:MM:SS format
 Func GetTimeString($aSeconds)
     $aSeconds = Int($aSeconds) ; make sure the param is integer
