@@ -1,6 +1,5 @@
 #include-once
 Global Enum $normalmode, $hardmode
-Global Enum $instancetype_outpost, $instancetype_explorable, $instancetype_loading
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
 
 ; === gold related ==
@@ -10,149 +9,6 @@ Global Const $g_aWeaponType[] = [ _
     $GC_I_TYPE_AXE, $GC_I_TYPE_BOW, $GC_I_TYPE_OFFHAND, $GC_I_TYPE_HAMMER, _
     $GC_I_TYPE_WAND, $GC_I_TYPE_SHIELD, $GC_I_TYPE_STAFF, $GC_I_TYPE_SWORD, _
     $GC_I_TYPE_DAGGERS, $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR]
-
-; === Material ===
-Global Const $model_id_bones  = 921
-Global Const $model_id_cloth  = 925
-Global Const $model_id_dust   = 929
-Global Const $model_id_feather  = 933
-Global Const $model_id_fiber  = 934
-Global Const $model_id_tanned_hide = 940
-Global Const $model_id_wood   = 946
-Global Const $model_id_iron   = 948
-Global Const $model_id_scales  = 953
-Global Const $model_id_chitin  = 954
-Global Const $model_id_granite  = 955
-
-; === Rare Material ===
-Global Const $model_id_charcoal     = 922
-Global Const $model_id_monstrous_claw   = 923
-Global Const $model_id_linen     = 926
-Global Const $model_id_damask     = 927
-Global Const $model_id_silk      = 928
-Global Const $model_id_ecto      = 930
-Global Const $model_id_monstrous_eye   = 931
-Global Const $model_id_monstrous_fang   = 932
-Global Const $model_id_diamond     = 935
-Global Const $model_id_onyx      = 936
-Global Const $model_id_ruby      = 937
-Global Const $model_id_sapphire     = 938
-Global Const $model_id_glass_vial    = 939
-Global Const $model_id_fur_square    = 941
-Global Const $model_id_leather_square   = 942
-Global Const $model_id_elonian_leather_square = 943
-Global Const $model_id_vial_of_ink    = 944
-Global Const $model_id_obsidian_shard   = 945
-Global Const $model_id_steel_ingot    = 949
-Global Const $model_id_deldrimor_steel_ingot = 950
-Global Const $model_id_roll_of_parchment  = 951
-Global Const $model_id_roll_of_vellum   = 952
-Global Const $model_id_spiritwood_plank   = 956
-Global Const $model_id_amber_chunk    = 6532
-Global Const $model_id_jadeite_shard   = 6533
-
-; === Trophies ===
-Global Const $model_id_shadowy_remnant = 441
-Global Const $model_id_abnormal_seed = 442
-Global Const $model_id_dark_remain  = 522
-Global Const $model_id_dragon_root  = 819
-Global Const $model_id_feathered_crest = 835
-Global Const $model_id_skale_tooth  = 1603
-Global Const $model_id_skale_claw  = 1604
-Global Const $model_id_iboga_petal  = 19183
-Global Const $model_id_skale_fin  = 19184
-Global Const $model_id_drake_flesh  = 19185
-Global Const $model_id_saurian_bones = 27035
-Global Const $model_id_glacial_stone = 27047
-Global Const $model_id_silver_bullion_coin = 1579
-
-; === Kits ===
-Global Const $model_id_salvage_kit   = 2992
-Global Const $model_id_expert_salvage_kit = 2991
-Global Const $model_id_superior_salvage_kit = 5900
-Global Const $model_id_identification_kit   = 2989
-Global Const $model_id_superior_identification_kit = 5899
-
-; == Misc Mode's ==
-Global Const $model_id_diessa_chalice = 24353
-Global Const $model_id_golden_rin_relic = 24354
-Global Const $model_id_mobstopper  = 32558
-Global Const $model_id_captured_skeleton = 32559
-Global Const $model_id_confessors_orders = 35123
-Global Const $model_id_top_left_map_piece = 24629
-Global Const $model_id_top_right_map_piece = 24630
-Global Const $model_id_bottom_left_map_piece = 24631 
-Global Const $model_id_bottom_right_map_piece = 24632
-Global Const $model_id_margonite_gemstone = 21128
-Global Const $model_id_stygian_gemstone = 21129
-Global Const $model_id_titan_gemstone = 21130
-Global Const $model_id_torment_gemstone = 21131
-Global Const $model_id_zaishen_key  = 28517
-Global Const $model_id_heros_strongbox = 36666
-Global Const $model_id_copper_zaishen_coin = 31202
-Global Const $model_id_silver_zaishen_coin = 31204
-
-Global Const $model_id_ghost_in_the_box = 6368
-Global Const $model_id_candy_cane_shard = 556
-Global Const $model_id_victory_token = 18345
-Global Const $model_id_lunar_token  = 21833
-Global Const $model_id_wayfarers_mark = 37765
-Global Const $model_id_tot_bag   = 28434
-
-;~ WoC
-Global Const $model_id_imperial_guard_lockbox = 30212
-Global Const $model_id_imperial_guard_requisition_order = 29108
-Global Const $model_id_ministerial_commendation = 36985
-Global Const $model_id_imperial_guard_reinforcement_order = 30210
-Global Const $model_id_tengu_support_flare = 30209
-Global Const $model_id_seal_of_the_dragon_empire = 30211
-
-;Hero IDs
-Global Enum $hero_id_norgu = 1, $hero_id_goren, $hero_id_tahlkora, $hero_id_master, $hero_id_jin, _
-            $hero_id_koss, $hero_id_dunkoro, $hero_id_sousuke, $hero_id_melonni, $hero_id_zhed, _
-            $hero_id_morgahn, $hero_id_margrid, $hero_id_zenmai, $hero_id_olias, $hero_id_razah, _
-            $hero_id_mox, $hero_id_keiran, $hero_id_jora, $hero_id_pyre, $hero_id_anton, _
-            $hero_id_livia, $hero_id_hayda, $hero_id_kahmu, $hero_id_gwen, $hero_id_xandra, _
-            $hero_id_vekk, $hero_id_ogden, $hero_id_mercenary_1, $hero_id_mercenary_2, $hero_id_mercenary_3, _
-            $hero_id_mercenary_4, $hero_id_mercenary_5, $hero_id_mercenary_6, $hero_id_mercenary_7, $hero_id_mercenary_8, _
-            $hero_id_miku , $hero_id_zei_ri
-
-#Region All Skill Infos
-; SKILL TYPES
-Global $Stance = 3;
-Global $Hex = 4;
-Global $Spell = 5;
-Global $Enchantment = 6;
-Global $Signet = 7;
-Global $Condition = 8;
-Global $Well = 9;
-Global $Skill = 10;
-Global $Ward = 11;
-Global $Glyph = 12;
-Global $Attack = 14;
-Global $Shout = 15;
-Global $Preparation = 19;
-Global $Trap = 21;
-Global $Ritual = 22;
-Global $ItemSpell = 24;
-Global $WeaponSpell = 25;
-Global $Chant = 27;
-Global $EchoRefrain = 28;
-Global $Disguise = 26;
-
-; PROFESSIONS
-Global Enum $prof_none, $prof_warrior, $prof_ranger, $prof_monk, $prof_necromancer, $prof_mesmer, $prof_elementalist, $prof_assassin, $prof_ritualist, $prof_paragon, $prof_dervish
-Global $None = 0
-Global $Warrior = 1
-Global $Ranger = 2
-Global $Monk = 3
-Global $Necromancer = 4
-Global $Mesmer = 5
-Global $Elementalist = 6
-Global $Assassin = 7
-Global $Ritualist = 8
-Global $Paragon = 9
-Global $Dervish = 10
 
 ; === Range ===
 Global Enum $range_adjacent   = 156,       $range_nearby    = 240,       $range_area    = 312,       $range_earshot   = 1000,        $range_spellcast   = 1085,        $range_spirit   = 2500,        $range_nature_ritual   = 3500,        $range_compass   = 5000
@@ -169,98 +25,12 @@ Global Const $typemap_spawned_ally  = 393216 ; 0x60000 Allied spawned creatures 
 Global Const $typemap_vampiric_spirit = 393224 ; 0x60008 Allied spawned creatures - Vampiric Spirit
 #EndRegion All Skill Infos
 
-#Region Map Districts - Languages
-; Region
-Global Const $GC_REGION_INTERNATIONAL = -2
-Global Const $GC_REGION_AMERICA = 0
-Global Const $GC_REGION_KOREA = 1
-Global Const $GC_REGION_EUROPE = 2
-Global Const $GC_REGION_CHINA = 3
-Global Const $GC_REGION_JAPAN = 4
-
-; Languages
-Global Const $GC_LANGUAGE_ENGLISH = 0  ; always used for $International, $Asia_Korean, $Asia_Chinese, $Asia_Japanese
-Global Const $GC_LANGUAGE_FRENCH = 2
-Global Const $GC_LANGUAGE_GERMAN = 3
-Global Const $GC_LANGUAGE_ITALIAN = 4
-Global Const $GC_LANGUAGE_SPANISH = 5
-Global Const $GC_LANGUAGE_POLISH = 9
-Global Const $GC_LANGUAGE_RUSSIAN = 10
-
-Global Const $g_aRegion[12] = [ $GC_REGION_EUROPE, $GC_REGION_EUROPE, $GC_REGION_EUROPE, $GC_REGION_EUROPE, $GC_REGION_EUROPE, $GC_REGION_EUROPE, _
-                                $GC_REGION_EUROPE, $GC_REGION_AMERICA, $GC_REGION_INTERNATIONAL, $GC_REGION_KOREA, $GC_REGION_CHINA, $GC_REGION_JAPAN ]
-Global Const $g_aLanguage[12] = [ $GC_LANGUAGE_ENGLISH, $GC_LANGUAGE_FRENCH, $GC_LANGUAGE_GERMAN, $GC_LANGUAGE_ITALIAN, $GC_LANGUAGE_SPANISH, $GC_LANGUAGE_POLISH, _
-                                  $GC_LANGUAGE_RUSSIAN, $GC_LANGUAGE_ENGLISH, $GC_LANGUAGE_ENGLISH, $GC_LANGUAGE_ENGLISH, $GC_LANGUAGE_ENGLISH, $GC_LANGUAGE_ENGLISH ]
 
 ;~ used by RndTravel
 Global Enum $dis_english, $dis_french, $dis_german, $dis_italian, $dis_spanish, $dis_polish, $dis_russian, _
             $dis_american, $dis_international, $dis_korea, $dis_china, $dis_japan, _
             $dis_europe, $dis_europe_no_english, $dis_int_american, $dis_asia, $dis_all, $dis_enum_size
 #EndRegion Map Districts - Languages
-
-#Region MapID
-; === Map IDs ===
-Global Const $map_id_the_black_curtain = 18
-Global Const $map_id_the_fissure_of_woe = 34
-Global Const $map_id_the_underworld = 72
-Global Const $map_id_house_zu_heltzer = 77
-Global Const $map_id_temple_of_the_ages = 138
-Global Const $map_id_cavalon = 193
-Global Const $map_id_drazach_thicket = 195
-Global Const $map_id_jaya_bluffs = 196
-Global Const $map_id_great_temple_of_balthazar = 248
-Global Const $map_id_seitung_harbor = 250
-Global Const $map_id_isle_of_the_nameless = 280
-Global Const $map_id_maatu_keep = 283
-Global Const $map_id_the_marketplace = 303
-Global Const $map_id_saoshang_trail = 313
-Global Const $map_id_saint_anjekas_shrine = 349
-Global Const $map_id_yohlon_haven = 381
-Global Const $map_id_the_floodplain_of_mahnkelon = 384
-Global Const $map_id_chantry_of_secrets = 393
-Global Const $map_id_rilohn_refuge = 425
-Global Const $map_id_moddok_crevice = 427
-Global Const $map_id_plains_of_jarin = 430
-Global Const $map_id_kamadan = 449
-Global Const $map_id_kamadan_wintersday = 819
-Global Const $map_id_gate_of_anguish = 474 ; explorable and outpost
-Global Const $map_id_champions_dawn = 479
-Global Const $map_id_fahranur = 481
-Global Const $map_id_bjora_marches = 482
-Global Const $map_id_zehlon_reach = 483
-Global Const $map_id_jokanur_diggings = 491
-Global Const $map_id_blacktide_den = 492
-Global Const $map_id_riven_earth = 501
-Global Const $map_id_the_astralarium = 502
-Global Const $map_id_jaga_moraine = 546
-Global Const $map_id_cathedral_of_flames = 560
-Global Const $map_id_rata_sum = 640
-Global Const $map_id_eye_of_the_north = 642
-Global Const $map_id_eye_of_the_north_wintersday = 821
-Global Const $map_id_hall_of_monuments = 646
-Global Const $map_id_doomlore_shrine = 648
-Global Const $map_id_longeyes_ledge = 650
-Global Const $map_id_snowman_dungeon = 782 ; check name
-Global Const $map_id_lions_arch = 808
-Global Const $map_id_lions_arch_wintersday = 809
-Global Const $map_id_shing_jea_monastery = 816
-Global Const $map_id_auspicious_beginnings = 849
-Global Const $map_id_embark_beach = 857
-
-Global Const $map_id_heros_ascent = 330 ; outpost and explorable
-Global Const $map_id_ha_underworld = 84
-Global Const $map_id_ha_fetid_river = 593
-Global Const $map_id_ha_burial_mounds = 80
-Global Const $map_id_ha_unholy_temples = 79
-Global Const $map_id_ha_forgotten_shrines = 596
-Global Const $map_id_ha_golden_gates = 126
-Global Const $map_id_ha_the_courtyard = 78
-Global Const $map_id_ha_the_antechamber = 598
-Global Const $map_id_ha_the_hall_of_heroes = 75
-Global Const $map_id_jade_quarry_luxon = 295
-Global Const $map_id_jade_quarry_kurzick = 296
-Global Const $map_id_jade_quarry_arena = 223
-#EndRegion MapID
 
 ; === Specific ItemID's ===
 Global Const $model_id_keirans_bow = 35829
@@ -278,7 +48,7 @@ Global Const $model_id_gothic_axe = 748
 Global Const $model_id_gothic_sword = 793
 Global Const $model_id_jug = 1023
 
-#Region TraderCoords
+#Region NPC XY
 Global Const $aXYBaseEotn = [-2680, 1212]
 Global Const $aXYMerchantEotn = [-2748, 1019] ; same for wintersday
 Global Const $aXYMaterialTraderEotn = [-1867, 803] ; same for wintersday
@@ -291,7 +61,7 @@ Global Const $aXYMerchantSifhalla = [11580, 21619]
 Global Const $aXYMaterialTraderSifhalla = [11489, 22240]
 Global Const $aXYRareMaterialTraderSifhalla = [10875, 22596]
 Global Const $aXYRuneTraderSifhalla = [11240, 22573]
-#EndRegion TraderCoords
+#EndRegion NPC XY
 
 #Region Weapons
 Global Enum $item_req, $item_min_dmg, $item_max_dmg

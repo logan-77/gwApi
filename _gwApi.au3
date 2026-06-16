@@ -23,11 +23,11 @@
 #include <SQLite.au3>
 #include <SQLite.dll.au3>
 
-;~ include constants
-#include "constants\_constants.au3"
-
 ; GwAu3 includes
 #include "GwAu3\API\_GwAu3.au3"
+
+;~ include constants
+#include "constants\_constants.au3"
 
 ; gwApi includes
 #include "gwApi\offsets.au3"

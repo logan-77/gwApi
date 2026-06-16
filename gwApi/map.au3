@@ -81,7 +81,7 @@ Func RndTravel($iMapID, $iTargetDistrict = $dis_europe, $bWaitToLoad = True)
     EndIf    
 
     Map_InitMapIsLoaded()
-    Map_MoveMap($iMapID, $g_aRegion[$iIdx], 0, $g_aLanguage[$iIdx])
+    Map_MoveMap($iMapID, $GC_AI_DISTRICT_REGION[$iIdx], 0, $GC_AI_DISTRICT_LANGUAGE[$iIdx])
     If $bWaitToLoad Then Return WaitMapIsLoaded()
 EndFunc ;==>RndTravel
 
@@ -104,7 +104,7 @@ Func SetAnchorDistrict($iTargetDistrict)
     If IsInTargetDistrict($iTargetDistrict) Then Return 1
 
     Out("Traveling to GtoB.")
-    RndTravel($map_id_great_temple_of_balthazar, $iTargetDistrict)
+    RndTravel($GC_I_MAP_ID_GREAT_TEMPLE_OF_BALTHAZAR, $iTargetDistrict)
     Other_RndSleep(2000)
 
     Out("Going to Charselect.")
@@ -133,7 +133,7 @@ Func SetAnchorDistrict($iTargetDistrict)
 EndFunc ;==>SetAnchorDistrict
 
 ;~ Returns True if you are already in Target District
-;~ Param: Index According to the constants $g_aRegion and $g_aLanguage,
+;~ Param: Index According to the constants $GC_AI_DISTRICT_REGION and $GC_AI_DISTRICT_LANGUAGE,
 ;~        and the corresponding Enum
 Func IsInTargetDistrict($iTargetDistrict = $dis_europe)
     If $iTargetDistrict < 0 Or $iTargetDistrict >= $dis_enum_size Then $iTargetDistrict = $dis_all
@@ -152,8 +152,8 @@ Func IsInTargetDistrict($iTargetDistrict = $dis_europe)
     ; CASE 1: Exact district (0–11)
     ; ============================
     If $iTargetDistrict <= $dis_japan Then
-        Local $iTargetRegion = $g_aRegion[$iTargetDistrict]
-        Local $iTargetLanguage = $g_aLanguage[$iTargetDistrict]
+        Local $iTargetRegion = $GC_AI_DISTRICT_REGION[$iTargetDistrict]
+        Local $iTargetLanguage = $GC_AI_DISTRICT_LANGUAGE[$iTargetDistrict]
         Return (($iTargetRegion = $iCurrentRegion) And ($iTargetLanguage = $iCurrentLanguage))
     EndIf
 
@@ -162,17 +162,17 @@ Func IsInTargetDistrict($iTargetDistrict = $dis_europe)
     ; ============================
     Switch $iTargetDistrict
         Case $dis_europe
-            Return ($iCurrentRegion = $GC_REGION_EUROPE)
+            Return ($iCurrentRegion = $GC_I_DISTRICT_REGION_EUROPE)
         Case $dis_europe_no_english
-            Return ($iCurrentRegion = $GC_REGION_EUROPE _
-                And $iCurrentLanguage <> $GC_LANGUAGE_ENGLISH)
+            Return ($iCurrentRegion = $GC_I_DISTRICT_REGION_EUROPE _
+                And $iCurrentLanguage <> $GC_I_DISTRICT_LANGUAGE_ENGLISH)
         Case $dis_int_american
-            Return ($iCurrentRegion = $GC_REGION_INTERNATIONAL _
-                Or $iCurrentRegion = $GC_REGION_AMERICA)
+            Return ($iCurrentRegion = $GC_I_DISTRICT_REGION_INTERNATIONAL _
+                Or $iCurrentRegion = $GC_I_DISTRICT_REGION_AMERICA)
         Case $dis_asia
-            Return ($iCurrentRegion = $GC_REGION_KOREA _
-                Or $iCurrentRegion = $GC_REGION_CHINA _
-                Or $iCurrentRegion = $GC_REGION_JAPAN)
+            Return ($iCurrentRegion = $GC_I_DISTRICT_REGION_KOREA _
+                Or $iCurrentRegion = $GC_I_DISTRICT_REGION_CHINA _
+                Or $iCurrentRegion = $GC_I_DISTRICT_REGION_JAPAN)
     EndSwitch
     
     Return False

@@ -1123,7 +1123,7 @@ EndFunc ;==>WithdrawItemsByModelID
 
 ;Stores all Items of given Type
 Func WithdrawItemsByType($aType, $aFullStack = False)
-    If Map_GetInstanceInfo("Type") <> $instancetype_outpost Then Return False
+    If Map_GetInstanceInfo("Type") <> $GC_I_MAP_TYPE_OUTPOST Then Return False
     Local $pItem, $pBag
     For $bag = 8 To 11
         $pBag = Item_GetBagPtr($bag)
@@ -1334,14 +1334,14 @@ Func BuySalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($model_id_salvage_kit, 10)
+        Merchant_BuyItem($GC_I_MODELID_SALVAGE_KIT, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($model_id_salvage_kit, $iQuantity)
+        Merchant_BuyItem($GC_I_MODELID_SALVAGE_KIT, $iQuantity)
         Other_PingSleep(1000)
     EndIf
 EndFunc ;==>BuySalvageKit
@@ -1351,14 +1351,14 @@ Func BuyExpertSalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($model_id_expert_salvage_kit, 10)
+        Merchant_BuyItem($GC_I_MODELID_EXPERT_SALVAGE_KIT, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($model_id_expert_salvage_kit, $iQuantity)
+        Merchant_BuyItem($GC_I_MODELID_EXPERT_SALVAGE_KIT, $iQuantity)
         Other_PingSleep(1000)
     EndIf
 EndFunc ;==>BuySalvageKit
@@ -1368,14 +1368,14 @@ Func BuySuperiorSalvageKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($model_id_superior_salvage_kit, 10)
+        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_SALVAGE_KIT, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($model_id_superior_salvage_kit, $iQuantity)
+        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_SALVAGE_KIT, $iQuantity)
         Other_PingSleep(1000)
     EndIf
 EndFunc ;==>BuySalvageKit
@@ -1385,14 +1385,14 @@ Func BuyIDKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($model_id_identification_kit, 10)
+        Merchant_BuyItem($GC_I_MODELID_IDENTIFICATION_KIT, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($model_id_identification_kit, $iQuantity)
+        Merchant_BuyItem($GC_I_MODELID_IDENTIFICATION_KIT, $iQuantity)
         Other_PingSleep(1000)
     EndIf
 EndFunc ;==>BuyIDKit
@@ -1402,14 +1402,14 @@ Func BuySuperiorIDKit($iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($model_id_superior_identification_kit, 10)
+        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($model_id_superior_identification_kit, $iQuantity)
+        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT, $iQuantity)
         Other_PingSleep(1000)
     EndIf
 EndFunc ;==>BuySuperiorIDKit
@@ -1746,77 +1746,77 @@ EndFunc   ;==>UnequipItem
 ;~ Return the Name of a Common or Rare Material by ModelID
 Func GetMaterialName($aModelID)
     Switch $aModelID
-        Case $model_id_bones
+        Case $GC_I_MODELID_BONES
             Return "Bones"
-        Case $model_id_cloth
+        Case $GC_I_MODELID_CLOTHS
             Return "Cloth"
-        Case $model_id_dust
+        Case $GC_I_MODELID_DUST
             Return "Dust"
-        Case $model_id_feather
+        Case $GC_I_MODELID_FEATHERS
             Return "Feathers"
-        Case $model_id_fiber
+        Case $GC_I_MODELID_PLANT_FIBRES
             Return "Fibers"
-        Case $model_id_tanned_hide
+        Case $GC_I_MODELID_TANNED_HIDE
             Return "Tanned Hide Squares"
-        Case $model_id_wood
+        Case $GC_I_MODELID_WOOD
             Return "Wood Planks"
-        Case $model_id_iron
+        Case $GC_I_MODELID_IRON
             Return "Iron"
-        Case $model_id_scales
+        Case $GC_I_MODELID_SCALES
             Return "Scales"
-        Case $model_id_chitin
+        Case $GC_I_MODELID_CHITIN
             Return "Chitin"
-        Case $model_id_granite
+        Case $GC_I_MODELID_GRANITE
             Return "Granite"
-        Case $model_id_charcoal
+        Case $GC_I_MODELID_CHARCOAL
             Return "Charcoal"
-        Case $model_id_monstrous_claw
+        Case $GC_I_MODELID_MONSTROUS_CLAW
             Return "Monstrous Claw"
-        Case $model_id_linen
+        Case $GC_I_MODELID_LINEN
             Return "Linen"
-        Case $model_id_damask
+        Case $GC_I_MODELID_DAMASK
             Return "Damask"
-        Case $model_id_silk
+        Case $GC_I_MODELID_SILK
             Return "Silk"
-        Case $model_id_ecto
+        Case $GC_I_MODELID_GLOB_OF_ECTOPLASM
             Return "Ecto"
-        Case $model_id_monstrous_eye
+        Case $GC_I_MODELID_MONSTROUS_EYE
             Return "Monstrous Eye"
-        Case $model_id_monstrous_fang
+        Case $GC_I_MODELID_MONSTROUS_FANG
             Return "Monstrous Fang"
-        Case $model_id_diamond
+        Case $GC_I_MODELID_DIAMOND
             Return "Diamond"
-        Case $model_id_onyx
+        Case $GC_I_MODELID_ONYX
             Return "Onyx"
-        Case $model_id_ruby
+        Case $GC_I_MODELID_RUBY
             Return "Ruby"
-        Case $model_id_sapphire
+        Case $GC_I_MODELID_SAPPHIRE
             Return "Sapphire"
-        Case $model_id_glass_vial
+        Case $GC_I_MODELID_GLASS_VIAL
             Return "Glass Vial"
-        Case $model_id_fur_square
+        Case $GC_I_MODELID_FUR_SQUARE
             Return "Fur Square"
-        Case $model_id_leather_square
+        Case $GC_I_MODELID_LEATHER_SQUARE
             Return "Leather Square"
-        Case $model_id_elonian_leather_square
+        Case $GC_I_MODELID_ELONIAN_LEATHER_SQUARE
             Return "Elonian Leather Square"
-        Case $model_id_vial_of_ink
+        Case $GC_I_MODELID_VIAL_OF_INK
             Return "Vial of Ink"
-        Case $model_id_obsidian_shard
+        Case $GC_I_MODELID_OBSIDIAN_SHARD
             Return "Obsidian Shard"
-        Case $model_id_steel_ingot
+        Case $GC_I_MODELID_STEEL_INGOT
             Return "Steel Ingot"
-        Case $model_id_deldrimor_steel_ingot
+        Case $GC_I_MODELID_DELDRIMOR_STEEL_INGOT
             Return "Deldrimor Steel Ingot"
-        Case $model_id_roll_of_parchment
+        Case $GC_I_MODELID_ROLL_OF_PARCHMENT
             Return "Roll of Parchment"
-        Case $model_id_roll_of_vellum
+        Case $GC_I_MODELID_ROLL_OF_VELLUM
             Return "Roll of Vellum"
-        Case $model_id_spiritwood_plank
+        Case $GC_I_MODELID_SPIRITWOOD_PLANK
             Return "Spiritwood Plank"
-        Case $model_id_amber_chunk
+        Case $GC_I_MODELID_AMBER_CHUNK
             Return "Amber Chunk"
-        Case $model_id_jadeite_shard
+        Case $GC_I_MODELID_JADEIT_SHARD
             Return "Jadeite Shard"  
         Case Else
             Return "Not a Material!"
@@ -1960,9 +1960,9 @@ Func SellJunk()
             Switch $lModelID
                 Case $GC_I_MODELID_SHING_JEA_KEY, $GC_I_MODELID_ISTANI_KEY, $GC_I_MODELID_KRYTAN_KEY, $GC_I_MODELID_OBSIDIAN_KEY
                     ContinueCase
-                Case $model_id_wood, $model_id_chitin, $model_id_scales, $model_id_granite
+                Case $GC_I_MODELID_WOOD, $GC_I_MODELID_CHITIN, $GC_I_MODELID_SCALES, $GC_I_MODELID_GRANITE
                     ContinueCase
-                Case $model_id_cloth, $model_id_tanned_hide
+                Case $GC_I_MODELID_CLOTHS, $GC_I_MODELID_TANNED_HIDE
                     Merchant_SellItem($pItem, $iQuantity)
                     Other_PingSleep(500)
                     ContinueLoop
@@ -1977,7 +1977,7 @@ Func IsEventItem($aModelID)
     ; ******************************************************************************************* 
     
     ; Canthan New Year
-    ;~ If $aModelID = $model_id_lunar_token Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_LUNAR_TOKEN Then Return True
     ;~ If $aModelID = $GC_I_MODELID_LUNAR_FORTUNE_HORSE Then Return True
     
     ; Lucky Treats Week
@@ -2006,25 +2006,25 @@ Func IsEventItem($aModelID)
     ;~ If $aModelID = $GC_I_MODELID_PARTY_BEACON Then Return True
     
     ; Dragon Festival
-    If $aModelID = $model_id_victory_token Then Return True ; also anniversary
+    If $aModelID = $GC_I_MODELID_VICTORY_TOKEN Then Return True ; also anniversary
     
     ; Wintersday in July
     ; -->see Wintersday
     
     ; Wayfarer's Reverie
-    ; If $aModelID = $model_id_wayfarers_mark Then Return True ; this ID is WRONG in constants.au3
+    ; If $aModelID = $GC_I_MODELID_WAYFARER_MARK Then Return True ; this ID is WRONG in constants.au3
     
     ; Pirate Week
     ; If $aModelID = $GC_I_MODELID_BOTTLE_OF_GROG Then Return True
     
     ; Halloween
-    ;~ If $aModelID = $model_id_tot_bag Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_TRICK_OR_TREAT_BAGS Then Return True
     
     ; Special Treats Week
     ;~ If $aModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
     
     ; Wintersday
-    ;~ If $aModelID = $model_id_candy_cane_shard Then Return True
+    ;~ If $aModelID = $GC_I_MODELID_CC_SHARDS Then Return True
     ;~ If $aModelID = $GC_I_MODELID_EGGNOG Then Return True
     ;~ If $aModelID = $GC_I_MODELID_SPIKED_EGGNOGG Then Return True
     ;~ If $aModelID = $GC_I_MODELID_FRUITCAKE Then Return True
