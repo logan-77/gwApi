@@ -8,10 +8,10 @@ Func GetSkillbarPtr($iHeroIndex = 0)
     Local $pWorldContext = World_GetWorldContextPtr()
     If $pWorldContext = 0 Or $iHeroIndex < 0 Then Return SetError(1, 0, 0)
 
-    Local $pSkillbarArray = Memory_Read($pWorldContext + 0x6F0, "ptr")
+    Local $pSkillbarArray = Memory_Read($pWorldContext + 0x6F0, 'ptr')
     If $iHeroIndex = 0 Then Return $pSkillbarArray ; player skillbar, fast return
 
-    Local $iSkillbarArraySize = Memory_Read($pWorldContext + 0x6F0 + 0x8, "long")
+    Local $iSkillbarArraySize = Memory_Read($pWorldContext + 0x6F0 + 0x8, 'long')
 
     If $iHeroIndex < $iSkillbarArraySize Then Return $pSkillbarArray + ($iHeroIndex * 0xBC)
 
@@ -88,6 +88,19 @@ EndFunc ;==>GetSkillbarSkillID
 Func GetSkillbarSkillAdrenaline($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
     Return Memory_Read($pSkillbar + 0x4 + (($iSkillSlot - 1) * 0x14), "dword")
 EndFunc ;==>GetSkillbarSkillAdrenaline
+
+;~ 
+Func GetSkillbarStruct(ByRef $tSkillbarStruct, $pSkillbar = GetSkillbarPtr())
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pSkillbar, _
+                    "struct*", $tSkillbarStruct, _
+                    "ulong_ptr", $g_iSkillbarStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(1, 0, False)
+
+    Return True
+EndFunc ;==>GetSkillbarStruct
 
 ;~ 
 Func UpdateSkillbar(ByRef $tSkillbarStruct, $pSkillbar = GetSkillbarPtr())
