@@ -31,22 +31,22 @@ Global Enum _
     $idx_mod_wand_size
 
 Global Enum _
-    $idx_mod_offhand_30hp, _
-    $idx_mod_offhand_45stance, _
-    $idx_mod_offhand_60hex, _
-    $idx_mod_offhand_45ench, _
-    $idx_mod_offhand_armor_enchanted, _
-    $idx_mod_offhand_armor_monster_type, _
-    $idx_mod_offhand_armor_monster_value, _
-    $idx_mod_offhand_10_hct, _
-    $idx_mod_offhand_10_hsr, _
-    $idx_mod_offhand_20_hct_attribute, _
-    $idx_mod_offhand_20_hct_value, _
-    $idx_mod_offhand_20_hsr_attribute, _
-    $idx_mod_offhand_20_hsr_value, _
-    $idx_mod_offhand_high_energy, _
-    $idx_mod_offhand_attribute, _
-    $idx_mod_offhand_size
+    $idx_mod_focus_30hp, _
+    $idx_mod_focus_45stance, _
+    $idx_mod_focus_60hex, _
+    $idx_mod_focus_45ench, _
+    $idx_mod_focus_armor_enchanted, _
+    $idx_mod_focus_armor_monster_type, _
+    $idx_mod_focus_armor_monster_value, _
+    $idx_mod_focus_10_hct, _
+    $idx_mod_focus_10_hsr, _
+    $idx_mod_focus_20_hct_attribute, _
+    $idx_mod_focus_20_hct_value, _
+    $idx_mod_focus_20_hsr_attribute, _
+    $idx_mod_focus_20_hsr_value, _
+    $idx_mod_focus_high_energy, _
+    $idx_mod_focus_attribute, _
+    $idx_mod_focus_size
 
 #Region Items
 Func GetItemPtr($iItemID, $pItemArray = 0, $pItemContext = 0)
@@ -3000,6 +3000,56 @@ EndFunc ;==>CheckModMartial
 
 ;~ filter for OS wand
 Func CheckOsWand($pItem, ByRef $sRules)
+    Local Static $bFirstCall = True
+
+    Local Static $aRuleReq[0]
+    Local Static $aRuleAttribute[0]
+    Local Static $aRuleMod1[0]
+    Local Static $aRuleMod2[0]
+
+    If $bFirstCall Then
+
+        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
+
+        Local $iRows = UBound($aRows), $iValidRows = 0
+
+        ReDim $aRuleReq[$iRows]
+        ReDim $aRuleAttribute[$iRows]
+        ReDim $aRuleMod1[$iRows]
+        ReDim $aRuleMod2[$iRows]
+
+        For $sCurrentRow In $aRows
+
+            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
+
+            If UBound($aCols) <> 4 Then
+                Out("Shield rule is wrongly formatted: " & $sCurrentRow)
+                ContinueLoop
+            EndIf
+
+            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+            $aRuleAttribute[$iValidRows] = $aCols[1]
+            $aRuleMod1[$iValidRows] = $aCols[2]
+            $aRuleMod2[$iValidRows] = $aCols[3]
+
+            $iValidRows += 1
+        Next
+
+        If $iValidRows < $iRows Then
+            Redim $aRuleReq[$iValidRows]
+            Redim $aRuleAttribute[$iValidRows]
+            Redim $aRuleMod1[$iValidRows]
+            Redim $aRuleMod2[$iValidRows]
+        EndIf
+        
+        $bFirstCall = False
+    EndIf
+
+    If UBound($aRuleReq) = 0 Then
+        Out("No valid wand rules found.")
+        Return False
+    EndIf
+
     Local $iType = GetItemType($pItem)
     If $iType <> $GC_I_TYPE_WAND Then Return False ; wand?
 
@@ -3012,36 +3062,17 @@ Func CheckOsWand($pItem, ByRef $sRules)
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
     Local $aWandMods = ParseWandMods($sModStruct)
 
-    ; Split all rule rows
-    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+    For $i = 0 To UBound($aRuleReq) - 1
 
-    ; Process each rule row
-    For $sRow In $aRows
+        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
 
-        ; Split row into columns
-        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+        If Not CheckWeaponAttribute($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
 
-        ; safety check
-        If UBound($aCols) <> 4 Then
-            Out("Row is wrongly formatted.")
-            ContinueLoop
-        EndIf
+        If Not CheckModWand($aWandMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
 
-        ;========================================
-        ; Column 1: Requirement
-        ;========================================
+        If Not CheckModWand($aWandMods, $aRuleMod2[$i]) Then ContinueLoop ; mod2
 
-        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
-
-        If $iReq > $iRuleReq Then ContinueLoop
-
-        ;========================================
-        ; Column 2: Attribute
-        ;========================================
-
-        Local $bAttributeMatch = CheckWeaponAttribute($iItemAttribute, $aCols[1])
-
-        If Not $bAttributeMatch Then ContinueLoop
+        Return True
 
     Next
 
@@ -3051,6 +3082,43 @@ EndFunc ;==>CheckOsWand
 ;~ checks if wand contains any requested mod
 Func CheckModWand(ByRef $aWandMods, ByRef $sMods)
 
+    ; Split requested mods
+    Local $aMods = StringSplit($sMods, ",", $STR_NOCOUNT)
+
+    ;~ remove whitespace
+    For $i = 0 To UBound($aMods) - 1
+        $aMods[$i] = StringStripWS($aMods[$i], $STR_STRIPLEADING + $STR_STRIPTRAILING)
+    Next
+
+    For $sCurrentMod In $aMods
+        Switch $sCurrentMod
+            Case "5e50", "+5e^50"
+                If $aWandMods[$idx_mod_wand_5_50] Then Return True
+            Case "5ench", "+5e^ench"
+                If $aWandMods[$idx_mod_wand_5_ench] Then Return True
+            Case "10hct"
+                If $aWandMods[$idx_mod_wand_10_hct] Then Return True
+            Case "10hsr"
+                If $aWandMods[$idx_mod_wand_10_hsr] Then Return True
+            Case "15-1", "+15e^-1", "highenergy"
+                If $aWandMods[$idx_mod_wand_high_energy] Then Return True
+
+            ;~ pick and choose specific attributes for 20 hct/hsr is missing
+            Case "19hct"
+                If $aWandMods[$idx_mod_wand_20_hct_value] >= 19 Then Return True
+            Case "19hsr"
+                If $aWandMods[$idx_mod_wand_20_hsr_value] >= 19 Then Return True
+            Case "20hct"
+                If $aWandMods[$idx_mod_wand_20_hct_value] >= 20 Then Return True
+            Case "20hsr"
+                If $aWandMods[$idx_mod_wand_20_hsr_value] >= 20 Then Return True
+        EndSwitch
+    Next
+
+    ;~ +1^20% attribute mods
+    If CheckModAttribute($aWandMods[$idx_mod_wand_attribute], $aMods) Then Return True
+
+    Return False
 EndFunc ;==>CheckModWand
 
 ;~ parses the modstruct of the wand and returns an array
@@ -3074,10 +3142,62 @@ Func ParseWandMods(ByRef $sModStruct)
     Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
     If $aAttribute[0] < 20 Then $aAttribute[1] = -1
     $aWandMods[$idx_mod_wand_attribute] = $aAttribute[1]
+
+    Return $aWandMods
 EndFunc ;==>ParseWandMods
 
 ;~ filter for OS focus
 Func CheckOsFocus($pItem, ByRef $sRules)
+    Local Static $bFirstCall = True
+
+    Local Static $aRuleReq[0]
+    Local Static $aRuleAttribute[0]
+    Local Static $aRuleMod1[0]
+    Local Static $aRuleMod2[0]
+
+    If $bFirstCall Then
+
+        Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT) ; split rows
+
+        Local $iRows = UBound($aRows), $iValidRows = 0
+
+        ReDim $aRuleReq[$iRows]
+        ReDim $aRuleAttribute[$iRows]
+        ReDim $aRuleMod1[$iRows]
+        ReDim $aRuleMod2[$iRows]
+
+        For $sCurrentRow In $aRows
+
+            Local $aCols = StringSplit($sCurrentRow, ";", $STR_NOCOUNT) ; split columns
+
+            If UBound($aCols) <> 4 Then
+                Out("Shield rule is wrongly formatted: " & $sCurrentRow)
+                ContinueLoop
+            EndIf
+
+            $aRuleReq[$iValidRows] = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
+            $aRuleAttribute[$iValidRows] = $aCols[1]
+            $aRuleMod1[$iValidRows] = $aCols[2]
+            $aRuleMod2[$iValidRows] = $aCols[3]
+
+            $iValidRows += 1
+        Next
+
+        If $iValidRows < $iRows Then
+            Redim $aRuleReq[$iValidRows]
+            Redim $aRuleAttribute[$iValidRows]
+            Redim $aRuleMod1[$iValidRows]
+            Redim $aRuleMod2[$iValidRows]
+        EndIf
+        
+        $bFirstCall = False
+    EndIf
+
+    If UBound($aRuleReq) = 0 Then
+        Out("No valid wand rules found.")
+        Return False
+    EndIf
+
     Local $iType = GetItemType($pItem)
     If $iType <> $GC_I_TYPE_OFFHAND Then Return False ; focus?
 
@@ -3088,38 +3208,19 @@ Func CheckOsFocus($pItem, ByRef $sRules)
 
     Local $iReq = GetItemReq($sModStruct) ; check against 1st column
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
-    Local $aOffhandMods = ParseFocusMods($sModStruct)
+    Local $aFocusMods = ParseFocusMods($sModStruct)
 
-    ; Split all rule rows
-    Local $aRows = StringSplit(StringLower($sRules), "|", $STR_NOCOUNT)
+   For $i = 0 To UBound($aRuleReq) - 1
 
-    ; Process each rule row
-    For $sRow In $aRows
+        If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
 
-        ; Split row into columns
-        Local $aCols = StringSplit($sRow, ";", $STR_NOCOUNT)
+        If Not CheckWeaponAttribute($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
 
-        ; safety check
-        If UBound($aCols) <> 4 Then
-            Out("Row is wrongly formatted.")
-            ContinueLoop
-        EndIf
+        If Not CheckModFocus($aFocusMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
 
-        ;========================================
-        ; Column 1: Requirement
-        ;========================================
+        If Not CheckModFocus($aFocusMods, $aRuleMod2[$i]) Then ContinueLoop ; mod2
 
-        Local $iRuleReq = Number(StringStripWS($aCols[0], $STR_STRIPLEADING + $STR_STRIPTRAILING))
-
-        If $iReq > $iRuleReq Then ContinueLoop
-
-        ;========================================
-        ; Column 2: Attribute
-        ;========================================
-
-        Local $bAttributeMatch = CheckWeaponAttribute($iItemAttribute, $aCols[1])
-
-        If Not $bAttributeMatch Then ContinueLoop
+        Return True
 
     Next
 
@@ -3127,51 +3228,104 @@ Func CheckOsFocus($pItem, ByRef $sRules)
 EndFunc ;==>CheckOsFocus
 
 ;~ checks if focus contains any requested mod
-Func CheckModFocus(ByRef $aWandMods, ByRef $sMods)
+Func CheckModFocus(ByRef $aFocusMods, ByRef $sMods)
 
+    ; Split requested mods
+    Local $aMods = StringSplit($sMods, ",", $STR_NOCOUNT)
+
+    ;~ remove whitespace
+    For $i = 0 To UBound($aMods) - 1
+        $aMods[$i] = StringStripWS($aMods[$i], $STR_STRIPLEADING + $STR_STRIPTRAILING)
+    Next
+
+    For $sCurrentMod In $aMods
+        Switch $sCurrentMod
+            ;~ Case "5a50", "+5a^50"
+            ;~     If $aFocusMods[$idx_mod_focus_armor_enchanted] Then Return True
+            Case "5ench", "+5a^ench"
+                If $aFocusMods[$idx_mod_focus_armor_enchanted] Then Return True
+            Case "10hct"
+                If $aFocusMods[$idx_mod_focus_10_hct] Then Return True
+            Case "10hsr"
+                If $aFocusMods[$idx_mod_focus_10_hsr] Then Return True
+            Case "15-1", "+15e^-1", "highenergy"
+                If $aFocusMods[$idx_mod_focus_high_energy] Then Return True
+
+            ;~ pick and choose specific attributes for 20 hct/hsr is missing
+            Case "19hct"
+                If $aFocusMods[$idx_mod_focus_20_hct_value] >= 19 Then Return True
+            Case "19hsr"
+                If $aFocusMods[$idx_mod_focus_20_hsr_value] >= 19 Then Return True
+            Case "20hct"
+                If $aFocusMods[$idx_mod_focus_20_hct_value] >= 20 Then Return True
+            Case "20hsr"
+                If $aFocusMods[$idx_mod_focus_20_hsr_value] >= 20 Then Return True
+        EndSwitch
+    Next
+
+    ;~ +30Hp
+    If CheckMod30Hp($aFocusMods[$idx_mod_focus_30hp], $aMods) Then Return True
+
+    ;~ +45Hp^ench
+    If CheckMod45Ench($aFocusMods[$idx_mod_focus_45ench], $aMods) Then Return True
+
+    ;~ +45Hp^stance
+    If CheckMod45Stance($aFocusMods[$idx_mod_focus_45stance], $aMods) Then Return True
+
+    ;~ +60Hp^hex
+    If CheckMod60Hex($aFocusMods[$idx_mod_focus_60hex], $aMods) Then Return True
+
+    ;~ +1^20% attribute mods
+    If CheckModAttribute($aFocusMods[$idx_mod_focus_attribute], $aMods) Then Return True
+
+    ;~ armor vs monster type
+    If CheckModMonster($aFocusMods[$idx_mod_shield_armor_monster], $aMods) Then Return True
+
+    Return False
 EndFunc ;==>CheckModFocus
 
 ;~ parses the modstruct of the focus and returns an array
 Func ParseFocusMods(ByRef $sModStruct)
-    Local $aOffhandMods[$idx_mod_offhand_size]
+    Local $aFocusMods[$idx_mod_focus_size]
 
     Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
-    $aOffhandMods[$idx_mod_offhand_30hp] = $a30hp[1]
+    $aFocusMods[$idx_mod_focus_30hp] = $a30hp[1]
 
     Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
-    $aOffhandMods[$idx_mod_offhand_45ench] = $a45ench[1]
+    $aFocusMods[$idx_mod_focus_45ench] = $a45ench[1]
     
     Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
-    $aOffhandMods[$idx_mod_offhand_45stance] = $a45stance[1]
+    $aFocusMods[$idx_mod_focus_45stance] = $a45stance[1]
 
     Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
-    $aOffhandMods[$idx_mod_offhand_60hex] = $a60hex[1]
+    $aFocusMods[$idx_mod_focus_60hex] = $a60hex[1]
 
-    $aOffhandMods[$idx_mod_offhand_armor_enchanted] = CheckModStruct($sModStruct, "05009821")
-    $aOffhandMods[$idx_mod_offhand_10_hct] = CheckModStruct($sModStruct, "000A0822")
-    $aOffhandMods[$idx_mod_offhand_10_hsr] = CheckModStruct($sModStruct, "000AA823")
-    $aOffhandMods[$idx_mod_offhand_high_energy] = CheckModStruct($sModStruct, "0F00D822")
+    $aFocusMods[$idx_mod_focus_armor_enchanted] = CheckModStruct($sModStruct, "05009821")
+    $aFocusMods[$idx_mod_focus_10_hct] = CheckModStruct($sModStruct, "000A0822")
+    $aFocusMods[$idx_mod_focus_10_hsr] = CheckModStruct($sModStruct, "000AA823")
+    $aFocusMods[$idx_mod_focus_high_energy] = CheckModStruct($sModStruct, "0F00D822")
 
     Local $aHct20 = GetModByIdentifier($sModStruct, '1822') ; 20% HCT
-    $aOffhandMods[$idx_mod_offhand_20_hct_attribute] = $aHct20[0]
-    $aOffhandMods[$idx_mod_offhand_20_hct_value] = $aHct20[1]
+    $aFocusMods[$idx_mod_focus_20_hct_attribute] = $aHct20[0]
+    $aFocusMods[$idx_mod_focus_20_hct_value] = $aHct20[1]
 
     Local $aHsr20 = GetModByIdentifier($sModStruct, '9823') ; 20% HSR
-    $aOffhandMods[$idx_mod_offhand_20_hsr_attribute] = $aHsr20[0]
-    $aOffhandMods[$idx_mod_offhand_20_hsr_value] = $aHsr20[1]
+    $aFocusMods[$idx_mod_focus_20_hsr_attribute] = $aHsr20[0]
+    $aFocusMods[$idx_mod_focus_20_hsr_value] = $aHsr20[1]
 
     Local $aAttribute = GetModByIdentifier($sModStruct, '1824') ; +1^20% attribute
     If $aAttribute[0] < 20 Then $aAttribute[1] = -1
-    $aOffhandMods[$idx_mod_offhand_attribute] = $aAttribute[1]
+    $aFocusMods[$idx_mod_focus_attribute] = $aAttribute[1]
 
     Local $aMonster = GetModByIdentifier($sModStruct, '8080') ; +monster type
-    $aOffhandMods[$idx_mod_offhand_armor_monster_type] = $aMonster[1]
+    $aFocusMods[$idx_mod_focus_armor_monster_type] = $aMonster[1]
 
-    If $aOffhandMods[$idx_mod_offhand_armor_monster_type] <> -1 Then
+    If $aFocusMods[$idx_mod_focus_armor_monster_type] <> -1 Then
         $aMonster = GetModByIdentifier($sModStruct, 'F8A0') ; armor vs monster value
-        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = $aMonster[1]
+        If $aMonster[1] < 10 Then $aMonster[1] = -1
+        $aFocusMods[$idx_mod_focus_armor_monster_value] = $aMonster[1]
     Else
-        $aOffhandMods[$idx_mod_offhand_armor_monster_value] = -1
+        $aFocusMods[$idx_mod_focus_armor_monster_value] = -1
     EndIf
 EndFunc ;==>ParseFocusMods
 
@@ -3225,6 +3379,14 @@ Func CheckOsStaff($pItem, ByRef $sRules)
 
     Return False
 EndFunc ;==>CheckOsStaff
+
+Func CheckModStaff()
+    Return True
+EndFunc ;==>CheckModStaff
+
+Func ParseStaffMods(ByRef $sModStruct)
+    Return True
+EndFunc ;==>ParseStaffMods
 
 ;~ filter or OS shield
 Func CheckOsShield(ByRef $pItem, ByRef $sRules)
@@ -3295,7 +3457,7 @@ Func CheckOsShield(ByRef $pItem, ByRef $sRules)
 
         If $iReq > $aRuleReq[$i] Then ContinueLoop ; req
 
-        If Not CheckAttributeShield($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
+        If Not CheckWeaponAttribute($iItemAttribute, $aRuleAttribute[$i]) Then ContinueLoop ; weapon attribute
 
         If Not CheckModShield($aShieldMods, $aRuleMod1[$i]) Then ContinueLoop ; mod1
 
@@ -3307,75 +3469,6 @@ Func CheckOsShield(ByRef $pItem, ByRef $sRules)
 
     Return False
 EndFunc ;==>CheckOsShield
-
-Func CheckAttributeShield($iAttribute, ByRef $sAttributeList)
-    Local $aAttributes = StringSplit($sAttributeList, ",", $STR_NOCOUNT)
-
-    For $sAttribute In $aAttributes
-
-        $sAttribute = StringStripWS($sAttribute, $STR_STRIPLEADING + $STR_STRIPTRAILING)
-
-        Switch $sAttribute
-
-            Case "tactics"
-                If $iAttribute = $GC_I_ATTRIBUTE_TACTICS Then Return True
-
-            Case "strength"
-                If $iAttribute = $GC_I_ATTRIBUTE_STRENGTH Then Return True
-
-            Case "command"
-                If $iAttribute = $GC_I_ATTRIBUTE_COMMAND Then Return True
-
-            Case "motivation"
-                If $iAttribute = $GC_I_ATTRIBUTE_MOTIVATION Then Return True
-
-            Case "leadership"
-                If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
-
-            Case Else
-                Out("Unknown shield attribute: " & $sAttribute)
-
-        EndSwitch
-    Next
-
-    Return False
-EndFunc ;==>CheckAttributeShield
-
-;~ parses the ModStruct of the shield and returns an array
-Func ParseShieldMods(ByRef $sModStruct)
-    Local $aShieldMods[$idx_mod_shield_size]
-
-    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
-    $aShieldMods[$idx_mod_shield_30hp] = $a30hp[1]
-
-    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
-    $aShieldMods[$idx_mod_shield_45ench] = $a45ench[1]
-    
-    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
-    $aShieldMods[$idx_mod_shield_45stance] = $a45stance[1]
-
-    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
-    $aShieldMods[$idx_mod_shield_60hex] = $a60hex[1]
-
-    $aShieldMods[$idx_mod_shield_2ench] = CheckModStruct($sModStruct, "02008820") ; -2ench
-    $aShieldMods[$idx_mod_shield_2stance] = CheckModStruct($sModStruct, "0200A820") ; -2stance
-    $aShieldMods[$idx_mod_shield_3hex] = CheckModStruct($sModStruct, "03009820") ; -3hex
-
-    Local $aArmor = GetModByIdentifier($sModStruct, '1821') ; blunt/fire/etc
-    If $aArmor[0] < 10 Then $aArmor[1] = -1
-    $aShieldMods[$idx_mod_shield_armor_type] = $aArmor[1]
-
-    $aShieldMods[$idx_mod_shield_armor_monster] = GetModArmorMonster($sModStruct) ; skeleton/demon/etc
-
-    Local $aCondition = GetModByIdentifier($sModStruct, "7824") ; 20% blind/dazed/etc
-    $aShieldMods[$idx_mod_shield_condition] = $aCondition[0]
-
-    Local $aAttribute = GetModByIdentifier($sModStruct, "1824") ; +1^20% attribute
-    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
-    $aShieldMods[$idx_mod_shield_attribute] = $aAttribute[1]
-
-    Return $aShieldMods
-EndFunc ;==>ParseShieldMods
 
 ;~ checks if shield contains any requested mod
 Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
@@ -3427,12 +3520,54 @@ Func CheckModShield(ByRef $aShieldMods, ByRef $sMods)
     Return False
 EndFunc ;==>CheckModShield
 
-Func ParseStaffMods(ByRef $sModStruct)
-    Return True
-EndFunc ;==>ParseStaffMods
+;~ parses the ModStruct of the shield and returns an array
+Func ParseShieldMods(ByRef $sModStruct)
+    Local $aShieldMods[$idx_mod_shield_size]
 
-Func CheckWeaponAttribute($iAttribute, ByRef $aMods)
-    Return True
+    Local $a30hp = GetModByIdentifier($sModStruct, '4823') ; 30hp
+    $aShieldMods[$idx_mod_shield_30hp] = $a30hp[1]
+
+    Local $a45ench = GetModByIdentifier($sModStruct, '6823') ; 45ench
+    $aShieldMods[$idx_mod_shield_45ench] = $a45ench[1]
+    
+    Local $a45stance = GetModByIdentifier($sModStruct, '8823') ; 45stance
+    $aShieldMods[$idx_mod_shield_45stance] = $a45stance[1]
+
+    Local $a60hex = GetModByIdentifier($sModStruct, '7823') ; 60hex
+    $aShieldMods[$idx_mod_shield_60hex] = $a60hex[1]
+
+    $aShieldMods[$idx_mod_shield_2ench] = CheckModStruct($sModStruct, "02008820") ; -2ench
+    $aShieldMods[$idx_mod_shield_2stance] = CheckModStruct($sModStruct, "0200A820") ; -2stance
+    $aShieldMods[$idx_mod_shield_3hex] = CheckModStruct($sModStruct, "03009820") ; -3hex
+
+    Local $aArmor = GetModByIdentifier($sModStruct, '1821') ; blunt/fire/etc
+    If $aArmor[0] < 10 Then $aArmor[1] = -1
+    $aShieldMods[$idx_mod_shield_armor_type] = $aArmor[1]
+
+    $aShieldMods[$idx_mod_shield_armor_monster] = GetModArmorMonster($sModStruct) ; skeleton/demon/etc
+
+    Local $aCondition = GetModByIdentifier($sModStruct, "7824") ; 20% blind/dazed/etc
+    $aShieldMods[$idx_mod_shield_condition] = $aCondition[0]
+
+    Local $aAttribute = GetModByIdentifier($sModStruct, "1824") ; +1^20% attribute
+    If $aAttribute[0] < 20 Then $aAttribute[1] = -1
+    $aShieldMods[$idx_mod_shield_attribute] = $aAttribute[1]
+
+    Return $aShieldMods
+EndFunc ;==>ParseShieldMods
+
+Func CheckWeaponAttribute($iAttribute, ByRef $sAttributeList)
+    Local $aAttributes = StringSplit($sAttributeList, ",", $STR_NOCOUNT)
+
+    For $sAttribute In $aAttributes
+
+        $sAttribute = StringStripWS($sAttribute, $STR_STRIPLEADING + $STR_STRIPTRAILING)
+
+        If CheckAttribute($iAttribute, $sAttribute) Then Return True
+
+    Next
+
+    Return False
 EndFunc ;==>CheckWeaponAttribute
 
 ;~ checks if item contains +30Hp
@@ -3597,99 +3732,107 @@ Func CheckModAttribute($iAttribute, ByRef $aMods)
 
     For $sCurrentMod In $aMods
 
-        Switch $sCurrentMod
-            Case "allattributes"
-                Return True
-            Case "fastcasting"
-                If $iAttribute = $GC_I_ATTRIBUTE_FAST_CASTING Then Return True
-            Case "illusion", "illusionmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_ILLUSION_MAGIC Then Return True
-            Case "domination", "dominationmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_DOMINATION_MAGIC Then Return True
-            Case "inspiration", "inspirationmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_INSPIRATION_MAGIC Then Return True
-            Case "blood", "bloodmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_BLOOD_MAGIC Then Return True
-            Case "death", "deathmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_DEATH_MAGIC Then Return True
-            Case "soulreaping", "sr"
-                If $iAttribute = $GC_I_ATTRIBUTE_SOUL_REAPING Then Return True
-            Case "curses"
-                If $iAttribute = $GC_I_ATTRIBUTE_CURSES Then Return True
-            Case "airmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_AIR_MAGIC Then Return True
-            Case "earthmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_EARTH_MAGIC Then Return True
-            Case "firemagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_FIRE_MAGIC Then Return True
-            Case "watermagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_WATER_MAGIC Then Return True
-            Case "energystorage", "es"
-                If $iAttribute = $GC_I_ATTRIBUTE_ENERGY_STORAGE Then Return True
-            Case "healing", "healingprayers"
-                If $iAttribute = $GC_I_ATTRIBUTE_HEALING_PRAYERS Then Return True
-            Case "smiting", "smitingprayers"
-                If $iAttribute = $GC_I_ATTRIBUTE_SMITING_PRAYERS Then Return True
-            Case "protection", "protectionprayers"
-                If $iAttribute = $GC_I_ATTRIBUTE_PROTECTION_PRAYERS Then Return True
-            Case "divinefavor", "df"
-                If $iAttribute = $GC_I_ATTRIBUTE_DIVINE_FAVOR Then Return True
-            Case "strength"
-                If $iAttribute = $GC_I_ATTRIBUTE_STRENGTH Then Return True
-            Case "axe", "axemastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_AXE_MASTERY Then Return True
-            Case "hammer", "hammermastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_HAMMER_MASTERY Then Return True
-            Case "sword", "swordsmanship"
-                If $iAttribute = $GC_I_ATTRIBUTE_SWORDSMANSHIP Then Return True
-            Case "tactics"
-                If $iAttribute = $GC_I_ATTRIBUTE_TACTICS Then Return True
-            Case "beastmastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_BEAST_MASTERY Then Return True
-            Case "expertise"
-                If $iAttribute = $GC_I_ATTRIBUTE_EXPERTISE Then Return True
-            Case "wilderness", "wildernesssurvival"
-                If $iAttribute = $GC_I_ATTRIBUTE_WILDERNESS_SURVIVAL Then Return True
-            Case "marksmanship"
-                If $iAttribute = $GC_I_ATTRIBUTE_MARKSMANSHIP Then Return True
-            Case "dagger", "daggermastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_DAGGER_MASTERY Then Return True
-            Case "deadlyarts"
-                If $iAttribute = $GC_I_ATTRIBUTE_DEADLY_ARTS Then Return True
-            Case "shadowarts"
-                If $iAttribute = $GC_I_ATTRIBUTE_SHADOW_ARTS Then Return True
-            Case "communing"
-                If $iAttribute = $GC_I_ATTRIBUTE_COMMUNING Then Return True
-            Case "restoration", "restorationmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_RESTORATION_MAGIC Then Return True
-            Case "channeling", "channelingmagic"
-                If $iAttribute = $GC_I_ATTRIBUTE_CHANNELING_MAGIC Then Return True
-            Case "criticalstrikes", "cs"
-                If $iAttribute = $GC_I_ATTRIBUTE_CRITICAL_STRIKES Then Return True
-            Case "spawningpower", "sp"
-                If $iAttribute = $GC_I_ATTRIBUTE_SPAWNING_POWER Then Return True
-            Case "spear", "spearmastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_SPEAR_MASTERY Then Return True
-            Case "command"
-                If $iAttribute = $GC_I_ATTRIBUTE_COMMAND Then Return True
-            Case "motivation"
-                If $iAttribute = $GC_I_ATTRIBUTE_MOTIVATION Then Return True
-            Case "leadership"
-                If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
-            Case "scythe", "scythemastery"
-                If $iAttribute = $GC_I_ATTRIBUTE_SCYTHE_MASTERY Then Return True
-            Case "windprayers", "wind"
-                If $iAttribute = $GC_I_ATTRIBUTE_WIND_PRAYERS Then Return True
-            Case "earthprayers", "earth"
-                If $iAttribute = $GC_I_ATTRIBUTE_EARTH_PRAYERS Then Return True
-            Case "mysticism"
-                If $iAttribute = $GC_I_ATTRIBUTE_MYSTICISM Then Return True
-        EndSwitch
+        If CheckAttribute($iAttribute, $sCurrentMod) Then Return True
 
     Next
 
     Return False
 EndFunc ;==>CheckModAttribute
+
+Func CheckAttribute(ByRef $iAttribute, ByRef $sAttribute)
+    Switch $sAttribute
+        Case "allattributes", "any"
+            Return True
+        Case "fastcasting"
+            If $iAttribute = $GC_I_ATTRIBUTE_FAST_CASTING Then Return True
+        Case "illusion", "illusionmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_ILLUSION_MAGIC Then Return True
+        Case "domination", "dominationmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_DOMINATION_MAGIC Then Return True
+        Case "inspiration", "inspirationmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_INSPIRATION_MAGIC Then Return True
+        Case "blood", "bloodmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_BLOOD_MAGIC Then Return True
+        Case "death", "deathmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_DEATH_MAGIC Then Return True
+        Case "soulreaping", "sr"
+            If $iAttribute = $GC_I_ATTRIBUTE_SOUL_REAPING Then Return True
+        Case "curses"
+            If $iAttribute = $GC_I_ATTRIBUTE_CURSES Then Return True
+        Case "airmagic", "air"
+            If $iAttribute = $GC_I_ATTRIBUTE_AIR_MAGIC Then Return True
+        Case "earthmagic", "earth"
+            If $iAttribute = $GC_I_ATTRIBUTE_EARTH_MAGIC Then Return True
+        Case "firemagic", "fire"
+            If $iAttribute = $GC_I_ATTRIBUTE_FIRE_MAGIC Then Return True
+        Case "watermagic", "water"
+            If $iAttribute = $GC_I_ATTRIBUTE_WATER_MAGIC Then Return True
+        Case "energystorage", "es"
+            If $iAttribute = $GC_I_ATTRIBUTE_ENERGY_STORAGE Then Return True
+        Case "healing", "healingprayers"
+            If $iAttribute = $GC_I_ATTRIBUTE_HEALING_PRAYERS Then Return True
+        Case "smiting", "smitingprayers"
+            If $iAttribute = $GC_I_ATTRIBUTE_SMITING_PRAYERS Then Return True
+        Case "protection", "protectionprayers", "prot"
+            If $iAttribute = $GC_I_ATTRIBUTE_PROTECTION_PRAYERS Then Return True
+        Case "divinefavor", "df"
+            If $iAttribute = $GC_I_ATTRIBUTE_DIVINE_FAVOR Then Return True
+        Case "strength"
+            If $iAttribute = $GC_I_ATTRIBUTE_STRENGTH Then Return True
+        Case "axe", "axemastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_AXE_MASTERY Then Return True
+        Case "hammer", "hammermastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_HAMMER_MASTERY Then Return True
+        Case "sword", "swordsmanship"
+            If $iAttribute = $GC_I_ATTRIBUTE_SWORDSMANSHIP Then Return True
+        Case "tactics"
+            If $iAttribute = $GC_I_ATTRIBUTE_TACTICS Then Return True
+        Case "beastmastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_BEAST_MASTERY Then Return True
+        Case "expertise"
+            If $iAttribute = $GC_I_ATTRIBUTE_EXPERTISE Then Return True
+        Case "wilderness", "wildernesssurvival"
+            If $iAttribute = $GC_I_ATTRIBUTE_WILDERNESS_SURVIVAL Then Return True
+        Case "marksmanship"
+            If $iAttribute = $GC_I_ATTRIBUTE_MARKSMANSHIP Then Return True
+        Case "dagger", "daggermastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_DAGGER_MASTERY Then Return True
+        Case "deadlyarts", "deadly"
+            If $iAttribute = $GC_I_ATTRIBUTE_DEADLY_ARTS Then Return True
+        Case "shadowarts", "shadow"
+            If $iAttribute = $GC_I_ATTRIBUTE_SHADOW_ARTS Then Return True
+        Case "communing"
+            If $iAttribute = $GC_I_ATTRIBUTE_COMMUNING Then Return True
+        Case "restoration", "restorationmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_RESTORATION_MAGIC Then Return True
+        Case "channeling", "channelingmagic"
+            If $iAttribute = $GC_I_ATTRIBUTE_CHANNELING_MAGIC Then Return True
+        Case "criticalstrikes", "cs"
+            If $iAttribute = $GC_I_ATTRIBUTE_CRITICAL_STRIKES Then Return True
+        Case "spawningpower", "sp"
+            If $iAttribute = $GC_I_ATTRIBUTE_SPAWNING_POWER Then Return True
+        Case "spear", "spearmastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_SPEAR_MASTERY Then Return True
+        Case "command"
+            If $iAttribute = $GC_I_ATTRIBUTE_COMMAND Then Return True
+        Case "motivation"
+            If $iAttribute = $GC_I_ATTRIBUTE_MOTIVATION Then Return True
+        Case "leadership"
+            If $iAttribute = $GC_I_ATTRIBUTE_LEADERSHIP Then Return True
+        Case "scythe", "scythemastery"
+            If $iAttribute = $GC_I_ATTRIBUTE_SCYTHE_MASTERY Then Return True
+        Case "windprayers", "wind"
+            If $iAttribute = $GC_I_ATTRIBUTE_WIND_PRAYERS Then Return True
+        Case "earthprayers"
+            If $iAttribute = $GC_I_ATTRIBUTE_EARTH_PRAYERS Then Return True
+        Case "mysticism"
+            If $iAttribute = $GC_I_ATTRIBUTE_MYSTICISM Then Return True
+        Case Else
+            Out("Unknown Attribute: " & $sAttribute)
+    EndSwitch
+
+    Return False
+EndFunc ;==>CheckAttribute
 
 ;~ checks if item contains +10 vsMonster (demon/skeleton/etc)
 Func CheckModMonster($iMonster, ByRef $aMods)
