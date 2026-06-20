@@ -305,7 +305,7 @@ Func GetItemPtrBySlot($iBag, $iSlot, $pInventory = 0)
 EndFunc   ;==>GetItemPtrBySlot
 
 ; Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
-Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialStacksOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
+Func GetItemPtrByModelID($aModelID, $iFirstBag = 1, $iLastBag = 16, $bPartialStacksOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
     Local $pItem, $pBag, $lItemArrayPtr, $lModelID, $iCount = 0
     
     If IsArray($aModelID) Then
@@ -318,7 +318,7 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialSta
     EndIf
     
     If IsArray($aModelID) Then
-        For $bag = $aFirstBag To $aLastBag
+        For $bag = $iFirstBag To $iLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
             If $bag = 6 And Not $aIncludeMats Then ContinueLoop
             If $bag = 7 Then ContinueLoop
@@ -342,7 +342,7 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialSta
             Next
         Next 
     Else
-        For $bag = $aFirstBag To $aLastBag
+        For $bag = $iFirstBag To $iLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
             If $bag = 6 And Not $aIncludeMats Then ContinueLoop
             If $bag = 7 Then ContinueLoop
@@ -362,7 +362,7 @@ Func GetItemPtrByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $bPartialSta
 EndFunc ;==>GetItemPtrByModelID
 
 ; Return first ItemPtr by Type in specified bags. Zero if no Item is found.
-Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
+Func GetItemPtrByType($aType, $iFirstBag = 1, $iLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
     Local $pItem, $pBag, $lItemArrayPtr, $lType, $iCount = 0
     
     If IsArray($aType) Then
@@ -375,7 +375,7 @@ Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipment
     EndIf
     
     If IsArray($aType) Then
-        For $bag = $aFirstBag To $aLastBag
+        For $bag = $iFirstBag To $iLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
             If $bag = 6 And Not $aIncludeMats Then ContinueLoop
             If $bag = 7 Then ContinueLoop
@@ -398,7 +398,7 @@ Func GetItemPtrByType($aType, $aFirstBag = 1, $aLastBag = 16, $aIncludeEquipment
             Next
         Next 
     Else
-        For $bag = $aFirstBag To $aLastBag
+        For $bag = $iFirstBag To $iLastBag
             If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
             If $bag = 6 And Not $aIncludeMats Then ContinueLoop
             If $bag = 7 Then ContinueLoop
@@ -448,64 +448,89 @@ Func GetItemByModStruct($iBagIndex = 1, $sModStruct = "")
     Return 0
 EndFunc ;==>GetItemByModStruct
 
-;~ Description: Returns amount of items of $aModelID in selected bags.
-Func CountItemByModelID($aModelID, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lModelID
-    If IsArray($aModelID) Then
-        Local $iCount[UBound($aModelID)]
-        For $i = 0 To UBound($aModelID) - 1
-            $iCount[$i] = 0
-        Next
-    Else
-        Local $iCount = 0
-    EndIf
+;~ Counts the Quantity or Slots of all Items contained in $aModelID in selected bags.
+Func CountItemByModelID($aModelID, $iFirstBag, $iLastBag, $bCountSlots = False, $bEquipmentPack = False, $bMaterialStorage = False)
     
-    If IsArray($aModelID) Then
-        For $bag = $aFirstBag To $aLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                $lModelID = GetItemModelID($pItem)
-                For $i = 0 To UBound($aModelID) - 1
-                    If $lModelID = $aModelID[$i] Then
-                        If $aCountSlotsOnly Then
-                            $iCount[$i] += 1
-                        Else
-                            $iCount[$i] += GetItemQuantity($pItem)
-                        EndIf
-                    EndIf
-                Next
-            Next
-        Next 
-    Else
-        For $bag = $aFirstBag To $aLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                If GetItemModelID($pItem) = $aModelID Then
-                    If $aCountSlotsOnly Then
-                        $iCount += 1
-                    Else
-                        $iCount += GetItemQuantity($pItem)
-                    EndIf
-                EndIf
-            Next
-        Next 
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aModelID) Then
+        Local $aTmp[1] = [$aModelID]
+        $aModelID = $aTmp
     EndIf
-    Return $iCount
+
+    Local $iSize = UBound($aModelID)
+    Local $aCount[$iSize]
+
+    Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
+    If @error Then Return SetError(1, 0, ($iSize = 1) ? $aCount[0] : $aCount)
+
+
+    Local $pItem, $iModelID
+
+    For $i = 0 To UBound($aItemPtr) - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $iModelID <> $aModelID[$j] Then ContinueLoop
+
+            If $bCountSlots Then
+                $aCount[$j] += 1
+            Else
+                $aCount[$j] += GetItemQuantity($tItemStruct)
+            EndIf
+        Next
+    Next
+ 
+    Return ($iSize = 1) ? $aCount[0] : $aCount
 EndFunc ;==>CountItemByModelID
+
+;~ Counts the Quantity or Slots of all Items contained in $aType in selected bags.
+Func CountItemByType($aType, $iFirstBag, $iLastBag, $bCountSlots = False, $bEquipmentPack = False, $bMaterialStorage = False)
+    
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aType) Then
+        Local $aTmp[1] = [$aType]
+        $aType = $aTmp
+    EndIf
+
+    Local $iSize = UBound($aType)
+    Local $aCount[$iSize]
+
+    Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
+    If @error Then Return SetError(1, 0, ($iSize = 1) ? $aCount[0] : $aCount)
+
+
+    Local $pItem, $iType
+
+    For $i = 0 To UBound($aItemPtr) - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iType = GetItemType($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $iType <> $aType[$j] Then ContinueLoop
+
+            If $bCountSlots Then
+                $aCount[$j] += 1
+            Else
+                $aCount[$j] += GetItemQuantity($tItemStruct)
+            EndIf
+        Next
+    Next
+ 
+    Return ($iSize = 1) ? $aCount[0] : $aCount
+EndFunc ;==>CountItemByType
 
 ; Returns the amount of an Item in Inventory by ModelID
 Func GetQuantityInventory($aModelID, $aCountSlotsOnly = False)
@@ -521,65 +546,6 @@ EndFunc ;==>GetQuantityChest
 Func GetQuantity($aModelID, $aCountSlotsOnly = False)
     Return CountItemByModelID($aModelID, 1, 11, $aCountSlotsOnly)
 EndFunc ;==>GetQuantity
-
-;~ Description: Returns amount of items of $aType in selected bags.
-Func CountItemByType($aType, $aFirstBag = 1, $aLastBag = 16, $aCountSlotsOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lType
-    If IsArray($aType) Then
-        Local $iCount[UBound($aType)]
-        For $i = 0 To UBound($aType) - 1
-            $iCount[$i] = 0
-        Next
-    Else
-        Local $iCount = 0
-    EndIf
-    
-    If IsArray($aType) Then
-        For $bag = $aFirstBag To $aLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                $lType = GetItemType($pItem)
-                For $i = 0 To UBound($aType) - 1
-                    If $lType = $aType[$i] Then
-                        If $aCountSlotsOnly Then
-                            $iCount[$i] += 1
-                        Else
-                            $iCount[$i] += GetItemQuantity($pItem)
-                        EndIf
-                    EndIf
-                Next
-            Next
-        Next 
-    Else
-        For $bag = $aFirstBag To $aLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                If GetItemType($pItem) = $aType Then
-                    If $aCountSlotsOnly Then
-                        $iCount += 1
-                    Else
-                        $iCount += GetItemQuantity($pItem)
-                    EndIf
-                EndIf
-            Next
-        Next 
-    EndIf
-    Return $iCount
-EndFunc ;==>CountItemByType
 
 ; Returns the amount of an Item in Inventory by Type
 Func GetQuantityInventoryByType($aType, $aCountSlotsOnly = False)
@@ -597,18 +563,19 @@ Func GetQuantityByType($aType, $aCountSlotsOnly = False)
 EndFunc ;==>GetQuantity
 
 ;~ Use Item in Inventory
-Func UseItemByModelID($iModelID)
-    If Not IsArray($iModelID) Then
-        Local $aTmp[1] = [$iModelID]
-        $iModelID = $aTmp
+Func UseItemByModelID($aModelID)
+    If Not IsArray($aModelID) Then
+        Local $aTmp[1] = [$aModelID]
+        $aModelID = $aTmp
     EndIf
 
-    Local $pItem = GetItemInInventory($iModelID)
+    Local $pItem = GetItemInInventory($aModelID)
 
-    For $i = 0 To UBound($iModelID) - 1
+    For $i = 0 To UBound($aModelID) - 1
         If $pItem[$i] = 0 Then ContinueLoop
         Item_UseItem($pItem[$i])
     Next
+
     Other_PingSleep(100)
 EndFunc ;==>UseItemByModelID
 
@@ -1507,21 +1474,25 @@ Func GetBagItemArrayPtr(ByRef $pBag)
 EndFunc ;==>GetBagItemArrayPtr
 
 ;~ returns the complete ItemPtr Array of the specified bags
-Func GetBagItemArray($iBagMin, $iBagMax)
+Func GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack = False, $bMaterialStorage = False)
     Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
 
-    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
+    If $iLastBag < $iFirstBag Then Return SetError(1, 0, 0)
 
     Local $pInventory = Item_GetInventoryPtr()
 
-    Local $iCountBags = $iBagMax - $iBagMin + 1
+    Local $iCountBags = $iLastBag - $iFirstBag + 1
     Local $iSlotsMax = $iCountBags * 25
 
     Local $aItemPtr[$iSlotsMax][3] ; $bag, $slot, $ItemPtr
     
     Local $iCount = 0
 
-    For $bag = $iBagMin To $iBagMax
+    For $bag = $iFirstBag To $iLastBag
+
+        If $bag = $GC_I_INVENTORY_EQUIPMENT_PACK And Not $bEquipmentPack Then ContinueLoop
+        If $bag = $GC_I_INVENTORY_MATERIAL_STORAGE And Not $bMaterialStorage Then ContinueLoop
+        If $bag = $GC_I_INVENTORY_UNCLAIMED_ITEMS Then ContinueLoop
 
         If GetBagStruct($tBagStruct, $bag, $pInventory) = False Then ContinueLoop
 
@@ -1564,15 +1535,15 @@ Func GetBagSlots(ByRef $pBag)
 EndFunc ;==>GetBagSlots
 
 ;~ counts free slots in specified bags
-Func CountFreeSlots($iBagMin, $iBagMax)
+Func CountFreeSlots($iFirstBag, $iLastBag)
     Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
 
-    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
+    If $iLastBag < $iFirstBag Then Return SetError(1, 0, 0)
 
     Local $pInventory = Item_GetInventoryPtr()
     Local $iCount = 0
 
-    For $bag = $iBagMin To $iBagMax
+    For $bag = $iFirstBag To $iLastBag
 
         If GetBagStruct($tBagStruct, $bag, $pInventory) = False Then ContinueLoop
 
@@ -1594,10 +1565,10 @@ Func CountFreeSlotsStorage()
 EndFunc ;==>CountFreeSlotsStorage
 
 
-Func GetFreeSlots($iBagMin, $iBagMax)
+Func GetFreeSlots($iFirstBag, $iLastBag)
     Local Static $tBagStruct = DllStructCreate($BAG_STRUCT_TEMPLATE)
 
-    If $iBagMax < $iBagMin Then Return SetError(1, 0, 0)
+    If $iLastBag < $iFirstBag Then Return SetError(1, 0, 0)
 
     While TimerDiff($g_hTimerMoveItem) < $g_iTimeoutMoveItem
         Sleep(100)
@@ -1605,14 +1576,14 @@ Func GetFreeSlots($iBagMin, $iBagMax)
     
     Local $pInventory = Item_GetInventoryPtr()
     
-    Local $iCountBags = $iBagMax - $iBagMin + 1
+    Local $iCountBags = $iLastBag - $iFirstBag + 1
     Local $iFreeSlotsMax = $iCountBags * 25
 
     Local $aFreeSlots[$iFreeSlotsMax][2] 
 
     Local $pItem, $iCount = 0
 
-    For $bag = $iBagMin To $iBagMax
+    For $bag = $iFirstBag To $iLastBag
 
         If GetBagStruct($tBagStruct, $bag, $pInventory) = False Then ContinueLoop
 
