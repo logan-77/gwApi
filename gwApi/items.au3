@@ -2156,19 +2156,19 @@ EndFunc ;==>CheckModStruct
 
 #Region Weapons
 ;~ Description: Returns a weapon or shield's minimum required attribute.
-Func GetItemReq($pItem)
+Func GetItemReq(ByRef $pItem)
     Local $aMod = GetModByIdentifier($pItem, '9827')
     Return $aMod[0]
 EndFunc ;==>GetItemReq
 
 ;~ Description: Returns a weapon or shield's required attribute.
-Func GetItemAttribute($pItem)
+Func GetItemAttribute(ByRef $pItem)
     Local $aMod = GetModByIdentifier($pItem, '9827')
     Return $aMod[1]
 EndFunc ;==>GetItemAttribute
 
 ;~ Description: Returns the maximum Dmg/Energy/Armor
-Func GetItemMaxDmg($pItem)
+Func GetItemMaxDmg(ByRef $pItem)
     Local $sModStruct = GetModStruct($pItem)
     Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
     If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
@@ -2179,7 +2179,7 @@ Func GetItemMaxDmg($pItem)
 EndFunc ;==>GetItemMaxDmg
 
 ;~ Description: Returns the minimum Dmg/Energy/Armor
-Func GetItemMinDmg($pItem)
+Func GetItemMinDmg(ByRef $pItem)
     Local $sModStruct = GetModStruct($pItem)
     Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
     If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
@@ -2190,7 +2190,7 @@ Func GetItemMinDmg($pItem)
 EndFunc ;==>GetItemMinDmg
 
 ;~ Description: Returns Dmg/Energy/Armor
-Func GetItemDmg($pItem)
+Func GetItemDmg(ByRef $pItem)
     Local $sModStruct = GetModStruct($pItem)
     Local $iPos = StringInStr($sModStruct, "A8A7") ; Weapon Damage
     If $iPos = 0 Then $iPos = StringInStr($sModStruct, "C867") ; Energy (focus)
@@ -2203,8 +2203,8 @@ Func GetItemDmg($pItem)
     Return $aMod
 EndFunc ;==>GetItemDmg
 
-Func IsWeaponMaxDmg($pItem, $iType = -1)
-    If $iType = -1 And IsPtr($pItem) Then $iType = GetItemType($pItem)
+Func IsWeaponMaxDmg(ByRef $pItem, $iType = -1)
+    If $iType = -1 Then $iType = GetItemType($pItem)
 
     If Not IsWeaponByType($iType) Then Return False
 
@@ -2933,7 +2933,7 @@ Func CheckTypeMartial($iType, ByRef $sWeapons)
         $sWeapon = StringStripWS($sWeapon, $STR_STRIPLEADING + $STR_STRIPTRAILING)
 
         Switch $sWeapon
-            Case "allweapons"
+            Case "allweapons", "any"
                 Return True
             Case "axe"
                 If $iType = $GC_I_TYPE_AXE Then Return True
@@ -3279,7 +3279,7 @@ Func CheckModFocus(ByRef $aFocusMods, ByRef $sMods)
     If CheckModAttribute($aFocusMods[$idx_mod_focus_attribute], $aMods) Then Return True
 
     ;~ armor vs monster type
-    If CheckModMonster($aFocusMods[$idx_mod_shield_armor_monster], $aMods) Then Return True
+    ;~ If CheckModMonster($aFocusMods[$idx_mod_shield_armor_monster], $aMods) Then Return True
 
     Return False
 EndFunc ;==>CheckModFocus
@@ -3327,6 +3327,8 @@ Func ParseFocusMods(ByRef $sModStruct)
     Else
         $aFocusMods[$idx_mod_focus_armor_monster_value] = -1
     EndIf
+
+    Return $aFocusMods
 EndFunc ;==>ParseFocusMods
 
 ;~ filter for OS staff
@@ -3743,7 +3745,7 @@ Func CheckAttribute(ByRef $iAttribute, ByRef $sAttribute)
     Switch $sAttribute
         Case "allattributes", "any"
             Return True
-        Case "fastcasting"
+        Case "fastcasting", "fc"
             If $iAttribute = $GC_I_ATTRIBUTE_FAST_CASTING Then Return True
         Case "illusion", "illusionmagic"
             If $iAttribute = $GC_I_ATTRIBUTE_ILLUSION_MAGIC Then Return True
