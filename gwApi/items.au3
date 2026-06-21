@@ -270,6 +270,18 @@ Func GetItemQuantity(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
     EndIf
 EndFunc ;==>GetQuantity
 
+;~ Returns the Slot the Item is in, if it is in inventory.
+Func GetItemSlot(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
+    If IsDllStruct($pItem) Then
+        Return DllStructGetData($pItem, 'Slot')
+    Else
+        $pItem = GetItemPtr($pItem, $pItemArray, $pItemContext)
+        If $pItem = 0 Then Return 0
+            
+        Return Memory_Read($pItem + 0x50, 'byte')
+    EndIf
+EndFunc ;==>GetItemSlot
+
 Func GetItemInteraction(ByRef $pItem, $pItemArray = 0, $pItemContext = 0)
     If IsDllStruct($pItem) Then
         Return DllStructGetData($pItem, 'Interaction')
@@ -302,137 +314,114 @@ Func GetItemPtrBySlot($iBag, $iSlot, $pInventory = 0)
     Local $pItemArray = Memory_Read($pBag + 0x18, 'ptr')
 
     Return Memory_Read($pItemArray + 4 * ($iSlot - 1), 'ptr')
-EndFunc   ;==>GetItemPtrBySlot
+EndFunc ;==>GetItemPtrBySlot
 
-; Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
-Func GetItemPtrByModelID($aModelID, $iFirstBag = 1, $iLastBag = 16, $bPartialStacksOnly = False, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lModelID, $iCount = 0
-    
-    If IsArray($aModelID) Then
-        Local $lReturnPtr[UBound($aModelID)]
-        For $i = 0 To UBound($aModelID) - 1
-            $lReturnPtr[$i] = 0
-        Next
-    Else
-        Local $lReturnPtr = 0
-    EndIf
-    
-    If IsArray($aModelID) Then
-        For $bag = $iFirstBag To $iLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                $lModelID = GetItemModelID($pItem)
-                For $i = 0 To UBound($aModelID) - 1
-                    If $lReturnPtr[$i] <> 0 Or $lModelID <> $aModelID[$i] Then ContinueLoop
-                    If $bPartialStacksOnly And GetItemQuantity($pItem) >= 250 Then ContinueLoop
-                    $lReturnPtr[$i] = $pItem
-                    $iCount += 1
-                    If $iCount = UBound($aModelID) Then
-                        Return $lReturnPtr
-                    EndIf
-                    ExitLoop
-                Next    
-            Next
-        Next 
-    Else
-        For $bag = $iFirstBag To $iLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                If GetItemModelID($pItem) <> $aModelID Then ContinueLoop
-                If $bPartialStacksOnly And GetItemQuantity($pItem) >= 250 Then ContinueLoop
-                Return $pItem
-            Next
-        Next
-    EndIf
-    Return $lReturnPtr
-EndFunc ;==>GetItemPtrByModelID
+;~ Return first ItemPtr by ModelID in specified bags. Zero if no Item is found.
+Func GetItemByModelID($aModelID, $iFirstBag, $iLastBag, $bPartialStacks = False, $bEquipmentPack = False, $bMaterialStorage = False)
 
-; Return first ItemPtr by Type in specified bags. Zero if no Item is found.
-Func GetItemPtrByType($aType, $iFirstBag = 1, $iLastBag = 16, $aIncludeEquipmentPack = False, $aIncludeMats = False)
-    Local $pItem, $pBag, $lItemArrayPtr, $lType, $iCount = 0
-    
-    If IsArray($aType) Then
-        Local $lReturnPtr[UBound($aType)]
-        For $i = 0 To UBound($aType) - 1
-            $lReturnPtr[$i] = 0
-        Next
-    Else
-        Local $lReturnPtr = 0
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aModelID) Then
+        Local $aTmp[1] = [$aModelID]
+        $aModelID = $aTmp
     EndIf
-    
-    If IsArray($aType) Then
-        For $bag = $iFirstBag To $iLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                $lType = GetItemType($pItem)
-                For $i = 0 To UBound($aType) - 1
-                    If $lReturnPtr[$i] <> 0 Or $lType <> $aType[$i] Then ContinueLoop
-                    $lReturnPtr[$i] = $pItem
-                    $iCount += 1
-                    If $iCount = UBound($aType) Then
-                        Return $lReturnPtr
-                    EndIf
-                    ExitLoop
-                Next    
-            Next
-        Next 
-    Else
-        For $bag = $iFirstBag To $iLastBag
-            If $bag = 5 And Not $aIncludeEquipmentPack Then ContinueLoop
-            If $bag = 6 And Not $aIncludeMats Then ContinueLoop
-            If $bag = 7 Then ContinueLoop
-            $pBag = Item_GetBagPtr($bag)
-            If $pBag = 0 Then ContinueLoop
-            $lItemArrayPtr = Memory_Read($pBag + 0x18, 'ptr')
-            For $slot = 0 To GetBagSlots($pBag) - 1
-                $pItem = Memory_Read($lItemArrayPtr + 4 * $slot, 'ptr')
-                If $pItem = 0 Then ContinueLoop
-                If GetItemType($pItem) = $aType Then
-                    Return $pItem
-                EndIf
-            Next
+
+    Local $iSize = UBound($aModelID)
+    Local $aReturn[$iSize]
+
+    Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
+    If @error Then Return SetError(1, 0, ($iSize = 1) ? $aReturn[0] : $aReturn)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iModelID, $iCount = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $aReturn[$j] <> 0 Or $iModelID <> $aModelID[$j] Then ContinueLoop
+            If $bPartialStacks And GetItemQuantity($tItemStruct) >= 250 Then ContinueLoop
+                
+            $aReturn[$j] = $pItem
+
+            $iCount += 1
+            If $iCount = $iSize Then Return ($iSize = 1) ? $aReturn[0] : $aReturn
+ 
+            ExitLoop
         Next
+    Next
+ 
+    Return ($iSize = 1) ? $aReturn[0] : $aReturn
+EndFunc ;==>GetItemByModelID
+
+;~ Return first ItemPtr by Type in specified bags. Zero if no Item is found.
+Func GetItemByType($aType, $iFirstBag, $iLastBag, $bPartialStacks = False, $bEquipmentPack = False, $bMaterialStorage = False)
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aType) Then
+        Local $aTmp[1] = [$aType]
+        $aType = $aTmp
     EndIf
-    Return $lReturnPtr
-EndFunc ;==>GetItemPtrByType
+
+    Local $iSize = UBound($aType)
+    Local $aReturn[$iSize]
+
+    Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
+    If @error Then Return SetError(1, 0, ($iSize = 1) ? $aReturn[0] : $aReturn)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iType, $iCount = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iType = GetItemType($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $aReturn[$j] <> 0 Or $iType <> $aType[$j] Then ContinueLoop
+            If $bPartialStacks And GetItemQuantity($tItemStruct) >= 250 Then ContinueLoop
+                
+            $aReturn[$j] = $pItem
+
+            $iCount += 1
+            If $iCount = $iSize Then Return ($iSize = 1) ? $aReturn[0] : $aReturn
+ 
+            ExitLoop
+        Next
+    Next
+ 
+    Return ($iSize = 1) ? $aReturn[0] : $aReturn
+EndFunc ;==>GetItemByType
 
 ; Returns the first Item by ModelID found in Inventory; If no Item is found Returns Zero
-Func GetItemInInventory($aModelID, $bPartialStacksOnly = False)
-    Return GetItemPtrByModelID($aModelID, 1, 4, $bPartialStacksOnly)
+Func GetItemInInventory($aModelID, $bPartialStacks = False)
+    Return GetItemByModelID($aModelID, 1, 4, $bPartialStacks)
 EndFunc ;==>GetItemInInventory
 
 ; Returns the first Item by ModelID found in Storage; If no Item is found Returns Zero
-Func GetItemInChest($aModelID, $bPartialStacksOnly = False)
-    Return GetItemPtrByModelID($aModelID, 8, 11, $bPartialStacksOnly)
+Func GetItemInChest($aModelID, $bPartialStacks = False)
+    Return GetItemByModelID($aModelID, 8, 11, $bPartialStacks)
 EndFunc ;==>GetItemInChest
 
-Func GetItemInInventoryByType($aType)
-    Return GetItemPtrByType($aType, 1, 4)
+Func GetItemInInventoryByType($aType, $bPartialStacks = False)
+    Return GetItemByType($aType, 1, 4, $bPartialStacks)
 EndFunc ;==>GetItemInInventoryByType
 
-Func GetItemInChestByType($aType)
-    Return GetItemPtrByType($aType, 8, 11)
+Func GetItemInChestByType($aType, $bPartialStacks = False)
+    Return GetItemByType($aType, 8, 11, $bPartialStacks)
 EndFunc ;==>GetItemInChestByType
 
 ;~ Returns the first Item, with a matching ModStruct
@@ -579,56 +568,104 @@ Func UseItemByModelID($aModelID)
     Other_PingSleep(100)
 EndFunc ;==>UseItemByModelID
 
-;Drops all Items to ground, if in explorable
+;~ Drops all Items to the ground.
 Func DropAll()
-    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
-    Local $pItem, $pBag
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            Item_DropItem($pItem)
-            Other_PingSleep(100)
-        Next
+    If Not GetIsExplorable() Then Return
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        Item_DropItem($pItem)
+        Other_PingSleep(100)
     Next
-    Return 1
 EndFunc ;==>DropAll
 
-;Drops all Items of given Type to ground, if in explorable
-Func DropItemsByType($aType)
-    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
-    Local $pItem, $pBag
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If GetItemType($pItem) <> $aType Then ContinueLoop
+;~ Drops all Items to the ground, by Type.
+Func DropItemsByType($aType, $bFullStack = False)
+    If Not GetIsExplorable() Then Return
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aType) Then
+        Local $aTmp[1] = [$aType]
+        $aType = $aTmp
+    EndIf
+    Local $iSize = UBound($aType)
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iType
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        If $bFullStack And GetItemQuantity($tItemStruct) < 250 Then ContinueLoop
+        
+        $iType = GetItemType($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $aType[$j] <> $iType Then ContinueLoop
+
             Item_DropItem($pItem)
             Other_PingSleep(100)
-        Next
+            ExitLoop
+        Next        
     Next
-    Return 1
 EndFunc ;==>DropItemsByType
 
-;Drops all Items of given ModelID to ground, if in explorable
-Func DropItemsByModelID($iModelID, $aFullStack = False)
-    If Not Map_GetInstanceInfo("IsExplorable") Then Return 0
-    Local $pItem, $pBag
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If GetItemModelID($pItem) <> $iModelID Then ContinueLoop
-            If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
+;~ Drops all Items to the ground, by ModelID
+Func DropItemsByModelID($aModelID, $bFullStack = False)
+    If Not GetIsExplorable() Then Return
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If Not IsArray($aModelID) Then
+        Local $aTmp[1] = [$aModelID]
+        $aModelID = $aTmp
+    EndIf
+    Local $iSize = UBound($aModelID)
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iModelID
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        If $bFullStack And GetItemQuantity($tItemStruct) < 250 Then ContinueLoop
+        
+        $iModelID = GetItemModelID($tItemStruct)
+
+        For $j = 0 To $iSize - 1
+            If $aModelID[$j] <> $iModelID Then ContinueLoop
+
             Item_DropItem($pItem)
             Other_PingSleep(100)
-        Next
+            ExitLoop
+        Next        
     Next
 EndFunc ;==>DropItemsByModelID
 
@@ -637,22 +674,6 @@ Func DestroyItem($pItem)
     Item_DestroyItem($pItem)
     Other_PingSleep(100)
 EndFunc ;==>DestroyItem
-
-;~ Description: Moves an Item and can split up a Stack
-Func MoveItemEx($pItemSource, $iBag, $iSlot, $iAmount = 0)
-    Local $pItem = Item_GetItemPtr($pItemSource)
-    If $pItem = 0 Then Return 0
-
-    Local $iQuantity = GetItemQuantity($pItem)
-    If $iAmount = 0 Or $iAmount > $iQuantity Then $iAmount = $iQuantity
-
-    If $iAmount >= $iQuantity Then
-        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($iBag), $iSlot - 1)
-    Else
-        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($pItem), $iAmount, GetBagID($iBag), $iSlot - 1)
-    EndIf
-    Return 1
-EndFunc ;==>MoveItemEx
 
 Func PickUpLootEx($iMaxDist = 2500)
     Local $lAgentPtr, $lAgentID, $pItem, $lOwner
@@ -692,6 +713,73 @@ Func GetItemPtrByAgentPtr($pAgent)
     If Not IsPtr($pAgent) Then Return 0
     Return Item_GetItemPtr(Memory_Read($pAgent + 0xC8, 'dword'))
 EndFunc ;==>GetItemPtrByAgentPtr
+
+Func MoveItem($pItem, $pBag, $iSlot)
+    Return Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($pBag), $iSlot)
+EndFunc ;==>MoveItem
+
+;~ Description: Moves an Item and can split up a Stack
+Func MoveItemEx($pItemSource, $iBag, $iSlot, $iAmount = 0)
+    Local $pItem = Item_GetItemPtr($pItemSource)
+    If $pItem = 0 Then Return 0
+
+    Local $iQuantity = GetItemQuantity($pItem)
+    If $iAmount = 0 Or $iAmount > $iQuantity Then $iAmount = $iQuantity
+
+    If $iAmount >= $iQuantity Then
+        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($iBag), $iSlot - 1)
+    Else
+        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($pItem), $iAmount, GetBagID($iBag), $iSlot - 1)
+    EndIf
+    Return 1
+EndFunc ;==>MoveItemEx
+
+Func MoveItemToStorage($pItemSource, $bStack = False, $pItemDest = 0)
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+    Local Static $tItemStructDest = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    If $pItemSource = $pItemDest Then Return False
+
+    Local $aFreeSlots = GetFreeSlotsStorage()
+    Local $iFreeSlots = UBound($aFreeSlots)
+    If Not $bStack And $iFreeSlots = 0 Then Return False
+
+    If GetItemStruct($tItemStruct, $pItemSource) = False Then Return False
+
+    Local $iModelID = GetItemModelID($tItemStruct)
+    Local $iQuantitySource = GetItemQuantity($tItemStruct)
+
+    If $bStack Then
+        If $pItemDest = 0 Then $pItemDest = GetItemInChest($iModelID, True)
+
+        If $pItemDest <> 0 Then
+            If GetItemStruct($tItemStructDest, $pItemDest) = False Then Return False
+
+            Local $iQuantityDest = GetItemQuantity($tItemStructDest)
+            Local $iQuantity = $iQuantitySource + $iQuantityDest
+
+            Local $pBagDest = GetItemBagPtr($tItemStructDest)
+            Local $iSlotDest = GetItemSlot($tItemStructDest)
+
+            If $iQuantity <= 250 Then                
+                MoveItem($pItemSource, $pBagDest, $iSlotDest)
+                ;~ wait for move here (source=0)
+                Return True
+            Else
+                $iQuantity = 250 - $iQuantityDest
+                MoveItemEx($pItemSource, $pBagDest, $iSlotDest, $iQuantity) ; ZERO BASED HERE
+                ;~ wait for move here (dest=250!?!)
+            EndIf
+        EndIf
+    EndIf
+
+    If $iFreeSlots = 0 Then Return False
+
+    MoveItem($pItemSource, $aFreeSlots[0][0], $aFreeSlots[0][1])
+    ;~ wait for move here (source=0 OR dest<>0)
+    Return True
+EndFunc ;==>MoveItemToStorage
 
 ;~ Description: Looks for free Slot and moves Item to Chest.
 ;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
@@ -911,7 +999,7 @@ Func StoreItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
     Next
        
     Local $aFreeSlots = GetFreeSlotsStorage()
-    If $aFreeSlots = 0 Then Return False
+    If UBound($aFreeSlots) = 0 Then Return False
 
     Local $pItemDest = GetItemInChest($aModelID, True)
     Local $iFreeSlotsMax = UBound($aFreeSlots), $iCountSlots = 0
@@ -1009,7 +1097,8 @@ Func WithdrawItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
     Next
        
     Local $aFreeSlots = GetFreeSlotsInventory()
-    If $aFreeSlots = 0 Then Return False
+    If UBound($aFreeSlots) = 0 Then Return False
+
     Local $pItemDest = GetItemInInventory($aModelID, True)
     Local $iFreeSlotsMax = UBound($aFreeSlots), $iCountSlots = 0
     Local $pItem, $pBag, $iModelID, $iQuantity, $iQuantityMerge, $iModelIDFound
@@ -1419,25 +1508,25 @@ EndFunc ;==>GetBagStruct
 
 Func GetBagType(ByRef $pBag)
     If IsDllStruct($pBag) Then
-        Return DllStructGetData($pBag, "BagType")
+        Return DllStructGetData($pBag, 'BagType')
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag), "dword")
+        Return Memory_Read(GetBagPtr($pBag), 'dword')
     EndIf
 EndFunc ;==>GetBagType
 
 Func GetBagIndex(ByRef $pBag)
     If IsDllStruct($pBag) Then
-        Return DllStructGetData($pBag, "Index")
+        Return DllStructGetData($pBag, 'Index')
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag) + 0x04, "dword")
+        Return Memory_Read(GetBagPtr($pBag) + 0x04, 'dword')
     EndIf
 EndFunc ;==>GetBagIndex
 
 Func GetBagID(ByRef $pBag)
     If IsDllStruct($pBag) Then
-        Return DllStructGetData($pBag, "BagID")
+        Return DllStructGetData($pBag, 'BagID')
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag) + 0x08, "dword")
+        Return Memory_Read(GetBagPtr($pBag) + 0x08, 'dword')
     EndIf
 EndFunc ;==>GetBagID
 
@@ -1612,9 +1701,8 @@ Func GetFreeSlots($iFirstBag, $iLastBag)
 
     Next
     
-    If $iCount = 0 Then Return 0
-    
     Redim $aFreeSlots[$iCount][2]
+
     Return $aFreeSlots
 EndFunc ;==>GetFreeSlots
 
@@ -1704,15 +1792,6 @@ Func GetGoldInfo(ByRef $iGoldCharacter, ByRef $iGoldStorage)
 EndFunc ;==>GetGoldInfo
 #EndRegion Inventory
 
-#Region Equipment
-;~ Description: Unequips item to $abag, $aslot (1-based).
-;~ Equipmentslots: 1 -> Mainhand/Two-hand 2 -> Offhand 3 -> Chestpiece 4 -> Leggings
-;~     5 -> Headpiece   6 -> Boots  7 -> Gloves
-Func UnequipItem($aEquipmentSlot, $aBag, $aSlot)
-    Return Core_SendPacket(0x10, $GC_I_HEADER_ITEM_UNEQUIP, $aEquipmentSlot - 1, GetBagID($aBag), $aSlot - 1)
-EndFunc   ;==>UnequipItem
-#EndRegion Equipment
-
 #Region Custom
 ;~ Return the Name of a Common or Rare Material by ModelID
 Func GetMaterialName($aModelID)
@@ -1799,11 +1878,6 @@ Func IsBlackDye($aModelID, $aExtraID)
     Return False
 EndFunc ;==>IsBlackDye
 
-Func IsEliteOrNormalTome($aModelID)
-    If $aModelID > 21785 And $aModelID < 21806 Then Return True
-    Return False
-EndFunc ;==>IsEliteOrNormalTome
-
 ; Return the amount of Alcohol in Inventory
 Func GetAlcQuantityInventory()
     Local $pItem, $pBag, $iQuantity = 0
@@ -1819,195 +1893,237 @@ Func GetAlcQuantityInventory()
     Return $iQuantity
 EndFunc ;==>GetAlcQuantityInventory
 
-; Uses first Alc found in Inventory, Returns 0 if no Alc available
-Func UseAlc($aOneMinAlc = False)
-    Local $pItem, $pBag
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If $aOneMinAlc And CheckIsOneMinAlc(GetItemModelID($pItem)) Then
-                Item_UseItem($pItem)
-                Return 1
-            ElseIf CheckIsAlc(GetItemModelID($pItem)) Then
+;~ Uses first Alcohol found in Inventory, Returns 0 if no Alc available
+Func UseAlcohol($bOnePoint = False, $bThreePoint = False)
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $bAnyAlcohol = ($bOnePoint = $bThreePoint)
+    Local $pItem, $iModelID
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        $iModelID = GetItemModelID($pItem)
+
+        If $bAnyAlcohol Then
+            If CheckIsOnePointAlc($iModelID) Or CheckIsThreePointAlc($iModelID) Then
                 Item_UseItem($pItem)
                 Return 1
             EndIf
-        Next
+        ElseIf $bOnePoint Then
+            If CheckIsOnePointAlc($iModelID) Then
+                Item_UseItem($pItem)
+                Return 1
+            EndIf
+        Else
+            If CheckIsThreePointAlc($iModelID) Then
+                Item_UseItem($pItem)
+                Return 1
+            EndIf
+        EndIf
     Next
+
     Return 0
-EndFunc ;==>UseAlc
+EndFunc ;==>UseAlcohol
 
-;~ Description: Checks if ModelID belongs to an Alcohol Item
-Func CheckIsAlc($aModelID)
-    Switch $aModelID
-        Case $GC_I_MODELID_HARD_APPLE_CIDER, $GC_I_MODELID_HUNTERS_ALE, $GC_I_MODELID_EGGNOG ; 1min
-            Return True
-        Case $GC_I_MODELID_WITCHS_BREW, $GC_I_MODELID_VIAL_OF_ABSINTHE, $GC_I_MODELID_SHAMROCK_ALE
-            Return True
-        Case $GC_I_MODELID_KEG_OF_AGED_HUNTERS_ALE, $GC_I_MODELID_FLASK_OF_FIREWATER, $GC_I_MODELID_AGED_HUNTERS_ALE ; 3min
-            Return True
-        Case $GC_I_MODELID_KRYTAN_BRANDY, $GC_I_MODELID_SPIKED_EGGNOGG, $GC_I_MODELID_BOTTLE_OF_GROG
-            Return True
-        Case Else
-            Return False
-    EndSwitch
+;~ Checks if Item is Alcohol.
+Func CheckIsAlc($iModelID)
+    For $i = 1 To UBound($GC_AI_ONEPOINT_ALCOHOL) - 1
+        If $GC_AI_ONEPOINT_ALCOHOL[$i] = $iModelID Then Return True
+    Next
+
+    For $i = 1 To UBound($GC_AI_THREEPOINT_ALCOHOL) - 1
+        If $GC_AI_THREEPOINT_ALCOHOL[$i] = $iModelID Then Return True
+    Next
+
     Return False
 EndFunc ;==>CheckIsAlc
 
-;~ Description: Checks if ModelID belongs to an Alcohol Item
-Func CheckIsOneMinAlc($aModelID)
-    Switch $aModelID
-        Case $GC_I_MODELID_HARD_APPLE_CIDER, $GC_I_MODELID_HUNTERS_ALE, $GC_I_MODELID_EGGNOG ; 1min
-            Return True
-        Case $GC_I_MODELID_WITCHS_BREW, $GC_I_MODELID_VIAL_OF_ABSINTHE, $GC_I_MODELID_SHAMROCK_ALE
-            Return True
-        Case Else
-            Return False
-    EndSwitch
+;~ Checks if Item is One Point Alcohol.
+Func CheckIsOnePointAlc($iModelID)
+    For $i = 1 To UBound($GC_AI_ONEPOINT_ALCOHOL) - 1
+        If $GC_AI_ONEPOINT_ALCOHOL[$i] = $iModelID Then Return True
+    Next
+
     Return False
-EndFunc ;==>CheckIsAlc
+EndFunc ;==>CheckIsOnePointAlc
+
+;~ Checks if Item is Three Point Alcohol.
+Func CheckIsThreePointAlc($iModelID)
+    For $i = 1 To UBound($GC_AI_ONEPOINT_ALCOHOL) - 1
+        If $GC_AI_ONEPOINT_ALCOHOL[$i] = $iModelID Then Return True
+    Next
+
+    Return False
+EndFunc ;==>CheckIsThreePointAlc
 
 ;~ Description: Checks if ModelID belongs to a City Speed Item
-Func CheckIsCitySpeed($aModelID)
-    Switch $aModelID
-        Case $GC_I_MODELID_SUGARY_BLUE_DRINK, $GC_I_MODELID_CHOCOLATE_BUNNY, $GC_I_MODELID_FRUITCAKE
-            Return True
-        Case $GC_I_MODELID_CREME_BRULEE, $GC_I_MODELID_JAR_OF_HONEY, $GC_I_MODELID_KRYTAN_LOKUM
-            Return True
-        Case Else
-            Return False
-    EndSwitch
+Func CheckIsCitySpeed($iModelID)
+    Local Static $aSweets[] = [ _
+        $GC_I_MODELID_CREME_BRULEE, _
+        $GC_I_MODELID_RED_BEAN_CAKE, _
+        $GC_I_MODELID_MANDRAGOR_ROOT_CAKE, _
+        $GC_I_MODELID_FRUITCAKE, _
+        $GC_I_MODELID_SUGARY_BLUE_DRINK, _
+        $GC_I_MODELID_CHOCOLATE_BUNNY, _
+        $GC_I_MODELID_MINI_TREATS_OF_PURITY, _
+        $GC_I_MODELID_JAR_OF_HONEY, _
+        $GC_I_MODELID_KRYTAN_LOKUM _
+    ]
+
+    For $i = 0 To UBound($aSweets) - 1
+        If $aSweets[$i] = $iModelID Then Return True
+    Next    
+    
     Return False
 EndFunc ;==>CheckIsCitySpeed
 
 ; Pops a City Speedboost
 Func MaintainCitySpeed()
     If GetIsEnchanted(-2) Then Return 1
-    Local $pItem, $pBag
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If CheckIsCitySpeed(GetItemModelID($pItem)) Then
-                Item_UseItem($pItem)
-                Return 1
-            EndIf
-        Next
-    Next
     
-    For $bag = 8 To 11
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If CheckIsCitySpeed(GetItemModelID($pItem)) Then
-                Item_UseItem($pItem)
-                Return 1
-            EndIf
-        Next
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_STORAGE4)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iModelID
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        $iModelID = GetItemModelID($pItem)
+
+        If CheckIsCitySpeed($iModelID) Then
+            Item_UseItem($pItem)
+            Return 1
+        EndIf
     Next
+
     Return 0
 EndFunc ;==>MaintainCitySpeed
 
 ; Sells all the unneeded Mats to Merchant
 ; Make sure *you are standing at a Merchant!!!*
 Func SellJunk()
-    Local $pItem, $pBag, $iQuantity, $lModelID
-    
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            $lModelID = GetItemModelID($pItem)
-            $iQuantity = GetItemQuantity($pItem)   
-            Switch $lModelID
-                Case $GC_I_MODELID_SHING_JEA_KEY, $GC_I_MODELID_ISTANI_KEY, $GC_I_MODELID_KRYTAN_KEY, $GC_I_MODELID_OBSIDIAN_KEY
-                    ContinueCase
-                Case $GC_I_MODELID_WOOD, $GC_I_MODELID_CHITIN, $GC_I_MODELID_SCALES, $GC_I_MODELID_GRANITE
-                    ContinueCase
-                Case $GC_I_MODELID_CLOTHS, $GC_I_MODELID_TANNED_HIDE
-                    Merchant_SellItem($pItem, $iQuantity)
-                    Other_PingSleep(500)
-                    ContinueLoop
-            EndSwitch
+    Local Static $aJunk[] = [ _
+        $GC_I_MODELID_SHING_JEA_KEY, _
+        $GC_I_MODELID_ISTANI_KEY, _
+        $GC_I_MODELID_KRYTAN_KEY, _
+        $GC_I_MODELID_OBSIDIAN_KEY, _
+        $GC_I_MODELID_WOOD, _
+        $GC_I_MODELID_CHITIN, _
+        $GC_I_MODELID_CLOTHS, _
+        $GC_I_MODELID_TANNED_HIDE, _
+        $GC_I_MODELID_SCALES, _
+        $GC_I_MODELID_GRANITE _
+    ]
+    Local Static $iSizeJunkArray = UBound($aJunk)
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
+    If @error Then Return SetError(1, 0, 0)
+
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iModelID, $iQuantity
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        For $j = 0 To $iSizeJunkArray - 1
+            If $aJunk[$j] <> $iModelID Then ContinueLoop
+            
+            $iQuantity = GetItemQuantity($tItemStruct)  
+
+            Merchant_SellItem($pItem, $iQuantity)
+            Other_PingSleep(500)
+            ExitLoop
         Next
     Next
 EndFunc ;==>SellJunk
 
-Func IsEventItem($aModelID)
+Func IsEventItem($iModelID)
     ; *******************************************************************************************
     ; Pick up EVENT ITEMS, put semicolon(;) infront of the line, if you DON'T want do pick it up
     ; ******************************************************************************************* 
     
     ; Canthan New Year
-    ;~ If $aModelID = $GC_I_MODELID_LUNAR_TOKEN Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_LUNAR_FORTUNE_HORSE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_LUNAR_TOKEN Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_LUNAR_FORTUNE_HORSE Then Return True
     
     ; Lucky Treats Week
-    ;~ If $aModelID = $GC_I_MODELID_FOUR_LEAF_CLOVER Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_SHAMROCK_ALE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_FOUR_LEAF_CLOVER Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_SHAMROCK_ALE Then Return True
     
     ; Sweet Treats Week
-    ;~ If $aModelID = $GC_I_MODELID_GOLDEN_EGG Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_CHOCOLATE_BUNNY Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_GOLDEN_EGG Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_CHOCOLATE_BUNNY Then Return True
     
     ;~ === Anniversary Celebration ===
-    ;~ If $aModelID = $GC_I_MODELID_CUPCAKE Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_HONEYCOMB Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_SUGARY_BLUE_DRINK Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_CUPCAKE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_HONEYCOMB Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_SUGARY_BLUE_DRINK Then Return True
     ;~ ;~ Alcohol
-    ;~ If $aModelID = $GC_I_MODELID_HARD_APPLE_CIDER Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_HUNTERS_ALE Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_KRYTAN_BRANDY Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_HARD_APPLE_CIDER Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_HUNTERS_ALE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_KRYTAN_BRANDY Then Return True
     ;~ ;~ Party Points
-    ;~ If $aModelID = $GC_I_MODELID_CHAMPAGNE_POPPER Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_BOTTLE_ROCKET Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_SPARKLER Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_CHAMPAGNE_POPPER Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_BOTTLE_ROCKET Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_SPARKLER Then Return True
     ;~ ;~ 50 Point Boss Items
-    ;~ If $aModelID = $GC_I_MODELID_DELICIOUS_CAKE Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_BATTLE_ISLE_ICED_TEA Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_PARTY_BEACON Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_DELICIOUS_CAKE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_BATTLE_ISLE_ICED_TEA Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_PARTY_BEACON Then Return True
     
     ; Dragon Festival
-    If $aModelID = $GC_I_MODELID_VICTORY_TOKEN Then Return True ; also anniversary
+    If $iModelID = $GC_I_MODELID_VICTORY_TOKEN Then Return True ; also anniversary
     
     ; Wintersday in July
     ; -->see Wintersday
     
     ; Wayfarer's Reverie
-    ; If $aModelID = $GC_I_MODELID_WAYFARER_MARK Then Return True ; this ID is WRONG in constants.au3
+    ; If $iModelID = $GC_I_MODELID_WAYFARER_MARK Then Return True ; this ID is WRONG in constants.au3
     
     ; Pirate Week
-    ; If $aModelID = $GC_I_MODELID_BOTTLE_OF_GROG Then Return True
+    ; If $iModelID = $GC_I_MODELID_BOTTLE_OF_GROG Then Return True
     
     ; Halloween
-    ;~ If $aModelID = $GC_I_MODELID_TRICK_OR_TREAT_BAGS Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_TRICK_OR_TREAT_BAGS Then Return True
     
     ; Special Treats Week
-    ;~ If $aModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
+    ;~ If $iModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
     
     ; Wintersday
-    ;~ If $aModelID = $GC_I_MODELID_CC_SHARDS Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_EGGNOG Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_SPIKED_EGGNOGG Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_FRUITCAKE Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_SNOWMAN_SUMMONER Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_CC_SHARDS Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_EGGNOG Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_SPIKED_EGGNOGG Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_FRUITCAKE Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_SNOWMAN_SUMMONER Then Return True
         
-    ;~ If $aModelID = $GC_I_MODELID_FROSTY_TONIC Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_MISCHIEVOUS_TONIC Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_YULETIDE_TONIC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_FROSTY_TONIC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_MISCHIEVOUS_TONIC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_YULETIDE_TONIC Then Return True
     
-    ;~ If $aModelID = $GC_I_MODELID_WINTERGREEN_CC Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_RAINBOW_CC Then Return True
-    ;~ If $aModelID = $GC_I_MODELID_PEPPERMINT_CC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_WINTERGREEN_CC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_RAINBOW_CC Then Return True
+    ;~ If $iModelID = $GC_I_MODELID_PEPPERMINT_CC Then Return True
     
     Return False
 EndFunc ;==>IsEventItem
@@ -2023,13 +2139,14 @@ Func IsInsignia($pItem)
             Return $array_insignia[$i][$insig_value]
         EndIf
     Next
-    Return 0
+
+    Return False
 EndFunc ;==>IsInsignia
 
 Func IsRune($pItem)
-    Local $sModstruct = GetModStruct($pItem), $lRarity = GetItemRarity($pItem)
+    Local $sModstruct = GetModStruct($pItem), $iRarity = GetItemRarity($pItem)
 
-    Switch $lRarity
+    Switch $iRarity
         Case $GC_I_RARITY_BLUE
             For $i = 0 To UBound($array_rune_minor) - 1
                 If $array_rune_minor[$i][$rune_value] = 0 Then ContinueLoop
@@ -2055,7 +2172,8 @@ Func IsRune($pItem)
                 EndIf
             Next
     EndSwitch
-    Return 0
+
+    Return False
 EndFunc ;==>IsRune
 #EndRegion Custom
 
