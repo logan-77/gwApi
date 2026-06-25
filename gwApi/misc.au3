@@ -5,6 +5,25 @@ Func CheckDisconnected()
     Return True
 EndFunc ;==>CheckDisconnected
 
+Func GetArrayFirstElement($aArray)
+    If Not IsArray($aArray) Then _
+        Exit MsgBox(16, "Error", "GetArrayFirstElement(): Parameter is not an array")
+
+    If UBound($aArray) = 0 Then _
+        Exit MsgBox(16, "Error", "GetArrayFirstElement(): Empty array")
+
+    Return $aArray[0]
+EndFunc ;==>GetArrayFirstElement
+
+Func EnsureArray(ByRef $vValue)
+    If Not IsArray($vValue) Then
+        Local $aTmp[1] = [$vValue]
+        $vValue = $aTmp
+    EndIf
+
+    Return UBound($vValue)
+EndFunc ;==>EnsureArray
+
 Func IsChecked($hCbx)
     Return GUICtrlRead($hCbx) = $GUI_CHECKED
 EndFunc ;==>IsChecked
