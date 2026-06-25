@@ -356,24 +356,96 @@ Global Const $model_id_luxon_hauler_turtle    = 3636
 
 ;~ War Supply Farm
 Global Enum _
-$model_id_silent_peacekeeper_1 = 8366, _
-$model_id_8367, _
+$model_id_silent_peacekeeper_1 = 8368, _
+$model_id_gap_001, _
 $model_id_silent_peacekeeper_2, _
-$model_id_8369, _
-$model_id_8370, $model_id_8371, $model_id_8372, $model_id_8373, $model_id_8374, $model_id_8375, $model_id_8376, $model_id_8377, $model_id_8378, $model_id_8379, _
-$model_id_8380, $model_id_8381, $model_id_8382, $model_id_8383, $model_id_8384, $model_id_8385, $model_id_8386, $model_id_8387, $model_id_8388, $model_id_8389, _
-$model_id_peacekeeper_enforcer_1 = 8390, _
+$model_id_gap_002, _
+$model_id_gap_003, _
+$model_id_gap_004, _
+$model_id_gap_005, _
+$model_id_gap_006, _
+$model_id_gap_007, _
+$model_id_gap_008, _
+$model_id_gap_009, _
+$model_id_gap_010, _
+$model_id_gap_011, _
+$model_id_gap_012, _
+$model_id_gap_013, _
+$model_id_gap_014, _
+$model_id_gap_015, _
+$model_id_gap_016, _
+$model_id_gap_017, _
+$model_id_gap_018, _
+$model_id_gap_019, _
+$model_id_gap_020, _
+$model_id_gap_021, _
+$model_id_gap_022, _
+ _
+$model_id_peacekeeper_enforcer_1, _ ; 8392
 $model_id_peacekeeper_enforcer_2, _
-$model_id_8392, $model_id_8393, $model_id_8394, $model_id_8395, $model_id_8396, $model_id_8397, $model_id_8398, $model_id_8399, _
-$model_id_8400, $model_id_8401, $model_id_8402, $model_id_8403, $model_id_8404, $model_id_8405, $model_id_8406, _
+ _
+$model_id_gap_023, _
+$model_id_gap_024, _
+$model_id_gap_025, _
+$model_id_gap_026, _
+$model_id_gap_027, _
+$model_id_gap_028, _
+$model_id_gap_029, _
+$model_id_gap_030, _
+$model_id_gap_031, _
+$model_id_gap_032, _
+$model_id_gap_033, _
+$model_id_gap_034, _
+$model_id_gap_035, _
+$model_id_gap_036, _
+$model_id_gap_037, _
+ _
 $model_id_peacekeeper_marksman_1, _     ; barrage, splinter
 $model_id_peacekeeper_marksman_2, _     ; magebane, savage shot, apply poison, frustration
 $model_id_peacekeeper_marksman_3, _     ; burning arrow,
-$model_id_8410, $model_id_8411, $model_id_8412, $model_id_8413, $model_id_8414, $model_id_8415, $model_id_8416, $model_id_8417,  $model_id_8418, $model_id_8419, _
-$model_id_8420, $model_id_8421, $model_id_8422, $model_id_8423, $model_id_8424, $model_id_8425, $model_id_8426, $model_id_8427, $model_id_8428, $model_id_8429, _
-$model_id_8430, $model_id_8431, $model_id_8432, $model_id_8433, $model_id_8434, $model_id_8435, $model_id_8436, $model_id_8437, $model_id_8438, $model_id_8439, _
-$model_id_8440, $model_id_8441, $model_id_8442, $model_id_8443, $model_id_8444, $model_id_8445, $model_id_8446, $model_id_8447, $model_id_8448, $model_id_8449, _
-$model_id_8450, $model_id_8451, _
+ _
+$model_id_gap_038, _
+$model_id_gap_039, _
+$model_id_gap_040, _
+$model_id_gap_041, _
+$model_id_gap_042, _
+$model_id_gap_043, _
+$model_id_gap_044, _
+$model_id_gap_045, _
+$model_id_gap_046, _
+$model_id_gap_047, _
+$model_id_gap_048, _
+$model_id_gap_049, _
+$model_id_gap_050, _
+$model_id_gap_051, _
+$model_id_gap_052, _
+$model_id_gap_053, _
+$model_id_gap_054, _
+$model_id_gap_055, _
+$model_id_gap_056, _
+$model_id_gap_057, _
+$model_id_gap_058, _
+$model_id_gap_059, _
+$model_id_gap_060, _
+$model_id_gap_061, _
+$model_id_gap_062, _
+$model_id_gap_063, _
+$model_id_gap_064, _
+$model_id_gap_065, _
+$model_id_gap_218, _
+$model_id_gap_066, _
+$model_id_gap_067, _
+$model_id_gap_068, _
+$model_id_gap_069, _
+$model_id_gap_070, _
+$model_id_gap_071, _
+$model_id_gap_072, _
+$model_id_gap_073, _
+$model_id_gap_074, _
+$model_id_gap_075, _
+$model_id_gap_076, _
+$model_id_gap_077, _
+$model_id_gap_078, _
  _
 $model_id_white_mantle_enforcer_1, _    ; war/sin (dismember, hos, keen chop, way of perfection)
 $model_id_white_mantle_enforcer_2, _    ; sin (dancing daggers, mantis touch, vampiric assault, entangling asp)
@@ -400,7 +472,9 @@ $model_id_white_mantle_fanatic_4, _ ; tainted flesh, deathly swarm, vile miasma,
  _
 $model_id_white_mantle_savant_1, _  ; mshower, glyph of renewal, liquid, resto
 $model_id_white_mantle_savant_2, _  ; savannah heat, fire storm, immolate, spirit boon strike, rit heal
-$model_id_8473, $model_id_8474, _
+ _
+$model_id_gap_079, _
+$model_id_gap_080, _
  _
 $model_id_white_mantle_adherent_1, _    ; shard storm, water trident, snare, chilling winds
 $model_id_white_mantle_adherent_2, _    ; shatterstone, rust, vapor blade, icy prism
@@ -437,10 +511,13 @@ $model_id_white_mantle_seeker_2, _  ; oath shot, penetrating attack, read the wi
 $model_id_white_mantle_seeker_3, _  ; glass arrows, sundering attack, needling shot, dual shot, conjure flame
 $model_id_white_mantle_seeker_4, _  ; fox fangs, shadow refuge, blinding powder, black mantis thrust
  _
-$model_id_8503, _
+$model_id_gap_081, _
+ _
 $model_id_white_mantle_devotee_1, _ ; enfeebling touch, dwaynas touch, grenths grasp, radiant scythe
 $model_id_white_mantle_devotee_2, _ ; reap impurities, dust cloadk, armor of sanctity, wounding strike, veil of thorns
-$model_id_8506, _
+ _
+$model_id_gap_082, _
+ _
 $model_id_white_mantle_devotee_3, _ ; magnetic aura, grasping earth, mystic sweep, lyssas assault, zealous vow
 $model_id_white_mantle_ritualist_5, _   ; rit/paragon spear
 $model_id_white_mantle_ritualist_6, _   ; rit/monk (preservation, strong heal, hexremove, spirits)
@@ -449,29 +526,151 @@ $model_id_white_mantle_ritualist_8_shadowsong, _    ; PRIMARY (shadowsong,bloods
 $model_id_white_mantle_ritualist_9, _               ; minions 2nd prio
 $model_id_white_mantle_ritualist_10, _              ; weapon of remedy rit(hardrez, prio)
 $model_id_white_mantle_champion_1, _    ; para/rit (splinter, signet return)
-$model_id_8515, _
+ _
+$model_id_gap_083, _
+ _
 $model_id_white_mantle_champion_2, _    ; para/ranger
 $model_id_white_mantle_champion_3, _    ; para/war
-$model_id_8518, $model_id_8519, _
-$model_id_8520, $model_id_8521, $model_id_8522, $model_id_8523, $model_id_8524, $model_id_8525, $model_id_8526, $model_id_8527, $model_id_8528, $model_id_8529, _
-$model_id_8530, $model_id_8531, $model_id_8532, $model_id_8533, $model_id_8534, $model_id_8535, $model_id_8536, $model_id_8537, $model_id_8538, $model_id_8539, _
-$model_id_8540, $model_id_8541, $model_id_8542, $model_id_8543, $model_id_8544, $model_id_8545, $model_id_8546, $model_id_8547, $model_id_8548, $model_id_8549, _
-$model_id_8550, $model_id_8551, $model_id_8552, $model_id_8553, $model_id_8554, $model_id_8555, $model_id_8556, $model_id_8557, $model_id_8558, $model_id_8559, _
-$model_id_8560, $model_id_8561, $model_id_8562, $model_id_8563, $model_id_8564, $model_id_8565, $model_id_8566, $model_id_8567, $model_id_8568, $model_id_8569, _
-$model_id_8570, $model_id_8571, $model_id_8572, $model_id_8573, $model_id_8574, $model_id_8575, $model_id_8576, $model_id_8577, $model_id_8578, $model_id_8579, _
-$model_id_8580, $model_id_8581, $model_id_8582, $model_id_8583, $model_id_8584, $model_id_8585, $model_id_8586, $model_id_8587, $model_id_8588, $model_id_8589, _
-$model_id_8590, $model_id_8591, $model_id_8592, $model_id_8593, $model_id_8594, $model_id_8595, $model_id_8596, $model_id_8597, $model_id_8598, $model_id_8599, _
-$model_id_8600, $model_id_8601, $model_id_8602, $model_id_8603, $model_id_8604, $model_id_8605, $model_id_8606, $model_id_8607, $model_id_8608, $model_id_8609, _
-$model_id_8610, $model_id_8611, _
  _
-$model_id_white_mantle_zealot_5, _  ; war/monk 8612
-$model_id_8613, $model_id_8614, $model_id_8615, $model_id_8616, $model_id_8617, $model_id_8618, $model_id_8619, _
-$model_id_8620, $model_id_8621, $model_id_8622, $model_id_8623, $model_id_8624, $model_id_8625, $model_id_8626, $model_id_8627, $model_id_8628, $model_id_8629, _
-$model_id_8630, $model_id_8631, $model_id_8632, $model_id_8633, $model_id_8634, $model_id_8635, $model_id_8636, $model_id_8637, $model_id_8638, $model_id_8639, _
-$model_id_8640, $model_id_8641, $model_id_8642, $model_id_8643, $model_id_8644, $model_id_8645, $model_id_8646, $model_id_8647, $model_id_8648, $model_id_8649, _
-$model_id_8650, $model_id_8651, $model_id_8652, _
+$model_id_gap_084, _
+$model_id_gap_085, _
+$model_id_gap_086, _
+$model_id_gap_087, _
+$model_id_gap_088, _
+$model_id_gap_089, _
+$model_id_gap_090, _
+$model_id_gap_091, _
+$model_id_gap_092, _
+$model_id_gap_093, _
+$model_id_gap_094, _
+$model_id_gap_095, _
+$model_id_gap_096, _
+$model_id_gap_097, _
+$model_id_gap_098, _
+$model_id_gap_099, _
+$model_id_gap_100, _
+$model_id_gap_101, _
+$model_id_gap_102, _
+$model_id_gap_103, _
+$model_id_gap_104, _
+$model_id_gap_105, _
+$model_id_gap_106, _
+$model_id_gap_107, _
+$model_id_gap_108, _
+$model_id_gap_109, _
+$model_id_gap_110, _
+$model_id_gap_111, _
+$model_id_gap_112, _
+$model_id_gap_113, _
+$model_id_gap_114, _
+$model_id_gap_115, _
+$model_id_gap_116, _
+$model_id_gap_117, _
+$model_id_gap_118, _
+$model_id_gap_119, _
+$model_id_gap_120, _
+$model_id_gap_121, _
+$model_id_gap_122, _
+$model_id_gap_123, _
+$model_id_gap_124, _
+$model_id_gap_125, _
+$model_id_gap_126, _
+$model_id_gap_127, _
+$model_id_gap_128, _
+$model_id_gap_129, _
+$model_id_gap_130, _
+$model_id_gap_131, _
+$model_id_gap_132, _
+$model_id_gap_133, _
+$model_id_gap_134, _
+$model_id_gap_135, _
+$model_id_gap_136, _
+$model_id_gap_137, _
+$model_id_gap_138, _
+$model_id_gap_139, _
+$model_id_gap_140, _
+$model_id_gap_141, _
+$model_id_gap_142, _
+$model_id_gap_143, _
+$model_id_gap_144, _
+$model_id_gap_145, _
+$model_id_gap_146, _
+$model_id_gap_147, _
+$model_id_gap_148, _
+$model_id_gap_149, _
+$model_id_gap_150, _
+$model_id_gap_151, _
+$model_id_gap_152, _
+$model_id_gap_153, _
+$model_id_gap_154, _
+$model_id_gap_155, _
+$model_id_gap_156, _
+$model_id_gap_157, _
+$model_id_gap_158, _
+$model_id_gap_159, _
+$model_id_gap_160, _
+$model_id_gap_161, _
+$model_id_gap_162, _
+$model_id_gap_163, _
+$model_id_gap_164, _
+$model_id_gap_165, _
+$model_id_gap_166, _
+$model_id_gap_167, _
+$model_id_gap_168, _
+$model_id_gap_169, _
+$model_id_gap_170, _
+$model_id_gap_171, _
+$model_id_gap_172, _
+$model_id_gap_173, _
+$model_id_gap_174, _
+$model_id_gap_175, _
+$model_id_gap_176, _
+$model_id_gap_177, _
  _
-$model_id_miku  ; 8653
+$model_id_white_mantle_zealot_5, _  ; war/monk 8614
+ _
+$model_id_gap_178, _
+$model_id_gap_179, _
+$model_id_gap_180, _
+$model_id_gap_181, _
+$model_id_gap_182, _
+$model_id_gap_183, _
+$model_id_gap_184, _
+$model_id_gap_185, _
+$model_id_gap_186, _
+$model_id_gap_187, _
+$model_id_gap_188, _
+$model_id_gap_189, _
+$model_id_gap_190, _
+$model_id_gap_191, _
+$model_id_gap_192, _
+$model_id_gap_193, _
+$model_id_gap_194, _
+$model_id_gap_195, _
+$model_id_gap_196, _
+$model_id_gap_197, _
+$model_id_gap_198, _
+$model_id_gap_199, _
+$model_id_gap_200, _
+$model_id_gap_201, _
+$model_id_gap_202, _
+$model_id_gap_203, _
+$model_id_gap_204, _
+$model_id_gap_205, _
+$model_id_gap_206, _
+$model_id_gap_207, _
+$model_id_gap_208, _
+$model_id_gap_209, _
+$model_id_gap_210, _
+$model_id_gap_211, _
+$model_id_gap_212, _
+$model_id_gap_213, _
+$model_id_gap_214, _
+$model_id_gap_215, _
+$model_id_gap_216, _
+$model_id_gap_217, _
+ _
+$model_id_miku  ; 8655
 
 ;~ ConsoleWrite("marksman1: " & $model_id_peacekeeper_marksman_1 & @CRLF)
 ;~ ConsoleWrite("enforcer1: " & $model_id_white_mantle_enforcer_1 & @CRLF)
