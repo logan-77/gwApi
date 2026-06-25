@@ -321,12 +321,7 @@ Func GetItemByModelID($aModelID, $iFirstBag, $iLastBag, $bPartialStacks = False,
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
-    EndIf
-
-    Local $iSize = UBound($aModelID)
+    Local $iSize = EnsureArray($aModelID)
     Local $aReturn[$iSize]
 
     Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
@@ -366,12 +361,7 @@ Func GetItemByType($aType, $iFirstBag, $iLastBag, $bPartialStacks = False, $bEqu
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aType) Then
-        Local $aTmp[1] = [$aType]
-        $aType = $aTmp
-    EndIf
-
-    Local $iSize = UBound($aType)
+    Local $iSize = EnsureArray($aType)
     Local $aReturn[$iSize]
 
     Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
@@ -408,21 +398,21 @@ EndFunc ;==>GetItemByType
 
 ; Returns the first Item by ModelID found in Inventory; If no Item is found Returns Zero
 Func GetItemInInventory($aModelID, $bPartialStacks = False)
-    Return GetItemByModelID($aModelID, 1, 4, $bPartialStacks)
+    Return GetItemByModelID($aModelID, $GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2, $bPartialStacks)
 EndFunc ;==>GetItemInInventory
 
 ; Returns the first Item by ModelID found in Storage; If no Item is found Returns Zero
-Func GetItemInChest($aModelID, $bPartialStacks = False)
-    Return GetItemByModelID($aModelID, 8, 11, $bPartialStacks)
-EndFunc ;==>GetItemInChest
+Func GetItemInStorage($aModelID, $bPartialStacks = False)
+    Return GetItemByModelID($aModelID, $GC_I_INVENTORY_STORAGE1, $GC_I_INVENTORY_STORAGE4, $bPartialStacks)
+EndFunc ;==>GetItemInStorage
 
 Func GetItemInInventoryByType($aType, $bPartialStacks = False)
-    Return GetItemByType($aType, 1, 4, $bPartialStacks)
+    Return GetItemByType($aType, $GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2, $bPartialStacks)
 EndFunc ;==>GetItemInInventoryByType
 
-Func GetItemInChestByType($aType, $bPartialStacks = False)
-    Return GetItemByType($aType, 8, 11, $bPartialStacks)
-EndFunc ;==>GetItemInChestByType
+Func GetItemInStorageByType($aType, $bPartialStacks = False)
+    Return GetItemByType($aType, $GC_I_INVENTORY_STORAGE1, $GC_I_INVENTORY_STORAGE4, $bPartialStacks)
+EndFunc ;==>GetItemInStorageByType
 
 ;~ Returns the first Item, with a matching ModStruct
 Func GetItemByModStruct($iBagIndex = 1, $sModStruct = "")
@@ -442,17 +432,11 @@ Func CountItemByModelID($aModelID, $iFirstBag, $iLastBag, $bCountSlots = False, 
     
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
-    EndIf
-
-    Local $iSize = UBound($aModelID)
+    Local $iSize = EnsureArray($aModelID)
     Local $aCount[$iSize]
 
     Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
     If @error Then Return SetError(1, 0, ($iSize = 1) ? $aCount[0] : $aCount)
-
 
     Local $pItem, $iModelID
 
@@ -484,17 +468,11 @@ Func CountItemByType($aType, $iFirstBag, $iLastBag, $bCountSlots = False, $bEqui
     
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aType) Then
-        Local $aTmp[1] = [$aType]
-        $aType = $aTmp
-    EndIf
-
-    Local $iSize = UBound($aType)
+    Local $iSize = EnsureArray($aType)
     Local $aCount[$iSize]
 
     Local $aItemPtr = GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack, $bMaterialStorage)
     If @error Then Return SetError(1, 0, ($iSize = 1) ? $aCount[0] : $aCount)
-
 
     Local $pItem, $iType
 
@@ -522,45 +500,42 @@ Func CountItemByType($aType, $iFirstBag, $iLastBag, $bCountSlots = False, $bEqui
 EndFunc ;==>CountItemByType
 
 ; Returns the amount of an Item in Inventory by ModelID
-Func GetQuantityInventory($aModelID, $aCountSlotsOnly = False)
-    Return CountItemByModelID($aModelID, 1, 4, $aCountSlotsOnly)
+Func GetQuantityInventory($aModelID, $bCountSlots = False)
+    Return CountItemByModelID($aModelID, 1, 4, $bCountSlots)
 EndFunc ;==>GetQuantityInventory
 
 ; Return the amount of an Item in Chest by ModelID
-Func GetQuantityChest($aModelID, $aCountSlotsOnly = False)
-    Return CountItemByModelID($aModelID, 8, 11, $aCountSlotsOnly)
-EndFunc ;==>GetQuantityChest
+Func GetQuantityStorage($aModelID, $bCountSlots = False)
+    Return CountItemByModelID($aModelID, 8, 11, $bCountSlots)
+EndFunc ;==>GetQuantityStorage
 
 ; Returns the amount of an Item by ModelID in Inventory+Chest
-Func GetQuantity($aModelID, $aCountSlotsOnly = False)
-    Return CountItemByModelID($aModelID, 1, 11, $aCountSlotsOnly)
+Func GetQuantity($aModelID, $bCountSlots = False)
+    Return CountItemByModelID($aModelID, 1, 11, $bCountSlots)
 EndFunc ;==>GetQuantity
 
 ; Returns the amount of an Item in Inventory by Type
-Func GetQuantityInventoryByType($aType, $aCountSlotsOnly = False)
-    Return CountItemByType($aType, 1, 4, $aCountSlotsOnly)
+Func GetQuantityInventoryByType($aType, $bCountSlots = False)
+    Return CountItemByType($aType, 1, 4, $bCountSlots)
 EndFunc ;==>GetQuantityInventory
 
 ; Return the amount of an Item in Chest by Type
-Func GetQuantityChestByType($aType, $aCountSlotsOnly = False)
-    Return CountItemByType($aType, 8, 11, $aCountSlotsOnly)
-EndFunc ;==>GetQuantityChest
+Func GetQuantityStorageByType($aType, $bCountSlots = False)
+    Return CountItemByType($aType, 8, 11, $bCountSlots)
+EndFunc ;==>GetQuantityStorageByType
 
 ; Returns the amount of an Item by Type in Inventory+Chest
-Func GetQuantityByType($aType, $aCountSlotsOnly = False)
-    Return CountItemByType($aType, 1, 11, $aCountSlotsOnly)
+Func GetQuantityByType($aType, $bCountSlots = False)
+    Return CountItemByType($aType, 1, 11, $bCountSlots)
 EndFunc ;==>GetQuantity
 
 ;~ Use Item in Inventory
 Func UseItemByModelID($aModelID)
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
-    EndIf
 
+    Local $iSize = EnsureArray($aModelID)
     Local $pItem = GetItemInInventory($aModelID)
 
-    For $i = 0 To UBound($aModelID) - 1
+    For $i = 0 To $iSize - 1
         If $pItem[$i] = 0 Then ContinueLoop
         Item_UseItem($pItem[$i])
     Next
@@ -595,11 +570,7 @@ Func DropItemsByType($aType, $bFullStack = False)
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aType) Then
-        Local $aTmp[1] = [$aType]
-        $aType = $aTmp
-    EndIf
-    Local $iSize = UBound($aType)
+    Local $iSize = EnsureArray($aType)
 
     Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
     If @error Then Return SetError(1, 0, 0)
@@ -635,11 +606,7 @@ Func DropItemsByModelID($aModelID, $bFullStack = False)
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
-    EndIf
-    Local $iSize = UBound($aModelID)
+    Local $iSize = EnsureArray($aModelID)
 
     Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
     If @error Then Return SetError(1, 0, 0)
@@ -715,46 +682,75 @@ Func GetItemPtrByAgentPtr($pAgent)
 EndFunc ;==>GetItemPtrByAgentPtr
 
 Func MoveItem($pItem, $pBag, $iSlot)
-    Return Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($pBag), $iSlot)
+    $g_hTimerMoveItem = TimerInit()
+
+    Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($pBag), $iSlot)
 EndFunc ;==>MoveItem
 
 ;~ Description: Moves an Item and can split up a Stack
-Func MoveItemEx($pItemSource, $iBag, $iSlot, $iAmount = 0)
-    Local $pItem = Item_GetItemPtr($pItemSource)
-    If $pItem = 0 Then Return 0
+Func MoveItemEx($pItem, $iBag, $iSlot, $iAmount = 0)
+    $pItem = GetItemPtr($pItem)
+    If $pItem = 0 Then Return
 
     Local $iQuantity = GetItemQuantity($pItem)
     If $iAmount = 0 Or $iAmount > $iQuantity Then $iAmount = $iQuantity
 
     If $iAmount >= $iQuantity Then
-        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($iBag), $iSlot - 1)
+        $g_hTimerMoveItem = TimerInit()
+
+        Core_SendPacket(0x10, $GC_I_HEADER_ITEM_MOVE, Item_ItemID($pItem), GetBagID($iBag), $iSlot)
+
     Else
-        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($pItem), $iAmount, GetBagID($iBag), $iSlot - 1)
+        $g_hTimerMoveItem = TimerInit()
+
+        Core_SendPacket(0x14, $GC_I_HEADER_ITEM_SPLIT_STACK, Item_ItemID($pItem), $iAmount, GetBagID($iBag), $iSlot)
+
     EndIf
-    Return 1
 EndFunc ;==>MoveItemEx
 
-Func MoveItemToStorage($pItemSource, $bStack = False, $pItemDest = 0)
+Func MoveItemToStorage($pItemSource, $bStack = True)
+    Return MoveItemToContainer($pItemSource, $bStack, True)
+EndFunc ;==>MoveItemToStorage
 
-    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+Func MoveItemToInventory($pItemSource, $bStack = True)
+    Return MoveItemToContainer($pItemSource, $bStack, False)
+EndFunc ;==>MoveItemToInventory
+
+Func MoveItemToContainer($pItemSource, $bStack, $bStore)
+
+    Local Static $tItemStructSource = DllStructCreate($ITEM_STRUCT_TEMPLATE)
     Local Static $tItemStructDest = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    If $pItemSource = $pItemDest Then Return False
+    Local $sGetItemFunc
+    Local $sGetFreeSlotsFunc
 
-    Local $aFreeSlots = GetFreeSlotsStorage()
+    If $bStore Then
+        $sGetItemFunc = "GetItemInStorage"
+        $sGetFreeSlotsFunc = "GetFreeSlotsStorage"
+    Else
+        $sGetItemFunc = "GetItemInInventory"
+        $sGetFreeSlotsFunc = "GetFreeSlotsInventory"
+    EndIf
+
+    Local $aFreeSlots = Call($sGetFreeSlotsFunc)
     Local $iFreeSlots = UBound($aFreeSlots)
     If Not $bStack And $iFreeSlots = 0 Then Return False
 
-    If GetItemStruct($tItemStruct, $pItemSource) = False Then Return False
+    If GetItemStruct($tItemStructSource, $pItemSource) = False Then Return True
 
-    Local $iModelID = GetItemModelID($tItemStruct)
-    Local $iQuantitySource = GetItemQuantity($tItemStruct)
+    Local $pBagSource = GetItemBagPtr($tItemStructSource)
+    Local $iSlotSource = GetItemSlot($tItemStructSource)
+
+    Local $iQuantitySource = GetItemQuantity($tItemStructSource)
+    If $iQuantitySource >= 250 Then $bStack = False
 
     If $bStack Then
-        If $pItemDest = 0 Then $pItemDest = GetItemInChest($iModelID, True)
+        Local $iModelID = GetItemModelID($tItemStructSource)    
 
-        If $pItemDest <> 0 Then
-            If GetItemStruct($tItemStructDest, $pItemDest) = False Then Return False
+        Local $pItemDest = Call($sGetItemFunc, $iModelID, True)
+
+        While $pItemDest <> 0
+            If GetItemStruct($tItemStructDest, $pItemDest) = False Then Return True
 
             Local $iQuantityDest = GetItemQuantity($tItemStructDest)
             Local $iQuantity = $iQuantitySource + $iQuantityDest
@@ -764,418 +760,225 @@ Func MoveItemToStorage($pItemSource, $bStack = False, $pItemDest = 0)
 
             If $iQuantity <= 250 Then                
                 MoveItem($pItemSource, $pBagDest, $iSlotDest)
-                ;~ wait for move here (source=0)
+                WaitForItemMove(0, $pBagSource, $iSlotSource)
                 Return True
             Else
                 $iQuantity = 250 - $iQuantityDest
-                MoveItemEx($pItemSource, $pBagDest, $iSlotDest, $iQuantity) ; ZERO BASED HERE
-                ;~ wait for move here (dest=250!?!)
+
+                MoveItemEx($pItemSource, $pBagDest, $iSlotDest, $iQuantity)
+                WaitForItemMove(250, $pBagSource, $iSlotSource, $pBagDest, $iSlotDest)
+
+                $iQuantitySource -= $iQuantity
+                If $iQuantitySource <= 0 Then Return True
+                
+                $pItemDest = Call($sGetItemFunc, $iModelID, True)
             EndIf
-        EndIf
+        WEnd
     EndIf
 
     If $iFreeSlots = 0 Then Return False
 
     MoveItem($pItemSource, $aFreeSlots[0][0], $aFreeSlots[0][1])
-    ;~ wait for move here (source=0 OR dest<>0)
+    WaitForItemMove(0, $pBagSource, $iSlotSource)
     Return True
-EndFunc ;==>MoveItemToStorage
+EndFunc ;==>MoveItemToContainer
 
-;~ Description: Looks for free Slot and moves Item to Chest.
-;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
-;~                     the items will be stacked together; the overflow goes to an empty slot
-Func MoveItemToChest($pItemSource, $bStackItem = False)
-    Local $pItem, $pBag, $iModelIDSource = 0
-    Local $bMoveItem = False
-    Local $aBagSlotSource[2] = [0, 0]
-    If $bStackItem Then $iModelIDSource = GetItemModelID($pItemSource)
+;~ Wait for confirmation, that an Item has moved. (i.e. the slot is empty)
+;~ $iQuantity = 0 : check for source = 0
+;~ $iQuantity > 0 : check for dest = $iQuantity
+Func WaitForItemMove($iQuantity, $pBagSource, $iSlotSource, $pBagDest = -1, $iSlotDest = -1)
 
-    For $bag = 8 To 11
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
+    Local $hDeadlock = TimerInit(), $bTimeout = True, $pItem
 
-            If $pItem = 0 Then
-                $bMoveItem = True
-                ExitLoop 2
+    If $iQuantity = 0 Then
+
+        Local $pItemArraySource = GetBagItemArrayPtr($pBagSource)
+
+        Do
+            Sleep(50)
+            $bTimeout = TimerDiff($hDeadlock) > 2000
+            $pItem = Memory_Read($pItemArraySource + (4 * $iSlotSource), 'ptr')
+        Until $pItem = 0 Or $bTimeout
+
+    ElseIf $iQuantity > 0 Then
+
+            If $pBagDest = -1 Or $iSlotDest = -1 Then ; fallback, we should never get here
+                Sleep(500)
+                Return False
             EndIf
 
-            If $bStackItem And (GetItemModelID($pItem) = $iModelIDSource) Then
-                Local $iQuantityDest = GetItemQuantity($pItem)
-                If $iQuantityDest >= 250 Then ContinueLoop
+            Local $pItemArrayDest = GetBagItemArrayPtr($pBagDest)
 
-                Local $iQuantitySource = GetItemQuantity($pItemSource)    
-                If ($iQuantitySource + $iQuantityDest) <= 250 Then
-                    $bMoveItem = True
-                    ExitLoop 2
-                Else
-                    $iQuantitySource = 250 - $iQuantityDest
-                    MoveItemEx($pItemSource, $bag, $slot, $iQuantitySource)
-                    Other_PingSleep(500) ; game needs time to update item data
-                EndIf
-            EndIf
-        Next
-    Next
-    
-    If $bMoveItem = False Then Return False
+            $pItem = Memory_Read($pItemArrayDest + (4 * $iSlotDest), 'ptr')
 
-    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemSource, "Bag"), "Index") + 1
-    $aBagSlotSource[1] = Item_GetItemInfoByPtr($pItemSource, "Slot") + 1
+            Do
+                Sleep(50)
+                $bTimeout = TimerDiff($hDeadlock) > 2000
+            Until GetItemQuantity($pItem) = $iQuantity Or $bTimeout
+    EndIf
 
-    Item_MoveItem($pItemSource, $bag, $slot)
-    WaitForItemMove($aBagSlotSource[0], $aBagSlotSource[1])
-    
-    Return True
-EndFunc ;==>MoveItemToChest
+    Return $bTimeout ? False : True
+EndFunc ;==>WaitForItemMove
 
 ;~ Merges two < 250 items together, does *not* handle any overflow
 ;~ > 0: Merge w/o overflow
 ;~ = 0: Merge w/ overflow or no merge
-Func MergeItemToChest($pItemSource, $pItemDest = 0)
-    ;~ some other func already found destination item
-    If $pItemDest <> 0 Then
-        If $pItemSource = $pItemDest Then Return 0
-        If GetItemModelID($pItemSource) <> GetItemModelID($pItemDest) Then Return 0
-
-        Local $iQuantityDest = GetItemQuantity($pItemDest)
-        If $iQuantityDest >= 250 Then Return 0
-
-        Local $iQuantitySource = GetItemQuantity($pItemSource)
-        Local $iBag = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemDest, "Bag"), "Index") + 1
-        Local $iSlot = Item_GetItemInfoByPtr($pItemDest, "Slot") + 1
-        
-        If ($iQuantitySource + $iQuantityDest) <= 250 Then
-            Item_MoveItem($pItemSource, $iBag, $iSlot)
-            Return ($iQuantitySource + $iQuantityDest)
-        Else
-            Local $iMoveAmount = 250 - $iQuantityDest
-            MoveItemEx($pItemSource, $iBag, $iSlot, $iMoveAmount)
-            Return 0
-        EndIf
-    EndIf
-
-    Local $pItem, $pBag, $iModelID = GetItemModelID($pItemSource)
-    Local $iQuantitySource = GetItemQuantity($pItemSource), $iQuantityDest
-
-    For $bag = 8 To 11
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If GetItemModelID($pItem) <> $iModelID Then ContinueLoop
-
-            $iQuantityDest = GetItemQuantity($pItem)
-            If $iQuantityDest >= 250 Then ContinueLoop
-
-            If ($iQuantitySource + $iQuantityDest) <= 250 Then
-                Item_MoveItem($pItemSource, $bag, $slot)
-                Return ($iQuantitySource + $iQuantityDest)
-            Else
-                Local $iMoveAmount = 250 - $iQuantityDest
-                MoveItemEx($pItemSource, $bag, $slot, $iMoveAmount)
-                Return 0
-            EndIf
-        Next
-    Next
-    Return 0
-EndFunc ;==>MergeItemToChest
-
-;~ Description: Looks for free Slot and moves Item to Inventory
-;~ $bStackItem = True: if it finds an item with the same ModelID, before it finds a free slot,
-;~                     the items will be stacked together; the overflow goes to an empty slot
-Func MoveItemToInventory($pItemSource, $bStackItem = False)
-    Local $pItem, $pBag, $iModelIDSource = 0
-    Local $bMoveItem = False
-    Local $aBagSlotSource[2] = [0, 0]
-    If $bStackItem Then $iModelIDSource = GetItemModelID($pItemSource)
-
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-
-            If $pItem = 0 Then
-                $bMoveItem = True
-                ExitLoop 2
-            EndIf
-
-            If $bStackItem And (GetItemModelID($pItem) = $iModelIDSource) Then
-                Local $iQuantityDest = GetItemQuantity($pItem)
-                If $iQuantityDest >= 250 Then ContinueLoop
-
-                Local $iQuantitySource = GetItemQuantity($pItemSource)    
-                If ($iQuantitySource + $iQuantityDest) <= 250 Then
-                    $bMoveItem = True
-                    ExitLoop 2
-                Else
-                    $iQuantitySource = 250 - $iQuantityDest
-                    MoveItemEx($pItemSource, $bag, $slot, $iQuantitySource)
-                    Other_PingSleep(500) ; game needs time to update item data
-                EndIf
-            EndIf
-        Next
-    Next
+Func MergeItem(ByRef $pItemSource, ByRef $pItemDest)
+    If $pItemDest <= 0 Or Not IsPtr($pItemDest) Then Return SetExtended(0, 0)
     
-    If $bMoveItem = False Then Return False
+    ;~ make sure that: source<>dest and ModelID matches
 
-    $aBagSlotSource[0] = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemSource, "Bag"), "Index") + 1
-    $aBagSlotSource[1] = Item_GetItemInfoByPtr($pItemSource, "Slot") + 1
+    Local $iQuantityDest = GetItemQuantity($pItemDest)
+    If $iQuantityDest >= 250 Then Return SetExtended(0, 0)
 
-    Item_MoveItem($pItemSource, $bag, $slot)
-    WaitForItemMove($aBagSlotSource[0], $aBagSlotSource[1])
+    Local $iQuantitySource = GetItemQuantity($pItemSource)
 
-    Return True
-EndFunc ;==>MoveItemToInventory
+    Local $iQuantity = $iQuantitySource + $iQuantityDest
 
-;~ Merges two < 250 items together, does *not* handle any overflow
-;~ > 0: Merge w/o overflow
-;~ = 0: Merge w/ overflow or no merge
-Func MergeItemToInventory($pItemSource, $pItemDest = 0)
-    ;~ some other func already found destination item
-    If $pItemDest <> 0 Then
-        If $pItemSource = $pItemDest Then Return 0
-        If GetItemModelID($pItemSource) <> GetItemModelID($pItemDest) Then Return 0
+    Local $pBagSource = GetItemBagPtr($pItemSource)
+    Local $iSlotSource = GetItemSlot($pItemSource)
 
-        Local $iQuantityDest = GetItemQuantity($pItemDest)
-        If $iQuantityDest >= 250 Then Return 0
-
-        Local $iQuantitySource = GetItemQuantity($pItemSource)
-        Local $iBag = Item_GetBagInfo(Item_GetItemInfoByPtr($pItemDest, "Bag"), "Index") + 1
-        Local $iSlot = Item_GetItemInfoByPtr($pItemDest, "Slot") + 1
-        
-        If ($iQuantitySource + $iQuantityDest) <= 250 Then
-            Item_MoveItem($pItemSource, $iBag, $iSlot)
-            Return ($iQuantitySource + $iQuantityDest)
-        Else
-            Local $iMoveAmount = 250 - $iQuantityDest
-            MoveItemEx($pItemSource, $iBag, $iSlot, $iMoveAmount)
-            Return 0
-        EndIf
-    EndIf
-
-    Local $pItem, $pBag, $iModelID = GetItemModelID($pItemSource)
-    Local $iQuantitySource = GetItemQuantity($pItemSource), $iQuantityDest
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If GetItemModelID($pItem) <> $iModelID Then ContinueLoop
-            $iQuantityDest = GetItemQuantity($pItem)
-            If $iQuantityDest >= 250 Then ContinueLoop
-            If ($iQuantitySource + $iQuantityDest) <= 250 Then
-                Item_MoveItem($pItemSource, $bag, $slot)
-                Return ($iQuantitySource + $iQuantityDest)
-            Else
-                Local $iMoveAmount = 250 - $iQuantityDest
-                MoveItemEx($pItemSource, $bag, $slot, $iMoveAmount)
-                Return 0
-            EndIf
-        Next
-    Next
-    Return 0
-EndFunc ;==>MergeItemToInventory
-
-;~ stores and merges all items by ModelID
-;~ $aModelID: singular ModelID or array of ModelIDs
-;~ $iAmount: counts stacks only
-Func StoreItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
-    If Not GetIsOutpost() Then Return False
-
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
-    EndIf
-
-    Local $iCountModelID = UBound($aModelID)
+    Local $pBagDest = GetItemBagPtr($pItemDest)
+    Local $iSlotDest = GetItemSlot($pItemDest)
     
-    Local $iAmountMoved[$iCountModelID]
-    For $i = 0 To $iCountModelID - 1
-        $iAmountMoved[$i] = 0
-    Next
-       
-    Local $aFreeSlots = GetFreeSlotsStorage()
-    If UBound($aFreeSlots) = 0 Then Return False
+    If $iQuantity <= 250 Then
+        MoveItem($pItemSource, $pBagDest, $iSlotDest)
+        WaitForItemMove(0, $pBagSource, $iSlotSource)
 
-    Local $pItemDest = GetItemInChest($aModelID, True)
-    Local $iFreeSlotsMax = UBound($aFreeSlots), $iCountSlots = 0
-    Local $pItem, $pBag, $iModelID, $iQuantity, $iQuantityMerge, $iModelIDFound
-    Local $iBagSource, $iSlotSource, $aBagSlotLast[2] = [0, 0]
-    Local $iAmountCount = 0
+        Return SetExtended($iQuantitySource, $iQuantity) ; moved amount in macro
+    Else
+        $iQuantity = 250 - $iQuantityDest
 
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
+        MoveItemEx($pItemSource, $pBagDest, $iSlotDest, $iQuantity)
+        WaitForItemMove(250, $pBagSource, $iSlotSource, $pBagDest, $iSlotDest)
 
-            $iQuantity = GetItemQuantity($pItem)
-            If $bFullStackOnly And $iQuantity < 250 Then ContinueLoop
-
-            $iModelID = GetItemModelID($pItem)
-            $iModelIDFound = -1
-
-            For $i = 0 To $iCountModelID - 1
-                If $iModelID = $aModelID[$i] Then
-                    $iModelIDFound = $i
-                    ExitLoop
-                EndIf
-            Next
-
-            If $iModelIDFound = -1 Then ContinueLoop
-            If $iAmount > 0 And $iAmountMoved[$iModelIDFound] >= $iAmount Then ContinueLoop
-
-            $iQuantityMerge = -1
-            If $iQuantity < 250 Then
-                $iBagSource = Item_GetBagInfo(Item_GetItemInfoByPtr($pItem, "Bag"), "Index") + 1
-                $iSlotSource = Item_GetItemInfoByPtr($pItem, "Slot") + 1
-                $iQuantityMerge = MergeItemToChest($pItem, $pItemDest[$iModelIDFound])
-                If $iQuantityMerge > 0 Then
-                    ;~ merge w/o overflow
-                    If $iQuantityMerge = 250 Then $pItemDest[$iModelIDFound] = 0
-                    WaitForItemMove($iBagSource, $iSlotSource)
-                    ContinueLoop
-                ElseIf $iQuantityMerge = 0 Then
-                    ;~ merge w/ overflow
-                    $pItemDest[$iModelIDFound] = $pItem
-                EndIf
-            EndIf
-
-            $aBagSlotLast[0] = $bag
-            $aBagSlotLast[1] = $slot
-            Item_MoveItem($pItem, $aFreeSlots[$iCountSlots][0], $aFreeSlots[$iCountSlots][1])
-
-            ;~ wait if a merge happened
-            If $iQuantityMerge <> -1 Then
-                WaitForItemMove($iBagSource, $iSlotSource)
-            EndIf
-
-            $g_hTimerMoveItem = TimerInit()
-
-            $iCountSlots += 1
-            If $iCountSlots >= $iFreeSlotsMax Then Return True
-
-            If $iAmount > 0 Then
-                $iAmountMoved[$iModelIDFound] += 1
-                ; ModelID reached required amount for the first time
-                If $iAmountMoved[$iModelIDFound] = $iAmount Then
-                    $iAmountCount += 1
-
-                    ; all ModelIDs satisfied
-                    If $iAmountCount = $iCountModelID Then Return True
-                EndIf
-            EndIf
-            
-        Next
-    Next
-
-    If $aBagSlotLast[0] <> 0 And $aBagSlotLast[1] <> 0 Then
-        WaitForItemMove($aBagSlotLast[0], $aBagSlotLast[1])
+        Return SetExtended($iQuantity, 0) ; moved amount in macro
     EndIf
-    
-    Return True
+
+    Return SetExtended(0, 0)
+EndFunc ;==>MergeItem
+
+Func StoreItemsByModelID($aModelID, $iQuantity = 0, $bFullStack = False)
+    Return MoveItemsByModelID($aModelID, True, $iQuantity, $bFullStack)
 EndFunc ;==>StoreItemsByModelID
 
-Func WithdrawItemsByModelID($aModelID, $iAmount = 0, $bFullStackOnly = False)
+Func WithdrawItemsByModelID($aModelID, $iQuantity = 0, $bFullStack = False)
+    Return MoveItemsByModelID($aModelID, False, $iQuantity, $bFullStack)
+EndFunc ;==>WithdrawItemsByModelID
+
+Func MoveItemsByModelID($aModelID, $bStore, $iQuantityTarget = 0, $bFullStack = False)
+    If $iQuantityTarget < 0 Then Return False
     If Not GetIsOutpost() Then Return False
 
-    If Not IsArray($aModelID) Then
-        Local $aTmp[1] = [$aModelID]
-        $aModelID = $aTmp
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Local $sGetFreeSlotsFunc
+    Local $sGetItemFunc
+    Local $sGetItemArrayFunc
+
+    If $bStore Then
+        $sGetFreeSlotsFunc = "GetFreeSlotsStorage"
+        $sGetItemFunc = "GetItemInStorage"
+        $sGetItemArrayFunc = "GetItemArrayInventory"
+    Else
+        $sGetFreeSlotsFunc = "GetFreeSlotsInventory"
+        $sGetItemFunc = "GetItemInInventory"
+        $sGetItemArrayFunc = "GetItemArrayStorage"
     EndIf
 
-    Local $iCountModelID = UBound($aModelID)
+    Local $iCountModelID = EnsureArray($aModelID)
     
-    Local $iAmountMoved[$iCountModelID]
-    For $i = 0 To $iCountModelID - 1
-        $iAmountMoved[$i] = 0
-    Next
+    Local $aQuantityMoved[$iCountModelID]
+    Local $iCountMoved = 0
        
-    Local $aFreeSlots = GetFreeSlotsInventory()
-    If UBound($aFreeSlots) = 0 Then Return False
+    Local $aFreeSlots = Call($sGetFreeSlotsFunc)
+    Local $iFreeSlots = UBound($aFreeSlots)
+    If $iFreeSlots = 0 Then Return False
 
-    Local $pItemDest = GetItemInInventory($aModelID, True)
-    Local $iFreeSlotsMax = UBound($aFreeSlots), $iCountSlots = 0
-    Local $pItem, $pBag, $iModelID, $iQuantity, $iQuantityMerge, $iModelIDFound
-    Local $iBagSource, $iSlotSource, $aBagSlotLast[2] = [0, 0]
-    Local $iAmountCount = 0
+    Local $iFreeSlotsIndex = 0
 
-    For $bag = 8 To 11
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
+    Local $pItemDest = Call($sGetItemFunc, $aModelID, True)
 
-            $iQuantity = GetItemQuantity($pItem)
-            If $bFullStackOnly And $iQuantity < 250 Then ContinueLoop
-
-            $iModelID = GetItemModelID($pItem)
-            $iModelIDFound = -1
-            For $i = 0 To $iCountModelID - 1
-                If $iModelID = $aModelID[$i] Then
-                    $iModelIDFound = $i
-                    ExitLoop
-                EndIf
-            Next
-
-            If $iModelIDFound = -1 Then ContinueLoop
-            If $iAmount > 0 And $iAmountMoved[$iModelIDFound] >= $iAmount Then ContinueLoop
-
-            $iQuantityMerge = -1
-            If $iQuantity < 250 Then
-                $iBagSource = Item_GetBagInfo(Item_GetItemInfoByPtr($pItem, "Bag"), "Index") + 1
-                $iSlotSource = Item_GetItemInfoByPtr($pItem, "Slot") + 1
-                $iQuantityMerge = MergeItemToInventory($pItem, $pItemDest[$iModelIDFound])
-                If $iQuantityMerge > 0 Then
-                    ;~ merge w/o overflow
-                    If $iQuantityMerge = 250 Then $pItemDest[$iModelIDFound] = 0
-                    WaitForItemMove($iBagSource, $iSlotSource)
-                    ContinueLoop
-                ElseIf $iQuantityMerge = 0 Then
-                    ;~ merge w/ overflow
-                    $pItemDest[$iModelIDFound] = $pItem
-                EndIf
-            EndIf
-
-            $aBagSlotLast[0] = $bag
-            $aBagSlotLast[1] = $slot
-            Item_MoveItem($pItem, $aFreeSlots[$iCountSlots][0], $aFreeSlots[$iCountSlots][1])
-
-            ;~ wait if a merge happened
-            If $iQuantityMerge <> -1 Then
-                WaitForItemMove($iBagSource, $iSlotSource)
-            EndIf
-
-            $g_hTimerMoveItem = TimerInit()
-
-            $iCountSlots += 1
-            If $iCountSlots >= $iFreeSlotsMax Then Return True
-
-            If $iAmount > 0 Then
-                $iAmountMoved[$iModelIDFound] += 1
-                ; ModelID reached required amount for the first time
-                If $iAmountMoved[$iModelIDFound] = $iAmount Then
-                    $iAmountCount += 1
-
-                    ; all ModelIDs satisfied
-                    If $iAmountCount = $iCountModelID Then Return True
-                EndIf
-            EndIf
-
-        Next
-    Next
-    If $aBagSlotLast[0] <> 0 And $aBagSlotLast[1] <> 0 Then
-        WaitForItemMove($aBagSlotLast[0], $aBagSlotLast[1])
-    EndIf
+    Local $aItemPtr = Call($sGetItemArrayFunc)
+    If @error Then Return SetError(1, 0, False)
     
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iQuantity, $iModelID, $iModelIDIndex, $iMerge, $iQuantityMoved
+    Local $pBagSource, $iSlotSource
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iQuantity = GetItemQuantity($tItemStruct)
+
+        If $bFullStack And $iQuantity < 250 Then ContinueLoop ; full stack
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        $iModelIDIndex = -1
+
+        For $j = 0 To $iCountModelID - 1
+            If $iModelID <> $aModelID[$j] Then ContinueLoop
+
+            $iModelIDIndex = $j
+            ExitLoop
+        Next
+
+        If $iModelIDIndex = -1 Then ContinueLoop ; ModelID not found
+
+        If $iQuantityTarget > 0 And $aQuantityMoved[$iModelIDIndex] >= $iQuantityTarget Then ContinueLoop ; moved enough already
+
+
+        ;~ try and merge
+        If $iQuantity < 250 And $pItemDest[$iModelIDIndex] <> 0 Then
+            
+            $iMerge = MergeItem($tItemStruct, $pItemDest[$iModelIDIndex])
+            $iQuantityMoved = @extended
+
+            If $iMerge > 0 Then ; no overflow
+                If $iMerge = 250 Then $pItemDest[$iModelIDIndex] = 0
+
+                $aQuantityMoved[$iModelIDIndex] += $iQuantityMoved
+                
+                ContinueLoop
+            Else ; overflow
+                $pItemDest[$iModelIDIndex] = $pItem
+
+                $aQuantityMoved[$iModelIDIndex] += $iQuantityMoved
+
+                $iQuantity -= $iQuantityMoved
+            EndIf
+
+        EndIf
+
+        ;~ move item
+        MoveItem($pItem, $aFreeSlots[$iFreeSlotsIndex][0], $aFreeSlots[$iFreeSlotsIndex][1])
+
+        $pBagSource = GetItemBagPtr($tItemStruct)
+        $iSlotSource = GetItemSlot($tItemStruct)        
+
+        $aQuantityMoved[$iModelIDIndex] += $iQuantity
+
+        $iFreeSlotsIndex += 1
+        If $iFreeSlotsIndex >= $iFreeSlots Then ExitLoop
+
+        If $iQuantityTarget > 0 And $aQuantityMoved[$iModelIDIndex] >= $iQuantityTarget Then
+            $iCountMoved += 1
+
+            If $iCountMoved = $iCountModelID Then ExitLoop
+        EndIf
+
+    Next
+
+    WaitForItemMove(0, $pBagSource, $iSlotSource)
+
     Return True
-EndFunc ;==>WithdrawItemsByModelID
+EndFunc ;==>MoveItemsByModelID
 
 ;Stores all Items of given Type
 Func WithdrawItemsByType($aType, $aFullStack = False)
@@ -1193,19 +996,6 @@ Func WithdrawItemsByType($aType, $aFullStack = False)
         Next
     Next
 EndFunc ;==>WithdrawItemsByType
-
-;~ Wait for confirmation, that an Item has moved. (i.e. the slot is empty)
-;~ Params: original position of the item
-Func WaitForItemMove($iBag, $iSlot)
-    Local $hDeadlock = TimerInit(), $bTimeout
-    Do
-        Sleep(50)
-        $bTimeout = TimerDiff($hDeadlock) > 2000
-    Until GetItemPtrBySlot($iBag, $iSlot) = 0 Or $bTimeout
-
-    Sleep(100)
-    Return $bTimeout ? 0 : 1
-EndFunc ;==>WaitForItemMove
 
 #Region Identify And Salvage
 Func IdentifyItem($pItem, $pIdKit = FindIDKit())
@@ -1542,7 +1332,7 @@ Func GetBagItemCount(ByRef $pBag)
     If IsDllStruct($pBag) Then
         Return DllStructGetData($pBag, "ItemCount")
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag) + 0x10, "dword")
+        Return Memory_Read(GetBagPtr($pBag) + 0x10, "dword")
     EndIf
 EndFunc ;==>GetBagItemCount
 
@@ -1550,17 +1340,25 @@ Func GetBagArrayPtr(ByRef $pBag)
     If IsDllStruct($pBag) Then
         Return DllStructGetData($pBag, "BagArray")
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag) + 0x14, "ptr")
+        Return Memory_Read(GetBagPtr($pBag) + 0x14, "ptr")
     EndIf
 EndFunc ;==>GetBagArrayPtr
 
 Func GetBagItemArrayPtr(ByRef $pBag)
     If IsDllStruct($pBag) Then
-        Return DllStructGetData($pBag, "ItemArray")
+        Return DllStructGetData($pBag, 'ItemArray')
     Else
-        Return Memory_Read(Item_GetBagPtr($pBag) + 0x18, "ptr")
+        Return Memory_Read(GetBagPtr($pBag) + 0x18, 'ptr')
     EndIf
 EndFunc ;==>GetBagItemArrayPtr
+
+Func GetItemArrayInventory($bEquipmentPack = False, $bMaterialStorage = False)
+    Return GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2, $bEquipmentPack, $bMaterialStorage)
+EndFunc ;==>GetItemArrayInventory
+
+Func GetItemArrayStorage($bEquipmentPack = False, $bMaterialStorage = False)
+    Return GetBagItemArray($GC_I_INVENTORY_STORAGE1, $GC_I_INVENTORY_STORAGE4, $bEquipmentPack, $bMaterialStorage)
+EndFunc ;==>GetItemArrayStorage
 
 ;~ returns the complete ItemPtr Array of the specified bags
 Func GetBagItemArray($iFirstBag, $iLastBag, $bEquipmentPack = False, $bMaterialStorage = False)
@@ -1693,7 +1491,7 @@ Func GetFreeSlots($iFirstBag, $iLastBag)
 
             If $pItem = 0 Then
                 $aFreeSlots[$iCount][0] = $bag
-                $aFreeSlots[$iCount][1] = $slot
+                $aFreeSlots[$iCount][1] = $slot - 1
                 $iCount += 1
             EndIf
 
