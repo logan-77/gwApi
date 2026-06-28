@@ -30,7 +30,8 @@ Global Const $AGENT_STRUCT_TEMPLATE = _
 'dword VisibleEffectsHasEnded;  dword h0180;            dword LoginNumber;      float AnimationSpeed;'      & _
 'dword AnimationCode;           dword AnimationID;      byte h0194[32];         byte LastStrike;'           & _
 'byte Allegiance;               short WeaponType;       short Skill;            short h01BA;'               & _
-'byte WeaponItemType;           byte OffhandItemType;   short WeaponItemID;     short OffhandItemID;'
+'byte WeaponItemType;           byte OffhandItemType;   short WeaponItemID;     short OffhandItemID'        ;& _
+;~ 'dword test1; dword test2; dword test3; dword test4; dword test5;'
 
 Global Const $IDX_AGENT_ID = 7
 Global Const $IDX_AGENT_X = 25
@@ -82,6 +83,18 @@ Global Const $SKILLBAR_STRUCT_TEMPLATE = _
 
 Global $g_tSkillbarStruct = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
 Global $g_iSkillbarStructSize = DllStructGetSize($g_tSkillbarStruct)
+
+Global Enum _
+    $IDX_SKILLBAR_AGENTID = 1, _
+    $IDX_ADRENALINE_1, $IDX_ADRENALINE_B1,  $IDX_RECHARGE_1, $IDX_SKILLID_1, $IDX_EVENT_1, _
+    $IDX_ADRENALINE_2, $IDX_ADRENALINE_B2,  $IDX_RECHARGE_2, $IDX_SKILLID_2, $IDX_EVENT_2, _
+    $IDX_ADRENALINE_3, $IDX_ADRENALINE_B3,  $IDX_RECHARGE_3, $IDX_SKILLID_3, $IDX_EVENT_3, _
+    $IDX_ADRENALINE_4, $IDX_ADRENALINE_B4,  $IDX_RECHARGE_4, $IDX_SKILLID_4, $IDX_EVENT_4, _
+    $IDX_ADRENALINE_5, $IDX_ADRENALINE_B5,  $IDX_RECHARGE_5, $IDX_SKILLID_5, $IDX_EVENT_5, _
+    $IDX_ADRENALINE_6, $IDX_ADRENALINE_B6,  $IDX_RECHARGE_6, $IDX_SKILLID_6, $IDX_EVENT_6, _
+    $IDX_ADRENALINE_7, $IDX_ADRENALINE_B7,  $IDX_RECHARGE_7, $IDX_SKILLID_7, $IDX_EVENT_7, _
+    $IDX_ADRENALINE_8, $IDX_ADRENALINE_B8,  $IDX_RECHARGE_8, $IDX_SKILLID_8, $IDX_EVENT_8, _
+    $IDX_SB_DISABLED,  $IDX_SB_H00A8,       $IDX_SB_CASTING, $IDX_SB_H00B4,  $IDX_SB_QUEUED
 
 
 ;~ bag struct, size = 36 / 0x24 (probably complete)
