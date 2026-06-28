@@ -3,16 +3,100 @@ Global Enum $normalmode, $hardmode
 Global Enum $east, $south_east, $south, $south_west, $west, $north_west, $north, $north_east
 
 ; === gold related ==
-Global Const $mMaxGoldStorage = 1000000
+Global Const $iMaxGoldStorage = 1000000
 
 Global Const $g_aWeaponType[] = [ _
     $GC_I_TYPE_AXE, $GC_I_TYPE_BOW, $GC_I_TYPE_OFFHAND, $GC_I_TYPE_HAMMER, _
     $GC_I_TYPE_WAND, $GC_I_TYPE_SHIELD, $GC_I_TYPE_STAFF, $GC_I_TYPE_SWORD, _
-    $GC_I_TYPE_DAGGERS, $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR]
+    $GC_I_TYPE_DAGGERS, $GC_I_TYPE_SCYTHE, $GC_I_TYPE_SPEAR _
+]
 
-; === Range ===
-Global Enum $range_adjacent   = 156,       $range_nearby    = 240,       $range_area    = 312,       $range_earshot   = 1000,        $range_spellcast   = 1085,        $range_spirit   = 2500,        $range_nature_ritual   = 3500,        $range_compass   = 5000
-Global Enum $range_adjacent_2 = 156 * 156, $range_nearby_2  = 240 * 240, $range_area_2  = 312 * 312, $range_earshot_2 = 1000 * 1000, $range_spellcast_2 = 1085 * 1085, $range_spirit_2 = 2500 * 2500, $range_nature_ritual_2 = 3500 * 3500, $range_compass_2 = 5000 * 5000
+;~ Distance constants
+Global Const $g_iDistAdjacent    = 156
+Global Const $g_iDistAdjacentSqr  = 156 * 156
+
+Global Const $g_iDistNearby      = 240
+Global Const $g_iDistNearbySqr    = 240 * 240
+
+Global Const $g_iDistArea        = 312
+Global Const $g_iDistAreaSqr      = 312 * 312
+
+Global Const $g_iDistEarshot     = 1000
+Global Const $g_iDistEarshotSqr   = 1000 * 1000
+
+Global Const $g_iDistSpellcast   = 1085
+Global Const $g_iDistSpellcastSqr = 1085 * 1085
+
+Global Const $g_iDistAggro       = 1250
+Global Const $g_iDistAggroSqr     = 1250 * 1250
+
+Global Const $g_iDistSpirit      = 2500
+Global Const $g_iDistSpiritSqr    = 2500 * 2500
+
+Global Const $g_iDistNatureRitual   = 3500
+Global Const $g_iDistNatureRitualSqr = 3500 * 3500
+
+Global Const $g_iDistCompass     = 5000
+Global Const $g_iDistCompassSqr   = 5000 * 5000
+
+Global Const $g_iDist50    = 50
+Global Const $g_iDist50Sqr = 50 * 50
+
+Global Const $g_iDist100    = 100
+Global Const $g_iDist100Sqr = 100 * 100
+
+Global Const $g_iDist150    = 150
+Global Const $g_iDist150Sqr = 150 * 150
+
+Global Const $g_iDist200    = 200
+Global Const $g_iDist200Sqr = 200 * 200
+
+Global Const $g_iDist250    = 250
+Global Const $g_iDist250Sqr = 250 * 250
+
+Global Const $g_iDist500    = 500
+Global Const $g_iDist500Sqr = 500 * 500
+
+Global Const $g_iDist750    = 750
+Global Const $g_iDist750Sqr = 750 * 750
+
+Global Const $g_iDist1000    = 1000
+Global Const $g_iDist1000Sqr = 1000 * 1000
+
+Global Const $g_iDist1250    = 1250
+Global Const $g_iDist1250Sqr = 1250 * 1250
+
+;~ Timeout constants
+Global Const $g_iSec1 = 1000*1
+Global Const $g_iSec2 = 1000*2
+Global Const $g_iSec3 = 1000*3
+Global Const $g_iSec4 = 1000*4
+Global Const $g_iSec5 = 1000*5
+Global Const $g_iSec10 = 1000*10
+Global Const $g_iSec15 = 1000*15
+Global Const $g_iSec20 = 1000*20
+Global Const $g_iSec25 = 1000*25
+Global Const $g_iSec30 = 1000*30
+Global Const $g_iSec35 = 1000*35
+Global Const $g_iSec40 = 1000*40
+Global Const $g_iSec45 = 1000*45
+Global Const $g_iSec50 = 1000*50
+Global Const $g_iSec55 = 1000*55
+
+Global Const $g_iMin1 = 1000*60
+Global Const $g_iMin2 = 1000*60*2
+Global Const $g_iMin3 = 1000*60*3
+Global Const $g_iMin4 = 1000*60*4
+Global Const $g_iMin5 = 1000*60*5
+Global Const $g_iMin6 = 1000*60*6
+Global Const $g_iMin7 = 1000*60*7
+Global Const $g_iMin8 = 1000*60*8
+Global Const $g_iMin9 = 1000*60*9
+Global Const $g_iMin10 = 1000*60*10
+Global Const $g_iMin15 = 1000*60*15
+Global Const $g_iMin20 = 1000*60*20
+Global Const $g_iMin25 = 1000*60*25
+Global Const $g_iMin30 = 1000*60*30
 
 ;TypeMap
 Global Const $typemap_boss    = 3072  ; 0xC00  Boss
@@ -49,18 +133,44 @@ Global Const $model_id_gothic_sword = 793
 Global Const $model_id_jug = 1023
 
 #Region NPC XY
-Global Const $aXYBaseEotn = [-2680, 1212]
-Global Const $aXYMerchantEotn = [-2748, 1019] ; same for wintersday
-Global Const $aXYMaterialTraderEotn = [-1867, 803] ; same for wintersday
-Global Const $aXYRareMaterialTraderEotn = [-2079, 1046] ; same for wintersday
-Global Const $aXYRuneTraderEotn = [-3368, 2092]
-Global Const $aXYRuneTraderEotnWintersday = [-3018, 1753]
+Global Enum _
+    $OUTPOST_BASE, _
+    $OUTPOST_MERCHANT, _
+    $OUTPOST_MATERIAL, _
+    $OUTPOST_RAREMAT, _
+    $OUTPOST_RUNE
 
-Global Const $aXYBaseSifhalla = [11800, 23090]
-Global Const $aXYMerchantSifhalla = [11580, 21619]
-Global Const $aXYMaterialTraderSifhalla = [11489, 22240]
-Global Const $aXYRareMaterialTraderSifhalla = [10875, 22596]
-Global Const $aXYRuneTraderSifhalla = [11240, 22573]
+Global Const $aOutpostEotN[][] = [ _
+    [-2680, 1212], _ ; Base
+    [-2748, 1019], _ ; Merchant
+    [-1867, 803], _ ; Material Trader
+    [-2079, 1046], _ ; Rare Material Trader
+    [-3368, 2092] _ ; Rune Trader
+]
+
+Global Const $aOutpostEotNWintersday[][] = [ _
+    [-2680, 1212], _ ; Base
+    [-2748, 1019], _ ; Merchant
+    [-1867, 803], _ ; Material Trader
+    [-2079, 1046], _ ; Rare Material Trader
+    [-3018, 1753] _ ; Rune Trader (Wintersday)
+]
+
+Global Const $aOutpostSifhalla[][] = [ _
+    [11800, 23090], _ ; Base
+    [11580, 21619], _ ; Merchant
+    [11489, 22240], _ ; Material Trader
+    [10875, 22596], _ ; Rare Material Trader
+    [11240, 22573] _ ; Rune Trader
+]
+
+Global Const $aOutpostSeitung[][] = [ _
+    [17000, 12450], _ ; Base
+    [17290, 12426], _ ; Merchant
+    [17520, 13805], _ ; Material Trader
+    [17709, 13868], _ ; Rare Material Trader
+    [16412, 12619] _ ; Rune Trader
+]
 #EndRegion NPC XY
 
 #Region Weapons
