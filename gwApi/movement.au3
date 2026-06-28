@@ -83,7 +83,7 @@ Func GetClosestXYinRangeOfAgent($aAgent = 0, $aDistance = 100, $sectors = 10)
     Local $coords = GetAllXYinRangeOfAgent($aAgent, $aDistance, $sectors) 
 
     For $i = 0 To UBound($coords) - 1    ; Find coords closest to me
-        $lDistance = GetPseudoDistanceToXY($coords[$i][0], $coords[$i][1])
+        $lDistance = GetDistanceSqrToXY($coords[$i][0], $coords[$i][1])
         If $lDistance < $lNearestDistance Then
             $lNearestDistance = $lDistance
             $lClosestXY[0] = $coords[$i][0]    ; select closest X but some degrees off axis
@@ -121,7 +121,7 @@ Func GetClosestXYtoWaypointInRangeOfAgent($wpX, $wpY, $aAgent, $aDistance = 100,
     Local $coords = GetAllXYinRangeOfAgent($aAgent, $aDistance, $sectors)    ; divides circle into sectors
 
     For $i = 0 To UBound($coords) - 1    ; Find coords closest to waypoint
-        $lDistance = ComputePseudoDistance($coords[$i][0], $coords[$i][1], $wpX, $wpY)
+        $lDistance = ComputeDistanceSqr($coords[$i][0], $coords[$i][1], $wpX, $wpY)
         If $lDistance < $lNearestDistance Then
             $lNearestDistance = $lDistance
             $lClosestXY[0] = $coords[$i][0]
