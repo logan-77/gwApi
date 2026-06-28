@@ -2,309 +2,29 @@
 Functions for retrieving information from the Agent Struct.
 #ce
 #include-once
-;~ Case 0: all agents
-;~ Case 1: agents by: $iType (use only this for 0x200/0x400)
-;~ Case 2: agents by: $iType + $iAllegiance
-;~ Case 3: agents by $iType + $iAllegiance + exclude Minions/Spirits + optional: PlayerNumber, Effect, $iRange ($iAgent or $aX/$aY)
-;~ Case 5: only for Feather Farm
-;~ Case 6: only for CoF
-;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
-Func GetAgentPtrArray($iMode = 0, $iType = 0xDB, $iAllegiance = 3, $iRange = 1320, $iAgent = Agent_GetAgentPtr(-2), $aPlayerNumber = 0, $aEffect = 0, $aX = X($iAgent), $aY = Y($iAgent))
-    Local $iMaxAgents = Agent_GetMaxAgents()
-    Local $lAgentPtrStruct = DllStructCreate("ptr[" & $iMaxAgents & "]")
-    DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, "ptr", Memory_Read($g_p_AgentBase), "struct*", $lAgentPtrStruct, "ulong_ptr", $iMaxAgents * 4, "ulong_ptr*", 0)
-    Local $lTempPtr, $iModelID
-    Local $lAgentArray[$iMaxAgents + 1]
-    $lAgentArray[0] = 0
-
-    $iRange = $iRange * $iRange ; dist squared
-
-    For $i = 1 To $iMaxAgents
-        $lTempPtr = DllStructGetData($lAgentPtrStruct, 1, $i)
-        If $lTempPtr = 0 Then ContinueLoop
-        If $iMode >= 1 And Memory_Read($lTempPtr + 0x9C, 'long') <> $iType Then ContinueLoop
-        If $iMode >= 2 And Memory_Read($lTempPtr + 0x1B5, 'byte') <> $iAllegiance Then ContinueLoop
-        If $iMode >= 3 Then
-            If $aEffect <> 0x0010 And GetIsDead($lTempPtr) Then ContinueLoop ; HP > 0
-            If $iRange <> 0 And GetPseudoDistanceToXY($aX, $aY, $lTempPtr) > $iRange Then ContinueLoop ; is in $iRange
-            
-            If $iAllegiance = 0x03 Or $aPlayerNumber <> 0 Then
-                $iModelID = Memory_Read($lTempPtr + 0xF4, "short")
-            EndIf
-            If $aPlayerNumber <> 0 And $aPlayerNumber <> $iModelID Then ContinueLoop ; has PlayerNumber
-            If $iAllegiance = 0x3 And (IsMinionAgent($iModelID) Or IsSpiritAgent($iModelID)) Then ContinueLoop
-
-            If $aEffect <> 0 And Not BitAND(Memory_Read($lTempPtr + 0x13C, 'dword'), $aEffect) Then ContinueLoop ; has $aEffect
-        EndIf
-        If $iMode = 5 And Not IsSensali($iModelID) Then ContinueLoop ; feather bot
-        If $iMode = 6 And Not IsCofEnemy($iModelID) Then ContinueLoop ; cof bot
-
-        $lAgentArray[0] += 1
-        $lAgentArray[$lAgentArray[0]] = $lTempPtr
-    Next
-    ReDim $lAgentArray[$lAgentArray[0] + 1]
-    Return $lAgentArray
-EndFunc ;==>GetAgentPtrArray
-
-#Region AgentControls
-; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
-Func GetNumberOfEnemiesNearAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfEnemiesNearAgent
-
-; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
-Func GetNumberOfEnemiesNearAgent2(ByRef $aAgentPtr, $iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
-    Local $lAgentPtr = Agent_GetAgentPtr($iAgent), $lCount = 0
-
-    $iRange = $iRange * $iRange ; dist squared
-    
-    For $i = 1 To $aAgentPtr[0]
-        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-        If GetPseudoDistance($aAgentPtr[$i], $lAgentPtr) > $iRange Then ContinueLoop
-        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
-
-        $lCount += 1
-    Next
-
-    Return $lCount
-EndFunc   ;==>GetNumberOfEnemiesNearAgent
-
-; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
-Func GetNumberOfEnemiesNearXY($aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, -2, $aPlayerNumber, 0, $aX, $aY)
-    Return UBound($aAgentPtr) - 1
-EndFunc ;==>GetNumberOfEnemiesNearXY
-
-; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
-Func GetNumberOfEnemiesNearXY2(ByRef $aAgentPtr, $aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
-    Local $lCount = 0
-
-    $iRange = $iRange * $iRange ; dist squared
-    
-    For $i = 1 To $aAgentPtr[0]
-        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-        If GetPseudoDistanceToXY($aX, $aY, $aAgentPtr[$i]) > $iRange Then ContinueLoop
-        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
-
-        $lCount += 1
-    Next
-
-    Return $lCount
-EndFunc   ;==>GetNumberOfEnemiesNearXY
-
-; Returns the number of living allies in range of an agent
-Func GetNumberOfDeadAllies($iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0010)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfDeadAllies
-
-;~ Returns the number of living allies in range of an agent. (include npc, pet, spirit)
-Func GetNumberOfAlliesInRangeOfAgent($iAgent = -2, $iRange = 1250)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, $iAgent)
-    Return UBound($aAgentPtr) - 1
-EndFunc ;==>GetNumberOfAlliesInRangeOfAgent
-
-; Returns the number of allies with a condition
-Func GetNumberOfConditionedAllies($iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0002)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfConditionedAllies
-
-; Returns the number of bleeding allies
-Func GetNumberOfBleedingAllies($iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0001)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfBleedingAllies
-
-; Returns the number of poisoned allies
-Func GetNumberOfPoisonedAllies($iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0040)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfPoisonedAllies
-
-; Returns the number of deep-wounded allies
-Func GetNumberOfDeepWoundedAllies($iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0020)
-    Return UBound($aAgentPtr) - 1
-EndFunc   ;==>GetNumberOfDeepWoundedAllies
-
-;~ Description: Returns Highest HP Enemy in Range. optional: PlayerNumber
-Func GetHighestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
-    Local $fHighestHP = 0, $pHighestHPAgent = 0, $fHP
-    
-    For $i = 1 To $aAgentPtr[0]
-        $fHP = GetHP($aAgentPtr[$i])
-
-        If $fHP > $fHighestHP Then
-            $fHighestHP = $fHP
-            $pHighestHPAgent = $aAgentPtr[$i]
-        EndIf
-    Next
-
-    Return $pHighestHPAgent
-EndFunc ;==>GetHighestHPEnemyPtr
-
-;~ Description: Returns Lowest HP Enemy in Range. optional: PlayerNumber
-Func GetLowestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
-    Local $fLowestHP = 2, $pLowestHPAgent = 0, $fHP
-    
-    For $i = 1 To $aAgentPtr[0]
-        $fHP = GetHP($aAgentPtr[$i])
-
-        If $fHP < $fLowestHP Then
-            $fLowestHP = $fHP
-            $pLowestHPAgent = $aAgentPtr[$i]
-        EndIf
-    Next
-
-    Return $pLowestHPAgent
-EndFunc ;==>GetLowestHPEnemyPtr
-
-Func GetAgentPtrByPlayerNumber($aPlayerNumber, $iRange = 5000)
-    Local $aAgentPtr = GetAgentPtrArray(1, 0xDB)
-
-    $iRange = $iRange * $iRange
-
-    For $i = 1 To $aAgentPtr[0]
-        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-        If GetPseudoDistance($aAgentPtr[$i]) > $iRange Then ContinueLoop
-
-        If Memory_Read($aAgentPtr[$i] + 0xF4, "short") = $aPlayerNumber Then Return $aAgentPtr[$i]
-    Next
-
-    Return 0
-EndFunc   ;==>GetAgentPtrByPlayerNumber
-#EndRegion AgentControls
-
-#Region GetNearestAgentPtr
-;~ Description: Returns Pointer to nearest agent to an Agent or XY. optional: PlayerNumber
-;~ GetNearestAgentPtr: Agent, Type, Allegiance, PlayerNumber, X, Y
-Func GetNearestAgentPtr($iAgent = -2, $iType = 0xDB, $iAllegiance = 0, $aPlayerNumber = 0, $aX = X($iAgent), $aY = Y($iAgent))
-    Local $pAgent = Agent_GetAgentPtr($iAgent), $pNearestAgent = 0, $iNearestDistance = 100000000
-    Local $aAgentPtr, $iDistance, $iModelID
-    Switch $iType
-        Case 0xDB
-            $aAgentPtr = GetAgentPtrArray(2, $iType, $iAllegiance)
-        Case 0x200, 0x400
-            $aAgentPtr = GetAgentPtrArray(1, $iType)
-    EndSwitch
-
-    For $i = 1 To $aAgentPtr[0]
-        If $aAgentPtr[$i] = $pAgent Then ContinueLoop
-        If $iType = 0xDB And GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-
-        If $iAllegiance = 0x03 Or $aPlayerNumber <> 0 Then
-            $iModelID = Memory_Read($aAgentPtr[$i] + 0xF4, "short")
-        EndIf
-        If $aPlayerNumber <> 0 And $iModelID <> $aPlayerNumber Then ContinueLoop
-        If $iAllegiance = 0x03 And (IsMinionAgent($iModelID) Or IsSpiritAgent($iModelID)) Then ContinueLoop
-        
-        $iDistance = GetPseudoDistanceToXY($aX, $aY, $aAgentPtr[$i])
-        If $iDistance < $iNearestDistance Then
-            $pNearestAgent = $aAgentPtr[$i]
-            $iNearestDistance = $iDistance
-        EndIf
-    Next
-    Return $pNearestAgent
-EndFunc ;==>GetNearestAgentPtr
-
-;~ Returns distance of nearest Agent. param: Allegiance
-Func GetNearestDistance($iAgent = -2, $iAllegiance = 3)
-    Local $pNearestAgent = GetNearestAgentPtr($iAgent, 0xDB, $iAllegiance)
-
-    Return $pNearestAgent <> 0 ? GetDistance($pNearestAgent, $iAgent) : 10000
-EndFunc   ;==>GetNearestDistance
-
-;~ Description: Returns pointer variable for the nearest enemy to an agent.
-Func GetNearestEnemyPtrToAgent($iAgent = -2, $aPlayerNumber = 0)
-    Return GetNearestAgentPtr($iAgent, 0xDB, 0x03, $aPlayerNumber)
-EndFunc ;==>GetNearestEnemyPtrToAgent
-
-;~ Description: Returns pointer variable for the nearest enemy to an agent.
-Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtr, $iAgent = -2, $aPlayerNumber = 0) 
-    Local $pAgent = Agent_GetAgentPtr($iAgent)
-    Local $pNearestAgent = 0, $iNearestDistance = 100000000, $iDistance
-    
-    For $i = 1 To $aAgentPtr[0]
-        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
-        If $aPlayerNumber <> 0 And Memory_Read($aAgentPtr[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
-        
-        $iDistance = GetPseudoDistance($aAgentPtr[$i], $pAgent)
-        
-        If $iDistance < $iNearestDistance Then
-            $iNearestDistance = $iDistance
-            $pNearestAgent = $aAgentPtr[$i]
-        EndIf
-    Next
-
-    Return $pNearestAgent
-EndFunc ;==>GetNearestEnemyPtrToAgent
-
-Func GetNearestEnemyPtrToXY($aX = X(-2), $aY = Y(-2), $aPlayerNumber = 0)
-    Return GetNearestAgentPtr(-2, 0xDB, 0x03, $aPlayerNumber, $aX, $aY)
-EndFunc ;==>GetNearestEnemyPtrToXY
-
-;~ Description: Returns pointer to the nearest NPC to an agent. optional: PlayerNumber
-Func GetNearestNPCPtrToAgent($iAgent = -2, $aPlayerNumber = 0)
-    Return GetNearestAgentPtr($iAgent, 0xDB, 0x06, $aPlayerNumber)
-EndFunc   ;==>GetNearestNPCPtrToAgent
-
-;~ Description: Returns pointer to the nearest NPC to XY. optional: PlayerNumber
-Func GetNearestNPCPtrToXY($aX = X(-2), $aY = Y(-2), $aPlayerNumber = 0)
-    Return GetNearestAgentPtr(-2, 0xDB, 0x06, $aPlayerNumber, $aX, $aY)
-EndFunc   ;==>GetNearestNPCPtrToXY
-
-;~ Description: Returns the pointer variable for the nearest signpost to an agent.
-Func GetNearestSignpostPtrToAgent($iAgent = -2)
-    Return GetNearestAgentPtr($iAgent, 0x200)
-EndFunc   ;==>GetNearestSignpostPtrToAgent
-
-;~ Description: Returns the pointer variable for the nearest signpost to a set of coordinates.
-Func GetNearestSignpostPtrToXY($aX, $aY)
-    Return GetNearestAgentPtr(-2, 0x200, 0, 0, $aX, $aY)
-EndFunc   ;==>GetNearestSignpostPtrToXY
-
-;~ Description: Returns pointer variable for the nearest ally to an agent.
-Func GetNearestAllyPtrToAgent($iAgent = -2)
-    Return GetNearestAgentPtr($iAgent, 0xDB, 0x01)
-EndFunc   ;==>GetNearestAllyPtrToAgent
-
-;~ Description: Returns pointer variable for the nearest dead ally to an agent.
-Func GetNearestDeadAllyPtrToAgent($iAgent = -2)
-    Local $lPtr = Agent_GetAgentPtr($iAgent), $pNearestAgent = 0, $iDistance, $iNearestDistance = 100000000
-    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, 1320, $lPtr, 0, 0x0010)
-
-    For $i = 1 To $aAgentPtr[0]
-        If $aAgentPtr[$i] = $lPtr Then ContinueLoop
-
-        $iDistance = GetPseudoDistance($aAgentPtr[$i], $lPtr)
-        
-        If $iDistance < $iNearestDistance Then
-            $pNearestAgent = $aAgentPtr[$i]
-            $iNearestDistance = $iDistance
-        EndIf
-    Next
-
-    Return $pNearestAgent
-EndFunc   ;==>GetNearestDeadAllyPtrToAgent
-
-;~ Description: Returns pointer variable for the nearest spirit ally to an agent.
-Func GetNearestSpiritPtrToAgent($iAgent = -2)
-    Return GetNearestAgentPtr($iAgent, 0xDB, 0x04)
-EndFunc   ;==>GetNearestSpiritPtrToAgent
-
-;~ Description: Returns pointer variable for the nearest minion ally to an agent.
-Func GetNearestMinionAllyToAgent($iAgent = -2)
-    Return GetNearestAgentPtr($iAgent, 0xDB, 0x05)
-EndFunc   ;==>GetNearestMinionAllyToAgent
-#EndRegion GetNearestAgentPtr
+Global $tPlayerStruct = DllStructCreate($AGENT_STRUCT_TEMPLATE)
 
 #Region AgentInfo
+Func GetAgentStruct(ByRef $tAgentStruct, $pAgent)
+
+    $pAgent = Agent_GetAgentPtr($pAgent)
+
+    If Not IsPtr($pAgent) Or $pAgent = 0 Then Return SetError(1, 0, False)
+
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pAgent, _
+                    "struct*", $tAgentStruct, _
+                    "ulong_ptr", $g_iAgentStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(2, 0, False)
+    
+    Return True
+EndFunc ;==>GetAgentStruct
+
 ;~ Description: Returns the ID of an Agent
-Func ID($iAgent = Agent_GetAgentPtr(-2))
+Func ID($iAgent = -2)
     Select
         Case $iAgent = -2
             Return Agent_GetMyID()
@@ -319,68 +39,179 @@ Func ID($iAgent = Agent_GetAgentPtr(-2))
     EndSelect
 EndFunc ;==>ID
 
-;~ Description: Test if an agent exists.
-Func GetAgentExists($iAgent)
-    Return (Agent_GetAgentPtr($iAgent) > 0 And ID($iAgent) < Agent_GetMaxAgents())
+;~ Description: Test if an agent exists. Param AgentID
+Func GetAgentExists($iAgentID = -2)
+    $iAgentID = ID($iAgentID)
+
+    Return  Agent_GetAgentPtr($iAgentID) > 0 And _
+            $iAgentID > 0 And _
+            $iAgentID < Agent_GetMaxAgents()
 EndFunc ;==>GetAgentExists
 
+Func GetAgentXY(ByRef $aXY, $pAgent = -2)
+    Local Static $tXY = DllStructCreate('float X; float Y')
+    Local Static $iStructSize = DllStructGetSize($tXY)
+
+    $aXY[0] = 0
+    $aXY[1] = 0
+
+    $pAgent = Agent_GetAgentPtr($pAgent)
+    If $pAgent = 0 Then Return SetError(2, 0, False)
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pAgent + $GC_I_OFFSET_AGENT_X[0], _
+                    "struct*", $tXY, _
+                    "ulong_ptr", $iStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(1, 0, False)
+
+    $aXY[0] = Int(DllStructGetData($tXY, 1))
+    $aXY[1] = Int(DllStructGetData($tXY, 2))
+
+    Return True
+EndFunc ;==>GetAgentXY
+
 ;~ Description: Agents X Location
-Func X($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x74, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_X[0], $GC_I_OFFSET_AGENT_X[1])
+Func X($pAgent = -2)
+    Local Static $aXY[2]
+    
+    GetAgentXY($aXY, $pAgent)
+
+    Return SetExtended($aXY[1], $aXY[0]) ; other value in @extended
 EndFunc ;==>X
 
-;~ Description: Agents X Location
-Func GetAgentX($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x74, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_X[0], $GC_I_OFFSET_AGENT_X[1])
-EndFunc ;==>GetAgentX
-
-;~ Description: Agents Movevement on the X axis
-Func MoveX($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0xA0, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MOVE_X[0], $GC_I_OFFSET_AGENT_MOVE_X[1])
-EndFunc ;==>MoveX
-
-;~ Description: Agents Movevement on the X axis
-Func GetAgentMoveX($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0xA0, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MOVE_X[0], $GC_I_OFFSET_AGENT_MOVE_X[1])
-EndFunc ;==>GetAgentMoveX
-
 ;~ Description: Agents Y Location
-Func Y($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x78, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_Y[0], $GC_I_OFFSET_AGENT_Y[1])
+Func Y($pAgent = -2)
+    Local Static $aXY[2]
+    
+    GetAgentXY($aXY, $pAgent)
+
+    Return SetExtended($aXY[0], $aXY[1]) ; other value in @extended
 EndFunc ;==>Y
 
+;~ Description: Agents X Location
+Func GetAgentX($pAgent = -2)
+    Local Static $aXY[2]
+    
+    GetAgentXY($aXY, $pAgent)
+
+    Return SetExtended($aXY[1], $aXY[0]) ; other value in @extended
+EndFunc ;==>GetAgentX
+
 ;~ Description: Agents Y Location
-Func GetAgentY($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x78, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_Y[0], $GC_I_OFFSET_AGENT_Y[1])
+Func GetAgentY($pAgent = -2)
+    Local Static $aXY[2]
+    
+    GetAgentXY($aXY, $pAgent)
+
+    Return SetExtended($aXY[0], $aXY[1]) ; other value in @extended
 EndFunc ;==>GetAgentY
 
-;~ Description: Agents Movevement on the Y axis
-Func MoveY($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0xA4, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MOVE_Y[0], $GC_I_OFFSET_AGENT_MOVE_Y[1])
-EndFunc ;==>MoveY
+Func GetAgentMoveXY(ByRef $aMoveXY, $pAgent = -2)
+    Local Static $tMoveXY = DllStructCreate('float MoveX; float MoveY')
+    Local Static $iStructSize = DllStructGetSize($tMoveXY)
 
-;~ Description: Agents Movevement on the Y axis
-Func GetAgentMoveY($iAgent = -2)
-    ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0xA4, 'float')
-    Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_MOVE_Y[0], $GC_I_OFFSET_AGENT_MOVE_Y[1])
-EndFunc ;==>MoveY
-
-;~ Description: Agents X and Y Location
-Func XY($iAgent = -2)
-    Local $lLocation[2]
-    Local $lPtr = Agent_GetAgentPtr($iAgent)
+    $aMoveXY[0] = 0
+    $aMoveXY[1] = 0
     
-    $lLocation[0] = X($lPtr)
-    $lLocation[1] = Y($lPtr)
-    Return $lLocation
-EndFunc   ;==>XY
+    $pAgent = Agent_GetAgentPtr($pAgent)
+    If $pAgent = 0 Then Return SetError(2, 0, False)
+
+    Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+                    "handle", $g_h_GWProcess, _
+                    "ptr", $pAgent + $GC_I_OFFSET_AGENT_MOVE_X[0], _
+                    "struct*", $tMoveXY, _
+                    "ulong_ptr", $iStructSize, _
+                    "ulong_ptr*", 0)
+    If @error Or Not $aCall[0] Then Return SetError(1, 0, False)
+
+    $aMoveXY[0] = Round(DllStructGetData($tMoveXY, 1), 2)
+    $aMoveXY[1] = Round(DllStructGetData($tMoveXY, 2), 2)
+
+    Return True
+EndFunc ;==>GetAgentMoveXY
+
+;~ Description: Agents Movement on the X axis
+Func MoveX($pAgent = -2)
+    Local Static $aMoveXY[2]
+
+    GetAgentMoveXY($aMoveXY, $pAgent)
+
+    Return SetExtended($aMoveXY[1], $aMoveXY[0]) ; other value in @extended
+EndFunc ;==>MoveX
+
+;~ Description: Agents Movement on the Y axis
+Func MoveY($pAgent = -2)
+    Local Static $aMoveXY[2]
+
+    GetAgentMoveXY($aMoveXY, $pAgent)
+
+    Return SetExtended($aMoveXY[0], $aMoveXY[1]) ; other value in @extended
+EndFunc ;==>MoveY
+
+;~ Description: Agents Movement on the X axis
+Func GetAgentMoveX($pAgent = -2)
+    Local Static $aMoveXY[2]
+
+    GetAgentMoveXY($aMoveXY, $pAgent)
+
+    Return SetExtended($aMoveXY[1], $aMoveXY[0]) ; other value in @extended
+EndFunc ;==>GetAgentMoveX
+
+;~ Description: Agents Movement on the Y axis
+Func GetAgentMoveY($pAgent = -2)
+    Local Static $aMoveXY[2]
+
+    GetAgentMoveXY($aMoveXY, $pAgent)
+
+    Return SetExtended($aMoveXY[0], $aMoveXY[1]) ; other value in @extended
+EndFunc ;==>GetAgentMoveY
+
+Func GetIsMoving($pAgent = -2)
+    Local Static $aMoveXY[2]
+
+    GetAgentMoveXY($aMoveXY, $pAgent)
+
+    Return $aMoveXY[0] <> 0 Or $aMoveXY[1] <> 0
+EndFunc ;==>GetIsMoving
+
+;~ Description: Waits until an agent is moving (X or Y <> 0)
+Func WaitUntilMoving($pAgent = -2, $iTimeout = 1000, $iSleep = 50)
+
+    Local $hTimer = TimerInit()
+
+    Do
+        Sleep($iSleep)
+        If GetIsMoving($pAgent) Then Return SetExtended(1, Int(TimerDiff($hTimer)))
+    Until TimerDiff($hTimer) >= $iTimeout
+
+    Return SetExtended(0, Int(TimerDiff($hTimer)))
+EndFunc ;==>WaitUntilMoving
+
+;~ Description: Waits until an agent stops moving
+Func WaitUntilStopped($pAgent = -2, $iTimeout = 2000, $iSleep = 50)
+
+    Local $hTimer = TimerInit()
+
+    Do
+        If Not GetIsMoving($pAgent) Then Return SetExtended(1, TimerDiff($hTimer))
+
+        Sleep($iSleep)
+
+    Until TimerDiff($hTimer) >= $iTimeout
+
+    Return SetExtended(0, TimerDiff($hTimer))
+EndFunc ;==>WaitUntilStopped
+
+Func ChangeTarget($iAgentID, $bTargetSelf = False)
+    $iAgentID = ID($iAgentID)
+
+    If Not $bTargetSelf And $iAgentID = Agent_GetMyID() Then Return
+    If Agent_GetCurrentTarget() = $iAgentID Then Return
+        
+    Agent_ChangeTarget($iAgentID)
+EndFunc ;==>ChangeTarget
 
 ;~ Description: Agents Z Location
 Func Z($iAgent = -2)
@@ -522,16 +353,6 @@ Func GetIsCasting($iAgent = -2)
     Return GetAgentSkillID($iAgent) <> 0
 EndFunc   ;==>GetIsCasting
 
-;~ Description: Tests if an agent is moving.
-Func GetIsMoving($iAgent = Agent_GetAgentPtr(-2), $aTimer = 0)
-    If MoveX($iAgent) <> 0 Or MoveY($iAgent) <> 0 Then Return True
-    If $aTimer > 0 Then
-        Sleep($aTimer)
-        If MoveX($iAgent) <> 0 Or MoveY($iAgent) <> 0 Then Return True
-    EndIf
-    Return False
-EndFunc   ;==>GetIsMoving
-
 ;~ Description: Returns the primary profession of an agent (heroes and PvP enemies only).
 Func GetPrimaryProfession($iAgent = -2)
     ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x10E, "byte")
@@ -571,6 +392,312 @@ Func GetAgentType($iAgent = -2)
     ;~ Return Memory_Read(Agent_GetAgentPtr($iAgent) + 0x9C, 'long')
     Return Memory_Read(Agent_GetAgentPtr($iAgent) + $GC_I_OFFSET_AGENT_TYPE[0], $GC_I_OFFSET_AGENT_TYPE[1])
 EndFunc ;==>GetAgentType
+#EndRegion AgentInfo
+
+;~ Case 0: all agents
+;~ Case 1: agents by: $iType (use only this for 0x200/0x400)
+;~ Case 2: agents by: $iType + $iAllegiance
+;~ Case 3: agents by $iType + $iAllegiance + exclude Minions/Spirits + optional: PlayerNumber, Effect, $iRange ($iAgent or $aX/$aY)
+;~ Case 5: only for Feather Farm
+;~ Case 6: only for CoF
+;~ GetAgentPtrArray: Mode, Type, Allegiance, Range, Agent, PlayerNumber, Effect, x, y
+Func GetAgentPtrArray($iMode = 0, $iType = 0xDB, $iAllegiance = 3, $iRange = 1320, $iAgent = Agent_GetAgentPtr(-2), $aPlayerNumber = 0, $aEffect = 0, $aX = X($iAgent), $aY = Y($iAgent))
+    Local $iMaxAgents = Agent_GetMaxAgents()
+    Local $lAgentPtrStruct = DllStructCreate("ptr[" & $iMaxAgents & "]")
+    DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", "handle", $g_h_GWProcess, _
+            "ptr", Memory_Read($g_p_AgentBase), _
+            "struct*", $lAgentPtrStruct, _
+            "ulong_ptr", $iMaxAgents * 4, _
+            "ulong_ptr*", 0)
+
+    Local $lTempPtr, $iModelID
+    Local $lAgentArray[$iMaxAgents + 1]
+    $lAgentArray[0] = 0
+
+    $iRange = $iRange * $iRange ; dist squared
+
+    For $i = 1 To $iMaxAgents
+        $lTempPtr = DllStructGetData($lAgentPtrStruct, 1, $i)
+        If $lTempPtr = 0 Then ContinueLoop
+        If $iMode >= 1 And Memory_Read($lTempPtr + 0x9C, 'long') <> $iType Then ContinueLoop
+        If $iMode >= 2 And Memory_Read($lTempPtr + 0x1B5, 'byte') <> $iAllegiance Then ContinueLoop
+        If $iMode >= 3 Then
+            If $aEffect <> 0x0010 And GetIsDead($lTempPtr) Then ContinueLoop ; HP > 0
+            If $iRange <> 0 And GetDistanceSqrToXY($aX, $aY, $lTempPtr) > $iRange Then ContinueLoop ; is in $iRange
+            
+            If $iAllegiance = 0x03 Or $aPlayerNumber <> 0 Then
+                $iModelID = Memory_Read($lTempPtr + 0xF4, "short")
+            EndIf
+            If $aPlayerNumber <> 0 And $aPlayerNumber <> $iModelID Then ContinueLoop ; has PlayerNumber
+            If $iAllegiance = 0x3 And (IsMinionAgent($iModelID) Or IsSpiritAgent($iModelID)) Then ContinueLoop
+
+            If $aEffect <> 0 And Not BitAND(Memory_Read($lTempPtr + 0x13C, 'dword'), $aEffect) Then ContinueLoop ; has $aEffect
+        EndIf
+        If $iMode = 5 And Not IsSensali($iModelID) Then ContinueLoop ; feather bot
+        If $iMode = 6 And Not IsCofEnemy($iModelID) Then ContinueLoop ; cof bot
+
+        $lAgentArray[0] += 1
+        $lAgentArray[$lAgentArray[0]] = $lTempPtr
+    Next
+    ReDim $lAgentArray[$lAgentArray[0] + 1]
+    Return $lAgentArray
+EndFunc ;==>GetAgentPtrArray
+
+#Region AgentControls
+; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
+Func GetNumberOfEnemiesNearAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfEnemiesNearAgent
+
+; Returns the number of living enemies in range of an agent excluding spawned creatures. optional: PlayerNumber
+Func GetNumberOfEnemiesNearAgent2(ByRef $aAgentPtr, $iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $lAgentPtr = Agent_GetAgentPtr($iAgent), $lCount = 0
+
+    $iRange = $iRange * $iRange ; dist squared
+    
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetDistanceSqr($aAgentPtr[$i], $lAgentPtr) > $iRange Then ContinueLoop
+        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
+
+        $lCount += 1
+    Next
+
+    Return $lCount
+EndFunc   ;==>GetNumberOfEnemiesNearAgent
+
+; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
+Func GetNumberOfEnemiesNearXY($aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, -2, $aPlayerNumber, 0, $aX, $aY)
+    Return UBound($aAgentPtr) - 1
+EndFunc ;==>GetNumberOfEnemiesNearXY
+
+; Returns the number of living enemies in range of a waypoint excluding Spirits+Minions. optional: PlayerNumber
+Func GetNumberOfEnemiesNearXY2(ByRef $aAgentPtr, $aX, $aY, $iRange = 1250, $aPlayerNumber = 0)
+    Local $lCount = 0
+
+    $iRange = $iRange * $iRange ; dist squared
+    
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetDistanceSqrToXY($aX, $aY, $aAgentPtr[$i]) > $iRange Then ContinueLoop
+        If $aPlayerNumber <> 0 And GetPlayerNumber($aAgentPtr[$i]) <> $aPlayerNumber Then ContinueLoop
+
+        $lCount += 1
+    Next
+
+    Return $lCount
+EndFunc   ;==>GetNumberOfEnemiesNearXY
+
+; Returns the number of living allies in range of an agent
+Func GetNumberOfDeadAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0010)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfDeadAllies
+
+;~ Returns the number of living allies in range of an agent. (include npc, pet, spirit)
+Func GetNumberOfAlliesInRangeOfAgent($iAgent = -2, $iRange = 1250)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, $iAgent)
+    Return UBound($aAgentPtr) - 1
+EndFunc ;==>GetNumberOfAlliesInRangeOfAgent
+
+; Returns the number of allies with a condition
+Func GetNumberOfConditionedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0002)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfConditionedAllies
+
+; Returns the number of bleeding allies
+Func GetNumberOfBleedingAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0001)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfBleedingAllies
+
+; Returns the number of poisoned allies
+Func GetNumberOfPoisonedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0040)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfPoisonedAllies
+
+; Returns the number of deep-wounded allies
+Func GetNumberOfDeepWoundedAllies($iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, $iRange, Agent_GetAgentPtr(-2), 0, 0x0020)
+    Return UBound($aAgentPtr) - 1
+EndFunc   ;==>GetNumberOfDeepWoundedAllies
+
+;~ Description: Returns Highest HP Enemy in Range. optional: PlayerNumber
+Func GetHighestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
+    Local $fHighestHP = 0, $pHighestHPAgent = 0, $fHP
+    
+    For $i = 1 To $aAgentPtr[0]
+        $fHP = GetHP($aAgentPtr[$i])
+
+        If $fHP > $fHighestHP Then
+            $fHighestHP = $fHP
+            $pHighestHPAgent = $aAgentPtr[$i]
+        EndIf
+    Next
+
+    Return $pHighestHPAgent
+EndFunc ;==>GetHighestHPEnemyPtr
+
+;~ Description: Returns Lowest HP Enemy in Range. optional: PlayerNumber
+Func GetLowestHPEnemyPtrToAgent($iAgent = -2, $iRange = 1250, $aPlayerNumber = 0)
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x03, $iRange, $iAgent, $aPlayerNumber)
+    Local $fLowestHP = 2, $pLowestHPAgent = 0, $fHP
+    
+    For $i = 1 To $aAgentPtr[0]
+        $fHP = GetHP($aAgentPtr[$i])
+
+        If $fHP < $fLowestHP Then
+            $fLowestHP = $fHP
+            $pLowestHPAgent = $aAgentPtr[$i]
+        EndIf
+    Next
+
+    Return $pLowestHPAgent
+EndFunc ;==>GetLowestHPEnemyPtr
+
+Func GetAgentPtrByPlayerNumber($aPlayerNumber, $iRange = 5000)
+    Local $aAgentPtr = GetAgentPtrArray(1, 0xDB)
+
+    $iRange = $iRange * $iRange
+
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If GetDistanceSqr($aAgentPtr[$i]) > $iRange Then ContinueLoop
+
+        If Memory_Read($aAgentPtr[$i] + 0xF4, "short") = $aPlayerNumber Then Return $aAgentPtr[$i]
+    Next
+
+    Return 0
+EndFunc   ;==>GetAgentPtrByPlayerNumber
+#EndRegion AgentControls
+
+#Region GetNearestAgentPtr
+;~ Description: Returns Pointer to nearest agent to an Agent or XY. optional: PlayerNumber
+;~ GetNearestAgentPtr: Agent, Type, Allegiance, PlayerNumber, X, Y
+Func GetNearestAgentPtr($iAgent = -2, $iType = 0xDB, $iAllegiance = 0, $aPlayerNumber = 0, $aX = X($iAgent), $aY = Y($iAgent))
+    Local $pAgent = Agent_GetAgentPtr($iAgent), $pNearestAgent = 0, $iNearestDistance = 100000000
+    Local $aAgentPtr, $iDistance, $iModelID
+    Switch $iType
+        Case 0xDB
+            $aAgentPtr = GetAgentPtrArray(2, $iType, $iAllegiance)
+        Case 0x200, 0x400
+            $aAgentPtr = GetAgentPtrArray(1, $iType)
+    EndSwitch
+
+    For $i = 1 To $aAgentPtr[0]
+        If $aAgentPtr[$i] = $pAgent Then ContinueLoop
+        If $iType = 0xDB And GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+
+        If $iAllegiance = 0x03 Or $aPlayerNumber <> 0 Then
+            $iModelID = Memory_Read($aAgentPtr[$i] + 0xF4, "short")
+        EndIf
+        If $aPlayerNumber <> 0 And $iModelID <> $aPlayerNumber Then ContinueLoop
+        If $iAllegiance = 0x03 And (IsMinionAgent($iModelID) Or IsSpiritAgent($iModelID)) Then ContinueLoop
+        
+        $iDistance = GetDistanceSqrToXY($aX, $aY, $aAgentPtr[$i])
+        If $iDistance < $iNearestDistance Then
+            $pNearestAgent = $aAgentPtr[$i]
+            $iNearestDistance = $iDistance
+        EndIf
+    Next
+    Return $pNearestAgent
+EndFunc ;==>GetNearestAgentPtr
+
+;~ Returns distance of nearest Agent. param: Allegiance
+Func GetNearestDistance($iAgent = -2, $iAllegiance = 3)
+    Local $pNearestAgent = GetNearestAgentPtr($iAgent, 0xDB, $iAllegiance)
+
+    Return $pNearestAgent <> 0 ? GetDistance($pNearestAgent, $iAgent) : 10000
+EndFunc   ;==>GetNearestDistance
+
+;~ Description: Returns pointer variable for the nearest enemy to an agent.
+Func GetNearestEnemyPtrToAgent($iAgent = -2, $aPlayerNumber = 0)
+    Return GetNearestAgentPtr($iAgent, 0xDB, 0x03, $aPlayerNumber)
+EndFunc ;==>GetNearestEnemyPtrToAgent
+
+;~ Description: Returns pointer variable for the nearest enemy to an agent.
+Func GetNearestEnemyPtrToAgent2(ByRef $aAgentPtr, $iAgent = -2, $aPlayerNumber = 0) 
+    Local $pAgent = Agent_GetAgentPtr($iAgent)
+    Local $pNearestAgent = 0, $iNearestDistance = 100000000, $iDistance
+    
+    For $i = 1 To $aAgentPtr[0]
+        If GetIsDead($aAgentPtr[$i]) Then ContinueLoop
+        If $aPlayerNumber <> 0 And Memory_Read($aAgentPtr[$i] + 0xF4, "short") <> $aPlayerNumber Then ContinueLoop
+        
+        $iDistance = GetDistanceSqr($aAgentPtr[$i], $pAgent)
+        
+        If $iDistance < $iNearestDistance Then
+            $iNearestDistance = $iDistance
+            $pNearestAgent = $aAgentPtr[$i]
+        EndIf
+    Next
+
+    Return $pNearestAgent
+EndFunc ;==>GetNearestEnemyPtrToAgent
+
+Func GetNearestEnemyPtrToXY($aX = X(-2), $aY = Y(-2), $aPlayerNumber = 0)
+    Return GetNearestAgentPtr(-2, 0xDB, 0x03, $aPlayerNumber, $aX, $aY)
+EndFunc ;==>GetNearestEnemyPtrToXY
+
+;~ Description: Returns pointer to the nearest NPC to an agent. optional: PlayerNumber
+Func GetNearestNPCPtrToAgent($iAgent = -2, $aPlayerNumber = 0)
+    Return GetNearestAgentPtr($iAgent, 0xDB, 0x06, $aPlayerNumber)
+EndFunc   ;==>GetNearestNPCPtrToAgent
+
+;~ Description: Returns pointer to the nearest NPC to XY. optional: PlayerNumber
+Func GetNearestNPCPtrToXY($aX = X(-2), $aY = Y(-2), $aPlayerNumber = 0)
+    Return GetNearestAgentPtr(-2, 0xDB, 0x06, $aPlayerNumber, $aX, $aY)
+EndFunc   ;==>GetNearestNPCPtrToXY
+
+;~ Description: Returns the pointer variable for the nearest signpost to an agent.
+Func GetNearestSignpostPtrToAgent($iAgent = -2)
+    Return GetNearestAgentPtr($iAgent, 0x200)
+EndFunc   ;==>GetNearestSignpostPtrToAgent
+
+;~ Description: Returns the pointer variable for the nearest signpost to a set of coordinates.
+Func GetNearestSignpostPtrToXY($aX, $aY)
+    Return GetNearestAgentPtr(-2, 0x200, 0, 0, $aX, $aY)
+EndFunc   ;==>GetNearestSignpostPtrToXY
+
+;~ Description: Returns pointer variable for the nearest ally to an agent.
+Func GetNearestAllyPtrToAgent($iAgent = -2)
+    Return GetNearestAgentPtr($iAgent, 0xDB, 0x01)
+EndFunc   ;==>GetNearestAllyPtrToAgent
+
+;~ Description: Returns pointer variable for the nearest dead ally to an agent.
+Func GetNearestDeadAllyPtrToAgent($iAgent = -2)
+    Local $lPtr = Agent_GetAgentPtr($iAgent), $pNearestAgent = 0, $iDistance, $iNearestDistance = 100000000
+    Local $aAgentPtr = GetAgentPtrArray(3, 0xDB, 0x01, 1320, $lPtr, 0, 0x0010)
+
+    For $i = 1 To $aAgentPtr[0]
+        If $aAgentPtr[$i] = $lPtr Then ContinueLoop
+
+        $iDistance = GetDistanceSqr($aAgentPtr[$i], $lPtr)
+        
+        If $iDistance < $iNearestDistance Then
+            $pNearestAgent = $aAgentPtr[$i]
+            $iNearestDistance = $iDistance
+        EndIf
+    Next
+
+    Return $pNearestAgent
+EndFunc   ;==>GetNearestDeadAllyPtrToAgent
+
+;~ Description: Returns pointer variable for the nearest spirit ally to an agent.
+Func GetNearestSpiritPtrToAgent($iAgent = -2)
+    Return GetNearestAgentPtr($iAgent, 0xDB, 0x04)
+EndFunc   ;==>GetNearestSpiritPtrToAgent
+
+;~ Description: Returns pointer variable for the nearest minion ally to an agent.
+Func GetNearestMinionAllyToAgent($iAgent = -2)
+    Return GetNearestAgentPtr($iAgent, 0xDB, 0x05)
+EndFunc   ;==>GetNearestMinionAllyToAgent
+#EndRegion GetNearestAgentPtr
 
 #Region Model State
 ; NOT reliable with disable render
@@ -592,7 +719,6 @@ Func GetIsAttacking($iAgent = -2)
     EndSwitch
 EndFunc   ;==>GetIsAttacking
 #EndRegion Model State
-#EndRegion AgentInfo
 
 #Region Effects
 ;~ checks if an agent is dead and output 
@@ -667,42 +793,66 @@ Func ComputeDistance($nX1, $nY1, $nX2, $nY2)
     Local $dx = $nX1 - $nX2
     Local $dy = $nY1 - $nY2
     Return Sqrt(($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>ComputeDistance
+EndFunc ;==>ComputeDistance
 
 ;~ Description: Returns the square of the distance between two coordinate pairs.
-Func ComputePseudoDistance($nX1, $nY1, $nX2, $nY2)
+Func ComputeDistanceSqr($nX1, $nY1, $nX2, $nY2)
     Local $dx = $nX1 - $nX2
     Local $dy = $nY1 - $nY2
     Return (($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>ComputePseudoDistance
+EndFunc ;==>ComputeDistanceSqr
 
 ;~ Description: Returns the distance between two agents.
-Func GetDistance($pAgent1 = GetNearestAgentPtr(-2), $pAgent2 = Agent_GetAgentPtr(-2))
-    Local $dx = X($pAgent1) - X($pAgent2)
-    Local $dy = Y($pAgent1) - Y($pAgent2)
+Func GetDistance($pAgent1, $pAgent2 = -2)
+    Local Static $aXY1[2]
+    Local Static $aXY2[2]
+
+    GetAgentXY($aXY1, $pAgent1)
+    GetAgentXY($aXY2, $pAgent2)
+
+    Local $dx = $aXY1[0] - $aXY2[0]
+    Local $dy = $aXY1[1] - $aXY2[1]
+
     Return Sqrt(($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>GetDistance
+EndFunc ;==>GetDistance
 
 ;~ Description: Return the square of the distance between two agents.
-Func GetPseudoDistance($pAgent1 = GetNearestAgentPtr(-2), $pAgent2 = Agent_GetAgentPtr(-2))
-    Local $dx = X($pAgent1) - X($pAgent2)
-    Local $dy = Y($pAgent1) - Y($pAgent2)
+Func GetDistanceSqr($pAgent1, $pAgent2 = -2)
+    Local Static $aXY1[2]
+    Local Static $aXY2[2]
+
+    GetAgentXY($aXY1, $pAgent1)
+    GetAgentXY($aXY2, $pAgent2)
+
+    Local $dx = $aXY1[0] - $aXY2[0]
+    Local $dy = $aXY1[1] - $aXY2[1]
+
     Return (($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>GetPseudoDistance
+EndFunc ;==>GetDistanceSqr
 
 ;~ Description: Returns the distance of agent from a waypoint.
-Func GetDistanceToXY($nX, $nY, $pAgent = Agent_GetAgentPtr(-2))
-    Local $dx = $nX - X($pAgent)
-    Local $dy = $nY - Y($pAgent)
+Func GetDistanceToXY($nX, $nY, $pAgent = -2)
+    Local Static $aXY[2]
+
+    GetAgentXY($aXY, $pAgent)
+
+    Local $dx = Int($nX) - $aXY[0]
+    Local $dy = Int($nY) - $aXY[1]
+
     Return Sqrt(($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>GetDistanceToXY
+EndFunc ;==>GetDistanceToXY
 
 ;~ Description: Returns the square of the distance of agent from a waypoint.
-Func GetPseudoDistanceToXY($nX, $nY, $pAgent = Agent_GetAgentPtr(-2))
-    Local $dx = $nX - X($pAgent)
-    Local $dy = $nY - Y($pAgent)
+Func GetDistanceSqrToXY($nX, $nY, $pAgent = -2)
+    Local Static $aXY[2]
+
+    GetAgentXY($aXY, $pAgent)
+
+    Local $dx = Int($nX) - $aXY[0]
+    Local $dy = Int($nY) - $aXY[1]
+
     Return (($dx * $dx) + ($dy * $dy))
-EndFunc   ;==>GetPseudoDistanceToXY
+EndFunc   ;==>GetDistanceSqrToXY
 
 ; Description: returns whether an Agent is moving away from a waypoint
 Func GetIsMovingAwayFromXY($aX, $aY, $iAgent)
