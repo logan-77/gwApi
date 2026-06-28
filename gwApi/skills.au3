@@ -1,5 +1,135 @@
 #include-once
 
+Global $hTimerSkillbar = TimerInit()
+Global Const $iSkillbarRefresh = 500 ; refresh skillbar struct if 500ms has passed since the last refresh
+Global $bRefreshSkillbar = False
+
+;~ Cache of Player Skillbar
+Global $tPlayerSkillbar = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
+Global $aPlayerRecharge[9]
+Global $aPlayerAdrenaline[9]
+Global $aPlayerSkillID[9]
+
+Global $aPlayerEffects[] = [ 0 _
+]
+Global Const $iSizePlayerEffectsArray = UBound($aPlayerEffects)
+
+Global Enum _
+    $IDX_OF_EFFECTS ; list of effects we want to keep track of
+    ;~ or make the array the size of all Skills and index=SkillID
+
+Global Const $aIdxRecharge[9] = [ _
+    0, _
+    $IDX_RECHARGE_1, _
+    $IDX_RECHARGE_2, _
+    $IDX_RECHARGE_3, _
+    $IDX_RECHARGE_4, _
+    $IDX_RECHARGE_5, _
+    $IDX_RECHARGE_6, _
+    $IDX_RECHARGE_7, _
+    $IDX_RECHARGE_8 _
+]
+
+Global Const $aIdxAdrenaline[9] = [ _
+    0, _
+    $IDX_ADRENALINE_1, _
+    $IDX_ADRENALINE_2, _
+    $IDX_ADRENALINE_3, _
+    $IDX_ADRENALINE_4, _
+    $IDX_ADRENALINE_5, _
+    $IDX_ADRENALINE_6, _
+    $IDX_ADRENALINE_7, _
+    $IDX_ADRENALINE_8 _
+]
+
+Global Const $aIdxSkillID[9] = [ _
+    0, _
+    $IDX_SKILLID_1, _
+    $IDX_SKILLID_2, _
+    $IDX_SKILLID_3, _
+    $IDX_SKILLID_4, _
+    $IDX_SKILLID_5, _
+    $IDX_SKILLID_6, _
+    $IDX_SKILLID_7, _
+    $IDX_SKILLID_8 _
+]
+
+Func UseSkillEx($iSkillSlot, $pTarget = -2, $iTimeout = 3000, $bCall = False)
+    Local $hDeadlock = TimerInit()
+
+    Local $pSkillbar = GetSkillbarPtr()
+    Local $pMe = Agent_GetAgentPtr(-2)
+    Local $iTargetID = ID($pTarget)
+    $pTarget = Agent_GetAgentPtr($pTarget)
+
+    If $iTargetID = 0 _
+    Or GetIsDead($pMe) _
+    Or Not IsRecharged($iSkillSlot, $pSkillbar) Then Return
+
+    Local $iSkillID = GetSkillbarSkillID($iSkillSlot, 0, $pSkillbar)
+    If GetEnergy($pMe) < GetEnergyReq($iSkillID) Then Return
+
+    ChangeTarget($iTargetID)
+    Skill_UseSkill($iSkillSlot, $iTargetID, $bCall)
+
+    Do
+        Sleep(50)
+        If GetIsDead($pTarget) Or GetIsDead($pMe) Then Return
+    Until Not IsRecharged($iSkillSlot, $pSkillbar) Or TimerDiff($hDeadlock) > $iTimeout
+
+    Sleep($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_AFTERCAST] * 1000) ; Aftercast
+
+    $bRefreshSkillbar = True
+EndFunc ;==>UseskillEx
+
+Func UseSkillBySkillID($iSkillID, $pTarget = -2, $iTimeout = 3000, $bCall = False)
+    Local Static $tSkillbarStruct = DllStructCreate($SKILLBAR_STRUCT_TEMPLATE)
+
+    Local $pSkillbar = GetSkillbarPtr()
+
+    GetSkillbarStruct($tSkillbarStruct, $pSkillbar)
+
+    Local $iSkillSlot = -1
+
+    For $i = 1 To 8
+        If $iSkillID <> DllStructGetData($tSkillbarStruct, $aIdxSkillID[$i]) Then ContinueLoop
+
+        $iSkillSlot = $i
+        ExitLoop
+    Next
+
+    If $iSkillSlot = -1 Then Return
+
+    Local $hDeadlock = TimerInit()
+    Local $pMe = Agent_GetAgentPtr(-2)
+    Local $iTargetID = ID($pTarget)
+    $pTarget = Agent_GetAgentPtr($pTarget)
+    
+    If $iTargetID = 0 _
+    Or GetIsDead($pMe) _
+    Or Not IsRecharged($iSkillSlot, $pSkillbar) Then Return
+
+    If GetEnergy($pMe) < GetEnergyReq($iSkillID) Then Return
+
+    ChangeTarget($iTargetID)
+    Skill_UseSkill($iSkillSlot, $iTargetID, $bCall)
+
+    Do
+        Sleep(50)
+        If GetIsDead($pTarget) Or GetIsDead($pMe) Then Return
+    Until Not IsRecharged($iSkillSlot, $pSkillbar) Or TimerDiff($hDeadlock) > $iTimeout
+
+    Sleep($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_AFTERCAST] * 1000) ; Aftercast
+
+    $bRefreshSkillbar = True
+EndFunc ;==>UseSkillBySkillID
+
+;~ Description: Returns energy cost of a skill.
+Func GetEnergyReq($iSkillID)
+    Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_I_SKILL_ENERGY_REQ])
+EndFunc ;==>GetEnergyReq
+
+#Region Skillbar
 ;~ Returns the pointer to the skillbar of player or hero
 ;~ only use in explorable!
 ;~ assumes, that the game orders the array according to the party window 0 -> 7
@@ -28,67 +158,6 @@ Func GetSkillbarPtr($iHeroIndex = 0)
     Return SetError(2, 0, 0)
 EndFunc ;==>GetSkillbarPtr
 
-#Region Skills
-Func UseSkillEx($iSkillSlot, $aTarget = -2, $aTimeout = 3000, $aCallTarget = False)
-    Local $pSkillbar = GetSkillbarPtr()
-    Local $lDeadlock = TimerInit(), $lAgentID = ID($aTarget), $lMe = Agent_GetAgentPtr(-2)
-    If $lAgentID = 0 Or GetIsDead($lMe) Or Not IsRecharged($iSkillSlot, $pSkillbar) Then Return
-
-    Local $iSkillID = GetSkillbarSkillID($iSkillSlot, 0, $pSkillbar)
-    If GetEnergy($lMe) < GetEnergyReq($iSkillID) Then Return
-
-    If $lAgentID <> GetMyID() Then Agent_ChangeTarget($lAgentID)
-    Skill_UseSkill($iSkillSlot, $lAgentID, $aCallTarget)
-    Do
-        Sleep(50)
-        If GetIsDead($lAgentID) Or GetIsDead($lMe) Then Return  
-    Until Not IsRecharged($iSkillSlot, $pSkillbar) Or TimerDiff($lDeadlock) > $aTimeout
-
-    Sleep($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_AFTERCAST] * 1000) ; Aftercast
-EndFunc ;==>UseskillEx
-
-;~ Description: Returns energy cost of a skill.
-Func GetEnergyReq($iSkillID)
-    ;~ Local $lEnergycost = Memory_Read(Skill_GetSkillPtr($aSkillID) + 0x35, "byte")
-    ;~ If $lEnergycost = 11 Then Return 15
-    ;~ If $lEnergycost = 12 Then Return 25
-    ;~ Return $lEnergycost
-    ;~ Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_F_SKILL_ENERGY_REQ_QZ])
-    Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_I_SKILL_ENERGY_REQ])
-EndFunc   ;==>GetEnergyReq
-
-;~ Description: Checks SkillRecharge by SkillSlot; True=Recharged
-Func IsRechargedHero($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
-    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), "dword")
-    Return ($iTimestamp = 0)
-EndFunc ;==>IsRechargedHero
-
-Func IsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
-    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), "dword")
-    Return ($iTimestamp = 0)
-EndFunc ;==>IsRecharged
-
-;~ Description: Returns the recharge time remaining of an equipped skill in milliseconds.
-Func GetSkillbarSkillRecharge($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
-    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), "dword")
-    If $iTimestamp = 0 Then Return 0
-    
-    Local $iTimestampSigned = Utils_MakeInt32($iTimestamp)
-    Local $iSkillTimerSigned = Utils_MakeInt32(Skill_GetSkillTimer())
-    Local $iTimeRemaining = $iTimestampSigned - $iSkillTimerSigned
-    Return ($iTimeRemaining <= 0) ? 0 : $iTimeRemaining
-EndFunc ;==>GetSkillbarSkillRecharge
-
-;~ Description: Returns the skill ID of an equipped skill.
-Func GetSkillbarSkillID($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
-    Return Memory_Read($pSkillbar + 0x10 + (($iSkillSlot - 1) * 0x14), "dword")
-EndFunc ;==>GetSkillbarSkillID
-
-;~ Description: Returns the adrenaline charge of an equipped skill.
-Func GetSkillbarSkillAdrenaline($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
-    Return Memory_Read($pSkillbar + 0x4 + (($iSkillSlot - 1) * 0x14), "dword")
-EndFunc ;==>GetSkillbarSkillAdrenaline
-
 ;~ 
 Func GetSkillbarStruct(ByRef $tSkillbarStruct, $pSkillbar = GetSkillbarPtr())
     Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
@@ -103,30 +172,83 @@ Func GetSkillbarStruct(ByRef $tSkillbarStruct, $pSkillbar = GetSkillbarPtr())
 EndFunc ;==>GetSkillbarStruct
 
 ;~ 
-Func UpdateSkillbar(ByRef $tSkillbarStruct, $pSkillbar = GetSkillbarPtr())
+Func UpdateSkillbarCache($pSkillbar = GetSkillbarPtr())
+    If Not $bRefreshSkillbar And TimerDiff($hTimerSkillbar) < $iSkillbarRefresh Then Return True
+
     Local $aCall = DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
                     "handle", $g_h_GWProcess, _
                     "ptr", $pSkillbar, _
-                    "struct*", $tSkillbarStruct, _
+                    "struct*", $tPlayerSkillbar, _
                     "ulong_ptr", $g_iSkillbarStructSize, _
                     "ulong_ptr*", 0)
-    If @error Or Not $aCall[0] Then Return SetError(1, 0, 0)
+    If @error Or Not $aCall[0] Then Return SetError(1, 0, False)
 
-    Return 1
-EndFunc ;==>UpdateSkillbar
+    $hTimerSkillbar = TimerInit()
+    $bRefreshSkillbar = False
 
-Func GetIsRecharged($iSkillSlot, ByRef $tSkillbarStruct)
-    Local $pRecharge, $tDword = DllStructCreate("dword")
-    Local $pBase = DllStructGetPtr($tSkillbarStruct)
+    ;~ fill cache
+    For $i = 1 To 8
+        $aPlayerRecharge[$i] = DllStructGetData($tPlayerSkillbar, $aIdxRecharge[$i])
+    Next
 
-    $pRecharge = $pBase + 0xC + (($iSkillSlot - 1) * 0x14)
-    $tDword = DllStructCreate("dword", $pRecharge)
+    Return True
+EndFunc ;==>UpdateSkillbarCache
 
-    Local $iRecharge = DllStructGetData($tDword, 1)
+Func GetIsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
+    UpdateSkillbarCache($pSkillbar)
 
-    Return ($iRecharge = 0)    
-EndFunc ;==>GetRecharge
-#EndRegion Skills
+    Local $iTimestamp = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot])
+    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())
+
+    Return $iTimestamp <= $iNow
+EndFunc ;==>GetIsRecharged
+
+Func GetRechargeTime($iSkillSlot, $pSkillbar = GetSkillbarPtr())
+    UpdateSkillbarCache($pSkillbar)
+
+    Local $iTimestamp = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot])
+    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())    
+
+    Local $iTimeRemaining = $iTimestamp - $iNow
+
+    If $iTimeRemaining < 0 Then $iTimeRemaining = 0
+
+    Return $iTimeRemaining
+EndFunc ;==>GetRechargeTime
+
+;~ for hot loops, where you want to know recharge state asap
+Func IsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
+    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), 'dword')
+    Return $iTimestamp = 0
+EndFunc ;==>IsRecharged
+
+;~ Description: Checks SkillRecharge by SkillSlot; True=Recharged
+Func IsRechargedHero($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
+    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), 'dword')
+    Return ($iTimestamp = 0)
+EndFunc ;==>IsRechargedHero
+
+;~ Description: Returns the recharge time remaining of an equipped skill in milliseconds.
+Func GetSkillbarSkillRecharge($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
+    Local $iTimestamp = Memory_Read($pSkillbar + 0xC + (($iSkillSlot - 1) * 0x14), 'dword')
+    If $iTimestamp = 0 Then Return 0
+    
+    Local $iTimestampSigned = Utils_MakeInt32($iTimestamp)
+    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())
+    Local $iTimeRemaining = $iTimestampSigned - $iNow
+    Return ($iTimeRemaining <= 0) ? 0 : $iTimeRemaining
+EndFunc ;==>GetSkillbarSkillRecharge
+
+;~ Description: Returns the skill ID of an equipped skill.
+Func GetSkillbarSkillID($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
+    Return Memory_Read($pSkillbar + 0x10 + (($iSkillSlot - 1) * 0x14), 'dword')
+EndFunc ;==>GetSkillbarSkillID
+
+;~ Description: Returns the adrenaline charge of an equipped skill.
+Func GetSkillbarSkillAdrenaline($iSkillSlot, $iHeroIndex = 0, $pSkillbar = GetSkillbarPtr($iHeroIndex))
+    Return Memory_Read($pSkillbar + 0x4 + (($iSkillSlot - 1) * 0x14), 'dword')
+EndFunc ;==>GetSkillbarSkillAdrenaline
+#EndRegion Skillbar
 
 #Region Efffects
 ;~ Description: Returns True if you're under the effect of $aSkillID.
