@@ -547,9 +547,7 @@ EndFunc ;==>UseItemByModelID
 Func DropAll()
     If Not GetIsExplorable() Then Return
 
-    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
-    If @error Then Return SetError(1, 0, 0)
-
+    Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem
@@ -572,9 +570,7 @@ Func DropItemsByType($aType, $bFullStack = False)
 
     Local $iSize = EnsureArray($aType)
 
-    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
-    If @error Then Return SetError(1, 0, 0)
-
+    Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem, $iType
@@ -608,9 +604,7 @@ Func DropItemsByModelID($aModelID, $bFullStack = False)
 
     Local $iSize = EnsureArray($aModelID)
 
-    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
-    If @error Then Return SetError(1, 0, 0)
-
+    Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem, $iModelID
@@ -657,7 +651,7 @@ Func PickUpLootEx($iMaxDist = 2500)
         $lOwner = Memory_Read($lAgentPtr + 0xC4, 'long')
         If $lOwner <> 0 And $lOwner <> Agent_GetMyID() Then ContinueLoop ; assigned to another player
         
-        If CanPickUpEx($pItem) And GetPseudoDistance($lAgentPtr) < $iMaxDist Then
+        If CanPickUpEx($pItem) And GetDistanceSqr($lAgentPtr) < $iMaxDist Then
             If GetDistanceToXY(X($lAgentPtr), Y($lAgentPtr)) > 250 Then MoveTo(X($lAgentPtr), Y($lAgentPtr))
 
             $hDeadlock = TimerInit()
@@ -898,10 +892,9 @@ Func MoveItemsByModelID($aModelID, $bStore, $iQuantityTarget = 0, $bFullStack = 
     Local $iFreeSlotsIndex = 0
 
     Local $pItemDest = Call($sGetItemFunc, $aModelID, True)
+    EnsureArray($pItemDest) ; test this
 
-    Local $aItemPtr = Call($sGetItemArrayFunc)
-    If @error Then Return SetError(1, 0, False)
-    
+    Local $aItemPtr = Call($sGetItemArrayFunc)    
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem, $iQuantity, $iModelID, $iModelIDIndex, $iMerge, $iQuantityMoved
@@ -980,25 +973,77 @@ Func MoveItemsByModelID($aModelID, $bStore, $iQuantityTarget = 0, $bFullStack = 
     Return True
 EndFunc ;==>MoveItemsByModelID
 
-;Stores all Items of given Type
-Func WithdrawItemsByType($aType, $aFullStack = False)
-    If Map_GetInstanceInfo("Type") <> $GC_I_MAP_TYPE_OUTPOST Then Return False
-    Local $pItem, $pBag
-    For $bag = 8 To 11
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 To GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            If GetItemType($pItem) <> $aType Then ContinueLoop
-            If $aFullStack And GetItemQuantity($pItem) < 250 Then ContinueLoop
-            If MoveItemToInventory($pItem) = False Then Return
-        Next
-    Next
+Func StoreItemsByType($aType, $bFullStack = False)
+    Return MoveItemsByType($aType, True, $bFullStack)
+EndFunc ;==>StoreItemsByType
+
+Func WithdrawItemsByType($aType, $bFullStack = False)
+    Return MoveItemsByType($aType, False, $bFullStack)
 EndFunc ;==>WithdrawItemsByType
 
+;Stores all Items of given Type
+Func MoveItemsByType($aType, $bStore, $bFullStack = False)
+    If Not GetIsOutpost() Then Return False
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Local $sCountFreeSlotsFunc
+    Local $sGetItemArrayFunc
+    Local $sMoveItemFunc
+
+    If $bStore Then
+        $sCountFreeSlotsFunc = "CountFreeSlotsStorage"
+        $sGetItemArrayFunc = "GetItemArrayInventory"
+        $sMoveItemFunc = "MoveItemToStorage"
+    Else
+        $sCountFreeSlotsFunc = "CountFreeSlotsInventory"
+        $sGetItemArrayFunc = "GetItemArrayStorage"
+        $sMoveItemFunc = "MoveItemToInventory"
+    EndIf
+
+    Local $iSizeType = EnsureArray($aType)
+
+    Local $aItemPtr = Call($sGetItemArrayFunc)  
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $iFreeSlots = Call($sCountFreeSlotsFunc)
+    If $iFreeSlots = 0 Then Return False
+
+    Local $pItem, $iType, $iTypeIndex
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iType = GetItemType($tItemStruct)
+
+        $iTypeIndex = -1
+
+        For $j = 0 To $iSizeType - 1
+            If $iType <> $aType[$j] Then ContinueLoop
+
+            $iTypeIndex = $j
+            ExitLoop
+        Next
+
+        If $iTypeIndex = -1 Then ContinueLoop
+
+        If $bFullStack And GetItemQuantity($tItemStruct) < 250 Then ContinueLoop
+
+        Call($sGetItemArrayFunc, $pItem)
+        $iFreeSlots -= 1
+
+        If $iFreeSlots <= 0 Then Return False
+    Next
+
+    Return True
+EndFunc ;==>MoveItemsByType
+
 #Region Identify And Salvage
-Func IdentifyItem($pItem, $pIdKit = FindIDKit())
+Func IdentifyItem(ByRef $pItem, $pIdKit = FindIDKit())
     If Not GetCanBeIdentified($pItem) Then Return 1
     
     Local $pKit = IsPtr($pIdKit) ? $pIdKit : FindIDKit()
@@ -1007,6 +1052,7 @@ Func IdentifyItem($pItem, $pIdKit = FindIDKit())
     Core_SendPacket(0xC, $GC_I_HEADER_ITEM_IDENTIFY, Item_ItemID($pKit), Item_ItemID($pItem))
 
     Local $hDeadlock = TimerInit(), $bTimeout
+
     Do
         Sleep(50)
         $bTimeout = TimerDiff($hDeadlock) > 5000
@@ -1015,36 +1061,90 @@ Func IdentifyItem($pItem, $pIdKit = FindIDKit())
     Return $bTimeout ? 0 : 1
 EndFunc ;==>IdentifyItem
 
+;~ identify all weapons in inventory (talk to a merchant beforehand)
+Func IdentifyWeapons($bSuperior, $bWhite = False)
+    If Not GetIsOutpost() Then Return
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Out("Identify all weapons in inventory.")
+
+    Local $aItemPtr = GetItemArrayInventory()
+    Local $iItemCount = UBound($aItemPtr)
+    
+    Local $pItem, $pKit = FindIDKit()
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        If Not IsWeapon($tItemStruct) Then ContinueLoop
+        If Not GetCanBeIdentified($tItemStruct) Then ContinueLoop        
+        If Not $bWhite And GetItemRarity($tItemStruct) = $GC_I_RARITY_WHITE Then ContinueLoop
+        
+        If $pKit = 0 Or GetItemBagPtr($pKit) = 0 Then
+            MinMaxGold()
+            Sleep(250)
+
+            If $bSuperior Then
+                BuySuperiorIDKit()
+            Else
+                BuyIDKit()
+            EndIf
+
+            $pKit = FindIDKit()
+        EndIf
+        
+        IdentifyItem($pItem, $pKit)
+        Other_RndSleep(50)
+    Next
+EndFunc ;==>IdentifyWeapons
+
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
 Func FindIDKit($bCheckUses = False)
-    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
 
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 to GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-            Switch GetItemModelID($pItem)
-                Case 2989
-                    If $bCheckUses = False Then Return $pItem
+    Local $aItemPtr = GetItemArrayInventory()
+    Local $iItemCount = UBound($aItemPtr)
 
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 2) < $iUses Then
-                        $iUses = $iValue / 2
-                        $pKit = $pItem
-                    EndIf
-                Case 5899
-                    If $bCheckUses = False Then Return $pItem
+    Local $pItem, $iValue
+    Local $iUses = 101
+    Local $pKit = 0
 
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 2.5) < $iUses Then
-                        $iUses = $iValue / 2.5
-                        $pKit = $pItem
-                    EndIf
-            EndSwitch
-        Next
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        If $iModelID = 2989 Then
+            If $bCheckUses = False Then Return $pItem
+
+            $iValue = GetItemValue($tItemStruct) / 2
+
+            If $iValue < $iUses Then
+                $iUses = $iValue
+                $pKit = $pItem
+            EndIf
+
+        ElseIf $iModelID = 5899 Then
+            If $bCheckUses = False Then Return $pItem
+
+            $iValue = GetItemValue($tItemStruct) / 2.5
+
+            If $iValue < $iUses Then
+                $iUses = $iValue
+                $pKit = $pItem
+            EndIf
+
+        EndIf
     Next
 
     Return $pKit
@@ -1052,26 +1152,36 @@ EndFunc ;==>FindIDKit
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
 Func FindSuperiorIDKit($bCheckUses = False)
-    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
 
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 to GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
-            
-            Switch GetItemModelID($pItem)
-                Case 5899
-                    If $bCheckUses = False Then Return $pItem
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 2.5) < $iUses Then
-                        $iUses = $iValue / 2.5
-                        $pKit = $pItem
-                    EndIf
-            EndSwitch
-        Next
+    Local $aItemPtr = GetItemArrayInventory()
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iValue
+    Local $iUses = 101
+    Local $pKit = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+
+        If $iModelID <> 5899 Then ContinueLoop
+
+        If $bCheckUses = False Then Return $pItem
+
+        $iValue = GetItemValue($tItemStruct) / 2.5
+
+        If $iValue < $iUses Then
+            $iUses = $iValue
+            $pKit = $pItem
+        EndIf
+
     Next
 
     Return $pKit
@@ -1099,7 +1209,7 @@ Func StartSalvage($pItem, $pSalvageKit = 0, $bCheap = True)
     DllStructSetData($g_d_Salvage, 4, $l_i_SalvageSessionID[1])
     Core_Enqueue($g_p_Salvage, 16)
     Return 1
-EndFunc   ;==>StartSalvage
+EndFunc ;==>StartSalvage
 
 ;~ Description: Salvage the materials out of an item.
 Func SalvageMaterials()
@@ -1113,26 +1223,36 @@ EndFunc   ;==>SalvageMod
 
 ;~ Description: Returns ItemPtr of cheap Salvage Kit in inventory. Return 0, if no Kit found.
 Func FindCheapSalvageKit($bCheckUses = False)
-    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
 
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 to GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Local $aItemPtr = GetItemArrayInventory()
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iValue
+    Local $iUses = 101
+    Local $pKit = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+        
+        If $iModelID <> 2992 Then ContinueLoop
+
+        If $bCheckUses = False Then Return $pItem
+
+        $iValue = GetItemValue($tItemStruct) / 2
+
+        If $iValue < $iUses Then
+            $iUses = $iValue
+            $pKit = $pItem
+        EndIf
             
-            Switch GetItemModelID($pItem)
-                Case 2992
-                    If $bCheckUses = False Then Return $pItem
-
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 2) < $iUses Then
-                        $iUses = $iValue / 2
-                        $pKit = $pItem
-                    EndIf
-            EndSwitch
-        Next
     Next
 
     Return $pKit
@@ -1140,38 +1260,75 @@ EndFunc ;==>FindCheapSalvageKit
 
 ;~ Description: Returns ItemPtr of any Salvage Kit in inventory. Return 0, if no Kit found.
 Func FindExpertSalvageKit($bCheckUses = False)
-    Local $pItem, $pBag, $iValue, $pKit = 0, $iUses = 101
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    For $bag = 1 To 4
-        $pBag = Item_GetBagPtr($bag)
-        If $pBag = 0 Then ContinueLoop
-        For $slot = 1 to GetBagSlots($pBag)
-            $pItem = GetItemPtrBySlot($pBag, $slot)
-            If $pItem = 0 Then ContinueLoop
+    Local $aItemPtr = GetItemArrayInventory()
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $iValue
+    Local $iUses = 101
+    Local $pKit = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        $iModelID = GetItemModelID($tItemStruct)
+        
+        If $iModelID = 2991 Then
+            If $bCheckUses = False Then Return $pItem
+
+            $iValue = GetItemValue($tItemStruct) / 8
+
+            If $iValue < $iUses Then
+                $iUses = $iValue
+                $pKit = $pItem
+            EndIf
+
+        ElseIf $iModelID = 5900 Then
+            If $bCheckUses = False Then Return $pItem
+
+            $iValue = GetItemValue($tItemStruct) / 10
+
+            If $iValue < $iUses Then
+                $iUses = $iValue
+                $pKit = $pItem
+            EndIf
+
+        EndIf
             
-            Switch GetItemModelID($pItem)
-                Case 2991
-                    If $bCheckUses = False Then Return $pItem
-
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 8) < $iUses Then
-                        $iUses = $iValue / 8
-                        $pKit = $pItem
-                    EndIf
-                Case 5900
-                    If $bCheckUses = False Then Return $pItem
-
-                    $iValue = GetItemValue($pItem)
-                    If ($iValue / 10) < $iUses Then
-                        $iUses = $iValue / 10
-                        $pKit = $pItem
-                    EndIf
-            EndSwitch
-        Next
     Next
 
     Return $pKit
 EndFunc ;==>FindExpertSalvageKit
+
+Func GetKitUses(ByRef $pItem, $iModelID = GetItemModelID($pItem))
+
+    If GetItemBagPtr($pItem) = 0 Then Return 0
+
+    Switch $iModelID
+        Case $GC_I_MODELID_IDENTIFICATION_KIT
+            Return GetItemValue($pItem) / 2
+
+        Case $GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT
+            Return GetItemValue($pItem) / 2.5
+
+        Case $GC_I_MODELID_SALVAGE_KIT
+            Return GetItemValue($pItem) / 2
+
+        Case $GC_I_MODELID_EXPERT_SALVAGE_KIT
+            Return GetItemValue($pItem) / 8
+
+        Case $GC_I_MODELID_SUPERIOR_SALVAGE_KIT
+            Return GetItemValue($pItem) / 10
+
+    EndSwitch
+
+    Return 0
+EndFunc ;==>GetKitUses
 #EndRegion Identify and Salvage
 
 #Region Buy and Sell
@@ -1569,7 +1726,7 @@ Func GetGoldStorage()
 EndFunc ;==>GetGoldStorage
 
 Func GetGoldInfo(ByRef $iGoldCharacter, ByRef $iGoldStorage)
-    Local Static $tGoldInfo = DllStructCreate("dword GoldCharacter; dword GoldStorage")
+    Local Static $tGoldInfo = DllStructCreate('dword GoldCharacter; dword GoldStorage')
     Local Static $iStructSize = DllStructGetSize($tGoldInfo)
 
     Local $pInventory = Item_GetInventoryPtr()
@@ -1583,8 +1740,8 @@ Func GetGoldInfo(ByRef $iGoldCharacter, ByRef $iGoldStorage)
                     "ulong_ptr*", 0)
     If @error Or Not $aCall[0] Then Return SetError(2, 0, False)
 
-    $iGoldCharacter = DllStructGetData($tGoldInfo, "GoldCharacter")
-    $iGoldStorage   = DllStructGetData($tGoldInfo, "GoldStorage")
+    $iGoldCharacter = DllStructGetData($tGoldInfo, 1)
+    $iGoldStorage   = DllStructGetData($tGoldInfo, 2)
 
     Return True
 EndFunc ;==>GetGoldInfo
@@ -1592,8 +1749,8 @@ EndFunc ;==>GetGoldInfo
 
 #Region Custom
 ;~ Return the Name of a Common or Rare Material by ModelID
-Func GetMaterialName($aModelID)
-    Switch $aModelID
+Func GetMaterialName($iModelID)
+    Switch $iModelID
         Case $GC_I_MODELID_BONES
             Return "Bones"
         Case $GC_I_MODELID_CLOTHS
@@ -1694,12 +1851,10 @@ EndFunc ;==>GetAlcQuantityInventory
 ;~ Uses first Alcohol found in Inventory, Returns 0 if no Alc available
 Func UseAlcohol($bOnePoint = False, $bThreePoint = False)
 
-    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
-    If @error Then Return SetError(1, 0, 0)
-
+    Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
 
-    Local $bAnyAlcohol = ($bOnePoint = $bThreePoint)
+    Local $bAnyAlcohol = ($bOnePoint = $bThreePoint) ; both same -> accept either
     Local $pItem, $iModelID
 
     For $i = 0 To $iItemCount - 1
@@ -1710,21 +1865,15 @@ Func UseAlcohol($bOnePoint = False, $bThreePoint = False)
         $iModelID = GetItemModelID($pItem)
 
         If $bAnyAlcohol Then
-            If CheckIsOnePointAlc($iModelID) Or CheckIsThreePointAlc($iModelID) Then
-                Item_UseItem($pItem)
-                Return 1
-            EndIf
+            If Not CheckIsOnePointAlc($iModelID) And Not CheckIsThreePointAlc($iModelID) Then ContinueLoop              
         ElseIf $bOnePoint Then
-            If CheckIsOnePointAlc($iModelID) Then
-                Item_UseItem($pItem)
-                Return 1
-            EndIf
+            If Not CheckIsOnePointAlc($iModelID) Then ContinueLoop
         Else
-            If CheckIsThreePointAlc($iModelID) Then
-                Item_UseItem($pItem)
-                Return 1
-            EndIf
+            If Not CheckIsThreePointAlc($iModelID) Then ContinueLoop
         EndIf
+
+        Item_UseItem($pItem)
+        Return 1
     Next
 
     Return 0
@@ -1754,8 +1903,8 @@ EndFunc ;==>CheckIsOnePointAlc
 
 ;~ Checks if Item is Three Point Alcohol.
 Func CheckIsThreePointAlc($iModelID)
-    For $i = 1 To UBound($GC_AI_ONEPOINT_ALCOHOL) - 1
-        If $GC_AI_ONEPOINT_ALCOHOL[$i] = $iModelID Then Return True
+    For $i = 1 To UBound($GC_AI_THREEPOINT_ALCOHOL) - 1
+        If $GC_AI_THREEPOINT_ALCOHOL[$i] = $iModelID Then Return True
     Next
 
     Return False
@@ -1787,8 +1936,6 @@ Func MaintainCitySpeed()
     If GetIsEnchanted(-2) Then Return 1
     
     Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_STORAGE4)
-    If @error Then Return SetError(1, 0, 0)
-
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem, $iModelID
@@ -1811,7 +1958,7 @@ EndFunc ;==>MaintainCitySpeed
 
 ; Sells all the unneeded Mats to Merchant
 ; Make sure *you are standing at a Merchant!!!*
-Func SellJunk()
+Func SellJunk($bScales = True, $bGranite = True)
     Local Static $aJunk[] = [ _
         $GC_I_MODELID_SHING_JEA_KEY, _
         $GC_I_MODELID_ISTANI_KEY, _
@@ -1828,9 +1975,7 @@ Func SellJunk()
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
 
-    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_BAG2)
-    If @error Then Return SetError(1, 0, 0)
-
+    Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
 
     Local $pItem, $iModelID, $iQuantity
@@ -1845,12 +1990,14 @@ Func SellJunk()
         $iModelID = GetItemModelID($tItemStruct)
 
         For $j = 0 To $iSizeJunkArray - 1
-            If $aJunk[$j] <> $iModelID Then ContinueLoop
+            If $iModelID <> $aJunk[$j] Then ContinueLoop
+            If Not $bScales And $iModelID = $GC_I_MODELID_SCALES Then ContinueLoop
+            If Not $bGranite And $iModelID = $GC_I_MODELID_GRANITE Then ContinueLoop
             
             $iQuantity = GetItemQuantity($tItemStruct)  
 
             Merchant_SellItem($pItem, $iQuantity)
-            Other_PingSleep(500)
+            Other_PingSleep(250)
             ExitLoop
         Next
     Next
@@ -1927,7 +2074,7 @@ Func IsEventItem($iModelID)
 EndFunc ;==>IsEventItem
 
 ;~ Description: Looks for valueable Insignia. 0 value will be skipped. Returns the value of Insignia, to use as comparison to rune value.
-Func IsInsignia($pItem)
+Func IsInsignia(ByRef $pItem)
     Local $sModstruct = GetModStruct($pItem)
 
     For $i = 0 To UBound($array_insignia) - 1
@@ -1938,10 +2085,10 @@ Func IsInsignia($pItem)
         EndIf
     Next
 
-    Return False
+    Return 0
 EndFunc ;==>IsInsignia
 
-Func IsRune($pItem)
+Func IsRune(ByRef $pItem)
     Local $sModstruct = GetModStruct($pItem), $iRarity = GetItemRarity($pItem)
 
     Switch $iRarity
@@ -1971,8 +2118,48 @@ Func IsRune($pItem)
             Next
     EndSwitch
 
-    Return False
+    Return 0
 EndFunc ;==>IsRune
+
+Func CountRunesInsignia($bIdentify = False)
+
+    Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
+
+    Local $aItemPtr = GetBagItemArray($GC_I_INVENTORY_BACKPACK, $GC_I_INVENTORY_STORAGE4)
+    Local $iItemCount = UBound($aItemPtr)
+
+    Local $pItem, $bIdKit = True
+
+    Local $iCount = 0
+
+    For $i = 0 To $iItemCount - 1
+        $pItem = $aItemPtr[$i][2]
+
+        If $pItem = 0 Then ContinueLoop
+
+        If GetItemStruct($tItemStruct, $pItem) = False Then ContinueLoop
+
+        If GetItemType($tItemStruct) <> $GC_I_TYPE_SALVAGE Then ContinueLoop
+
+        If $bIdentify And $bIdKit And GetCanBeIdentified($tItemStruct) Then
+
+            If IdentifyItem($pItem) = 0 Then
+                $bIdKit = False
+                ContinueLoop
+            EndIf            
+            
+            Other_PingSleep(250)
+
+        EndIf
+
+        If IsRune($pItem) > 0 Or IsInsignia($pItem) > 0 Then $iCount += 1
+
+    Next
+
+    If $iCount = 0 Then Out("No Runes or Insignia found.")
+    
+    Return $iCount
+EndFunc ;==>CountRunesInsignia
 #EndRegion Custom
 
 #Region ModStruct
