@@ -1332,89 +1332,45 @@ EndFunc ;==>GetKitUses
 #EndRegion Identify and Salvage
 
 #Region Buy and Sell
-;~ Buys Salvage Kit
-Func BuySalvageKit($iQuantity = 1)
+Func BuyItemByModelID($iModelID, $iQuantity = 1)
     If $iQuantity <= 0 Then Return
 
     While $iQuantity > 10
-        Merchant_BuyItem($GC_I_MODELID_SALVAGE_KIT, 10)
+        Merchant_BuyItem($iModelID, 10)
         Other_PingSleep(1000)
 
         $iQuantity -= 10
     WEnd
 
     If $iQuantity > 0 Then
-        Merchant_BuyItem($GC_I_MODELID_SALVAGE_KIT, $iQuantity)
+        Merchant_BuyItem($iModelID, $iQuantity)
         Other_PingSleep(1000)
     EndIf
+EndFunc ;==>BuyKitByModelID
+
+;~ Buys Salvage Kit
+Func BuySalvageKit($iQuantity = 1)
+    BuyItemByModelID($GC_I_MODELID_SALVAGE_KIT, $iQuantity)
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys Expert Salvage Kit
 Func BuyExpertSalvageKit($iQuantity = 1)
-    If $iQuantity <= 0 Then Return
-
-    While $iQuantity > 10
-        Merchant_BuyItem($GC_I_MODELID_EXPERT_SALVAGE_KIT, 10)
-        Other_PingSleep(1000)
-
-        $iQuantity -= 10
-    WEnd
-
-    If $iQuantity > 0 Then
-        Merchant_BuyItem($GC_I_MODELID_EXPERT_SALVAGE_KIT, $iQuantity)
-        Other_PingSleep(1000)
-    EndIf
+    BuyItemByModelID($GC_I_MODELID_EXPERT_SALVAGE_KIT, $iQuantity)
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys Superior Salvage Kit
 Func BuySuperiorSalvageKit($iQuantity = 1)
-    If $iQuantity <= 0 Then Return
-
-    While $iQuantity > 10
-        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_SALVAGE_KIT, 10)
-        Other_PingSleep(1000)
-
-        $iQuantity -= 10
-    WEnd
-
-    If $iQuantity > 0 Then
-        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_SALVAGE_KIT, $iQuantity)
-        Other_PingSleep(1000)
-    EndIf
+    BuyItemByModelID($GC_I_MODELID_SUPERIOR_SALVAGE_KIT, $iQuantity)
 EndFunc ;==>BuySalvageKit
 
 ;~ Buys an ID kit.
 Func BuyIDKit($iQuantity = 1)
-    If $iQuantity <= 0 Then Return
-
-    While $iQuantity > 10
-        Merchant_BuyItem($GC_I_MODELID_IDENTIFICATION_KIT, 10)
-        Other_PingSleep(1000)
-
-        $iQuantity -= 10
-    WEnd
-
-    If $iQuantity > 0 Then
-        Merchant_BuyItem($GC_I_MODELID_IDENTIFICATION_KIT, $iQuantity)
-        Other_PingSleep(1000)
-    EndIf
+    BuyItemByModelID($GC_I_MODELID_IDENTIFICATION_KIT, $iQuantity)
 EndFunc ;==>BuyIDKit
 
 ;~ Buys Superior ID kit.
 Func BuySuperiorIDKit($iQuantity = 1)
-    If $iQuantity <= 0 Then Return
-
-    While $iQuantity > 10
-        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT, 10)
-        Other_PingSleep(1000)
-
-        $iQuantity -= 10
-    WEnd
-
-    If $iQuantity > 0 Then
-        Merchant_BuyItem($GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT, $iQuantity)
-        Other_PingSleep(1000)
-    EndIf
+    BuyItemByModelID($GC_I_MODELID_SUPERIOR_IDENTIFICATION_KIT, $iQuantity)
 EndFunc ;==>BuySuperiorIDKit
 #EndRegion Buy and Sell
 
@@ -1828,8 +1784,12 @@ Func GetMaterialName($iModelID)
     EndSwitch
 EndFunc ;==>GetMaterialName
 
-Func IsBlackDye($aModelID, $aExtraID)
-    If $aModelID = $GC_I_MODELID_DYE And $aExtraID = $GC_I_EXTRAID_DYE_BLACK Then Return True
+Func IsBlackDye($iModelID, $iExtraID, $bWhite = False)
+    If $iModelID <> $GC_I_MODELID_DYE Then Return False
+        
+    If ($iExtraID = $GC_I_EXTRAID_DYE_BLACK) _
+    Or ($iExtraID = $GC_I_EXTRAID_DYE_WHITE And $bWhite) Then Return True
+    
     Return False
 EndFunc ;==>IsBlackDye
 
