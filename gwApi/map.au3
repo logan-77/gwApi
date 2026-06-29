@@ -21,22 +21,16 @@ EndFunc
 
 #Region Travel
 ;~ Customized Wrapper (added extra sleep)
-Func WaitMapLoading($aMapID = -1, $aInstanceType = -1, $aTimeout = 15000)
-    If Map_WaitMapLoading($aMapID, $aInstanceType, $aTimeout) = False Then Return False
-    Other_RndSleep(3000)
-    Return True
-EndFunc ;==>WaitMapLoading
-
-;~ Customized Wrapper (added extra sleep)
-Func WaitMapIsLoaded($aTimeout = 30000)
-    If Map_WaitMapIsLoaded($aTimeout) = False Then Return False
+Func WaitMapIsLoaded($iTimeout = 30000)
+    If Map_WaitMapIsLoaded($iTimeout) = False Then Return False
     Other_RndSleep(1000)
     Return True
 EndFunc ;==>WaitMapIsLoaded
 
 ;~ Customized Wrapper (added extra sleep)
-Func TravelTo($aMapID, $aLanguage = Map_GetCharacterInfo("Language"), $aRegion = Map_GetCharacterInfo("Region"), $aDistrict = 0, $aWaitToLoad = True)
-    Map_TravelTo($aMapID, $aLanguage, $aRegion, $aDistrict, $aWaitToLoad)
+Func TravelTo($iMapID, $aLanguage = Map_GetCharacterInfo("Language"), $aRegion = Map_GetCharacterInfo("Region"), $aDistrict = 0, $aWaitToLoad = True)
+    Out("Travelling to " & $g_as_MapLabels[$iMapID])
+    Map_TravelTo($iMapID, $aLanguage, $aRegion, $aDistrict, $aWaitToLoad)
     Other_RndSleep(1000)
 EndFunc ;==>TravelTo
 
@@ -88,15 +82,21 @@ EndFunc ;==>RndTravel
 ;~ Description: /resign+wait for wipe+return to outpost+wait for mapload
 Func ResignAndReturn()
     Resign()
-    Local $lDeadlock = TimerInit()
+
+    Local $hDeadlock = TimerInit(), $bTimeout
+
     Do
         Sleep(100)
-    Until GetPartyDefeated() or (TimerDiff($lDeadlock) > 5000)
+        $bTimeout = TimerDiff($hDeadlock) > 7500
+    Until GetPartyDefeated() Or $bTimeout
+
+    If $bTimeout Then Return
+
     Other_PingSleep(1000)
 
     Map_ReturnToOutpost()
-    Other_RndSleep(1000)
-EndFunc   ;==>ResignAndReturn
+    Other_RndSleep(2000)
+EndFunc ;==>ResignAndReturn
 #EndRegion Travel
 
 ;~ Param: According to the Enum in constants.au3
