@@ -197,10 +197,14 @@ EndFunc ;==>UpdateSkillbarCache
 Func GetIsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
     UpdateSkillbarCache($pSkillbar)
 
-    Local $iTimestamp = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot])
-    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())
+    If $aPlayerRecharge[$iSkillSlot] = 0 Then Return True
 
-    Return $iTimestamp <= $iNow
+    Local $iRecharge = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot] - Skill_GetSkillTimer())
+
+    Local $bRecharge = $iRecharge <= 0 ? True : False
+    If $bRecharge Then Out("RECHARGED: " & $iSkillSlot)
+
+    Return $bRecharge
 EndFunc ;==>GetIsRecharged
 
 Func GetRechargeTime($iSkillSlot, $pSkillbar = GetSkillbarPtr())
