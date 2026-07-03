@@ -1,15 +1,15 @@
 #include-once
 
 ;~ send /stuck with rate limitting
-Func CheckStuck()
-    Local Static $iRandom = Random(3000, 6000, 1)
+Func CheckStuck($iMinRng = 3000, $iMaxRng = 6000)
+    Local Static $iRandom = Random($iMinRng, $iMaxRng, 1)
     Local Static $hTimerStuck = TimerInit()   
 
     If TimerDiff($hTimerStuck) < $iRandom Then Return False
 
     Chat_SendChat('stuck', '/')
 
-    $iRandom = Random(3000, 6000, 1)
+    $iRandom = Random($iMinRng, $iMaxRng, 1)
     $hTimerStuck = TimerInit()
     Return True
 EndFunc ;==>Stuck
