@@ -60,6 +60,18 @@ Global Const $g_iDist500Sqr = 500 * 500
 Global Const $g_iDist750    = 750
 Global Const $g_iDist750Sqr = 750 * 750
 
+Global Const $g_iDist800    = 800
+Global Const $g_iDist800Sqr = 800 * 800
+
+Global Const $g_iDist850    = 850
+Global Const $g_iDist850Sqr = 850 * 850
+
+Global Const $g_iDist900    = 900
+Global Const $g_iDist900Sqr = 900 * 900
+
+Global Const $g_iDist950    = 950
+Global Const $g_iDist950Sqr = 950 * 950
+
 Global Const $g_iDist1000    = 1000
 Global Const $g_iDist1000Sqr = 1000 * 1000
 
