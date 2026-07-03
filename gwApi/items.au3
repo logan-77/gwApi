@@ -1047,7 +1047,7 @@ Func IdentifyItem(ByRef $pItem, $pIdKit = FindIDKit())
     If Not GetCanBeIdentified($pItem) Then Return 1
     
     Local $pKit = IsPtr($pIdKit) ? $pIdKit : FindIDKit()
-    If $pKit = 0 Then Return 0
+    If $pKit = 0 Then Return SetExtended(1, 0)
     
     Core_SendPacket(0xC, $GC_I_HEADER_ITEM_IDENTIFY, Item_ItemID($pKit), Item_ItemID($pItem))
 
@@ -1058,7 +1058,7 @@ Func IdentifyItem(ByRef $pItem, $pIdKit = FindIDKit())
         $bTimeout = TimerDiff($hDeadlock) > 5000
     Until Not GetCanBeIdentified($pItem) Or $bTimeout
 
-    Return $bTimeout ? 0 : 1
+    Return $bTimeout ? SetExtended(1, 0) : 1
 EndFunc ;==>IdentifyItem
 
 ;~ identify all weapons in inventory (talk to a merchant beforehand)
@@ -1199,7 +1199,7 @@ Func StartSalvage($pItem, $pSalvageKit = 0, $bCheap = True)
         $pKit = FindExpertSalvageKit()
     EndIf
 
-    If $pKit = 0 Then Return 0
+    If $pKit = 0 Then Return SetExtended(1, 0)
 
     Local $l_a_Offset[4] = [0, 0x18, 0x2C, 0x690]
     Local $l_i_SalvageSessionID = Memory_ReadPtr($g_p_BasePointer, $l_a_Offset)
