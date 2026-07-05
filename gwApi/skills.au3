@@ -124,6 +124,31 @@ Func UseSkillBySkillID($iSkillID, $pTarget = -2, $iTimeout = 3000, $bCall = Fals
     $bRefreshSkillbar = True
 EndFunc ;==>UseSkillBySkillID
 
+Func UseSkillAdrenaline($iSkillSlot, $pTarget = -2, $iTimeout = 3000, $bCall = False)
+    Local $hDeadlock = TimerInit()
+
+    Local $pSkillbar = GetSkillbarPtr()
+    Local $pMe = Agent_GetAgentPtr(-2)
+    Local $iTargetID = ID($pTarget)
+    $pTarget = Agent_GetAgentPtr($pTarget)
+
+    If $iTargetID = 0 _
+    Or GetIsDead($pMe) _
+    Or Not GetHasAdrenaline($iSkillSlot, $pSkillbar) Then Return
+
+    ChangeTarget($iTargetID)
+    Skill_UseSkill($iSkillSlot, $iTargetID, $bCall)
+
+    Do
+        Sleep(50)
+        If GetIsDead($pTarget) Or GetIsDead($pMe) Then Return
+    Until Not GetHasAdrenaline($iSkillSlot, $pSkillbar) Or TimerDiff($hDeadlock) > $iTimeout
+
+    Sleep($GC_AMX2_SKILL_DATA[$aPlayerSkillID[$iSkillSlot]][$GC_F_SKILL_AFTERCAST] * 1000) ; Aftercast
+
+    $bRefreshSkillbar = True
+EndFunc ;==>UseSkillAdrenaline
+
 ;~ Description: Returns energy cost of a skill.
 Func GetEnergyReq($iSkillID)
     Return Ceiling($GC_AMX2_SKILL_DATA[$iSkillID][$GC_I_SKILL_ENERGY_REQ])
@@ -189,6 +214,8 @@ Func UpdateSkillbarCache($pSkillbar = GetSkillbarPtr())
     ;~ fill cache
     For $i = 1 To 8
         $aPlayerRecharge[$i] = DllStructGetData($tPlayerSkillbar, $aIdxRecharge[$i])
+        $aPlayerAdrenaline[$i] = DllStructGetData($tPlayerSkillbar, $aIdxAdrenaline[$i])
+        $aPlayerSkillID[$i] = DllStructGetData($tPlayerSkillbar, $aIdxSkillID[$i])
     Next
 
     Return True
@@ -202,7 +229,6 @@ Func GetIsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
     Local $iRecharge = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot] - Skill_GetSkillTimer())
 
     Local $bRecharge = $iRecharge <= 0 ? True : False
-    If $bRecharge Then Out("RECHARGED: " & $iSkillSlot)
 
     Return $bRecharge
 EndFunc ;==>GetIsRecharged
@@ -211,7 +237,7 @@ Func GetRechargeTime($iSkillSlot, $pSkillbar = GetSkillbarPtr())
     UpdateSkillbarCache($pSkillbar)
 
     Local $iTimestamp = Utils_MakeInt32($aPlayerRecharge[$iSkillSlot])
-    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())    
+    Local $iNow = Utils_MakeInt32(Skill_GetSkillTimer())
 
     Local $iTimeRemaining = $iTimestamp - $iNow
 
@@ -219,6 +245,19 @@ Func GetRechargeTime($iSkillSlot, $pSkillbar = GetSkillbarPtr())
 
     Return $iTimeRemaining
 EndFunc ;==>GetRechargeTime
+
+Func GetHasAdrenaline($iSkillSlot, $pSkillbar = GetSkillbarPtr())
+    
+    $bRefreshSkillbar = True
+    UpdateSkillbarCache($pSkillbar)
+
+    Local $iAdrenalineReq = $GC_AMX2_SKILL_DATA[$aPlayerSkillID[$iSkillSlot]][$GC_I_SKILL_ADRENALINE_REQ]
+
+    Return _
+        GetIsRecharged($iSkillSlot, $pSkillbar) And _
+        $aPlayerAdrenaline[$iSkillSlot] >= $iAdrenalineReq
+
+EndFunc ;==>GetHasAdrenaline
 
 ;~ for hot loops, where you want to know recharge state asap
 Func IsRecharged($iSkillSlot, $pSkillbar = GetSkillbarPtr())
