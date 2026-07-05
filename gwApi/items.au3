@@ -1062,7 +1062,7 @@ Func IdentifyItem(ByRef $pItem, $pIdKit = FindIDKit())
 EndFunc ;==>IdentifyItem
 
 ;~ identify all weapons in inventory (talk to a merchant beforehand)
-Func IdentifyWeapons($bSuperior, $bWhite = False)
+Func IdentifyWeapons($bWhite = False)
     If Not GetIsOutpost() Then Return
 
     Local Static $tItemStruct = DllStructCreate($ITEM_STRUCT_TEMPLATE)
@@ -1072,7 +1072,8 @@ Func IdentifyWeapons($bSuperior, $bWhite = False)
     Local $aItemPtr = GetItemArrayInventory()
     Local $iItemCount = UBound($aItemPtr)
     
-    Local $pItem, $pKit = FindIDKit()
+    Local $pItem
+    Local $pKit = 0, $iUses = 0
 
     For $i = 0 To $iItemCount - 1
         $pItem = $aItemPtr[$i][2]
@@ -1085,22 +1086,30 @@ Func IdentifyWeapons($bSuperior, $bWhite = False)
         If Not GetCanBeIdentified($tItemStruct) Then ContinueLoop        
         If Not $bWhite And GetItemRarity($tItemStruct) = $GC_I_RARITY_WHITE Then ContinueLoop
         
-        If $pKit = 0 Or GetItemBagPtr($pKit) = 0 Then
-            MinMaxGold()
-            Sleep(250)
-
-            If $bSuperior Then
-                BuySuperiorIDKit()
-            Else
-                BuyIDKit()
-            EndIf
+        If $iUses <= 0 Then
 
             $pKit = FindIDKit()
+            $iUses = @extended
+
+            If $iUses = 0 Then
+
+                MinMaxGold()
+                Other_PingSleep(250)
+
+                BuyIDKit()
+
+                $pKit = FindIDKit()
+                $iUses = @extended
+            EndIf
         EndIf
         
         IdentifyItem($pItem, $pKit)
         Other_RndSleep(50)
+
+        $iUses -= 1
     Next
+
+    Other_PingSleep(250)
 EndFunc ;==>IdentifyWeapons
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
@@ -1125,7 +1134,7 @@ Func FindIDKit($bCheckUses = False)
         $iModelID = GetItemModelID($tItemStruct)
 
         If $iModelID = 2989 Then
-            If $bCheckUses = False Then Return $pItem
+            If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
             $iValue = GetItemValue($tItemStruct) / 2
 
@@ -1135,7 +1144,7 @@ Func FindIDKit($bCheckUses = False)
             EndIf
 
         ElseIf $iModelID = 5899 Then
-            If $bCheckUses = False Then Return $pItem
+            If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
             $iValue = GetItemValue($tItemStruct) / 2.5
 
@@ -1147,7 +1156,7 @@ Func FindIDKit($bCheckUses = False)
         EndIf
     Next
 
-    Return $pKit
+    Return $pKit = 0 ? SetExtended(0, 0) : SetExtended($iUses, $pKit)
 EndFunc ;==>FindIDKit
 
 ;~ Description: Returns ItemPtr of ID kit in inventory. Return 0, if no Kit found.
@@ -1173,7 +1182,7 @@ Func FindSuperiorIDKit($bCheckUses = False)
 
         If $iModelID <> 5899 Then ContinueLoop
 
-        If $bCheckUses = False Then Return $pItem
+        If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
         $iValue = GetItemValue($tItemStruct) / 2.5
 
@@ -1184,7 +1193,7 @@ Func FindSuperiorIDKit($bCheckUses = False)
 
     Next
 
-    Return $pKit
+    Return $pKit = 0 ? SetExtended(0, 0) : SetExtended($iUses, $pKit)
 EndFunc ;==>FindSuperiorIDKit
 
 ;~ Description: Starts a salvaging session of an item.
@@ -1244,7 +1253,7 @@ Func FindCheapSalvageKit($bCheckUses = False)
         
         If $iModelID <> 2992 Then ContinueLoop
 
-        If $bCheckUses = False Then Return $pItem
+        If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
         $iValue = GetItemValue($tItemStruct) / 2
 
@@ -1255,7 +1264,7 @@ Func FindCheapSalvageKit($bCheckUses = False)
             
     Next
 
-    Return $pKit
+    Return $pKit = 0 ? SetExtended(0, 0) : SetExtended($iUses, $pKit)
 EndFunc ;==>FindCheapSalvageKit
 
 ;~ Description: Returns ItemPtr of any Salvage Kit in inventory. Return 0, if no Kit found.
@@ -1279,7 +1288,7 @@ Func FindExpertSalvageKit($bCheckUses = False)
         $iModelID = GetItemModelID($tItemStruct)
         
         If $iModelID = 2991 Then
-            If $bCheckUses = False Then Return $pItem
+            If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
             $iValue = GetItemValue($tItemStruct) / 8
 
@@ -1289,7 +1298,7 @@ Func FindExpertSalvageKit($bCheckUses = False)
             EndIf
 
         ElseIf $iModelID = 5900 Then
-            If $bCheckUses = False Then Return $pItem
+            If $bCheckUses = False Then Return SetExtended(GetKitUses($tItemStruct, $iModelID), $pItem)
 
             $iValue = GetItemValue($tItemStruct) / 10
 
@@ -1302,7 +1311,7 @@ Func FindExpertSalvageKit($bCheckUses = False)
             
     Next
 
-    Return $pKit
+    Return $pKit = 0 ? SetExtended(0, 0) : SetExtended($iUses, $pKit)
 EndFunc ;==>FindExpertSalvageKit
 
 Func GetKitUses(ByRef $pItem, $iModelID = GetItemModelID($pItem))
@@ -1310,6 +1319,7 @@ Func GetKitUses(ByRef $pItem, $iModelID = GetItemModelID($pItem))
     If GetItemBagPtr($pItem) = 0 Then Return 0
 
     Switch $iModelID
+
         Case $GC_I_MODELID_IDENTIFICATION_KIT
             Return GetItemValue($pItem) / 2
 
@@ -3033,7 +3043,7 @@ Func CheckModMartial(ByRef $sModStruct, ByRef $sMods)
 EndFunc ;==>CheckModMartial
 
 ;~ filter for OS wand
-Func CheckOsWand($pItem, ByRef $sRules)
+Func CheckOsWand(ByRef $pItem, ByRef $sRules)
     Local Static $bFirstCall = True
 
     Local Static $aRuleReq[0]
@@ -3181,7 +3191,7 @@ Func ParseWandMods(ByRef $sModStruct)
 EndFunc ;==>ParseWandMods
 
 ;~ filter for OS focus
-Func CheckOsFocus($pItem, ByRef $sRules)
+Func CheckOsFocus(ByRef $pItem, ByRef $sRules)
     Local Static $bFirstCall = True
 
     Local Static $aRuleReq[0]
@@ -3366,7 +3376,7 @@ Func ParseFocusMods(ByRef $sModStruct)
 EndFunc ;==>ParseFocusMods
 
 ;~ filter for OS staff
-Func CheckOsStaff($pItem, ByRef $sRules)
+Func CheckOsStaff(ByRef $pItem, ByRef $sRules)
     Local $iType = GetItemType($pItem)
     If $iType <> $GC_I_TYPE_STAFF Then Return False ; focus?
 
@@ -3487,7 +3497,6 @@ Func CheckOsShield(ByRef $pItem, ByRef $sRules)
     Local $iReq = GetItemReq($sModStruct) ; check against 1st column
     Local $iItemAttribute = GetItemAttribute($sModStruct) ; check against 2nd column
     Local $aShieldMods = ParseShieldMods($sModStruct)
-
 
     For $i = 0 To UBound($aRuleReq) - 1
 
