@@ -356,7 +356,7 @@ Global Const $model_id_luxon_hauler_turtle    = 3636
 
 ;~ War Supply Farm
 Global Enum _
-$model_id_silent_peacekeeper_1 = 8368, _
+$model_id_silent_peacekeeper_1 = 8373, _
 $model_id_gap_001, _
 $model_id_silent_peacekeeper_2, _
 $model_id_gap_002, _
@@ -381,7 +381,7 @@ $model_id_gap_020, _
 $model_id_gap_021, _
 $model_id_gap_022, _
  _
-$model_id_peacekeeper_enforcer_1, _ ; 8392
+$model_id_peacekeeper_enforcer_1, _ ; 8397
 $model_id_peacekeeper_enforcer_2, _
  _
 $model_id_gap_023, _
@@ -627,7 +627,7 @@ $model_id_gap_175, _
 $model_id_gap_176, _
 $model_id_gap_177, _
  _
-$model_id_white_mantle_zealot_5, _  ; war/monk 8614
+$model_id_white_mantle_zealot_5, _  ; war/monk 8619
  _
 $model_id_gap_178, _
 $model_id_gap_179, _
@@ -670,7 +670,7 @@ $model_id_gap_215, _
 $model_id_gap_216, _
 $model_id_gap_217, _
  _
-$model_id_miku  ; 8655
+$model_id_miku  ; 8660
 
 ;~ ConsoleWrite("marksman1: " & $model_id_peacekeeper_marksman_1 & @CRLF)
 ;~ ConsoleWrite("enforcer1: " & $model_id_white_mantle_enforcer_1 & @CRLF)
