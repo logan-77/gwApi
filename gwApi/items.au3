@@ -1976,7 +1976,13 @@ EndFunc ;==>SellJunk
 Func IsEventItem($iModelID)
     ; *******************************************************************************************
     ; Pick up EVENT ITEMS, put semicolon(;) infront of the line, if you DON'T want do pick it up
-    ; ******************************************************************************************* 
+    ; *******************************************************************************************
+
+    Local $model_id_rations = 38613
+    Local $model_id_compass = 38614
+
+    If $model_id_rations = $iModelID Then Return True
+    If $model_id_compass = $iModelID Then Return True
     
     ; Canthan New Year
     ;~ If $iModelID = $GC_I_MODELID_LUNAR_TOKEN Then Return True
