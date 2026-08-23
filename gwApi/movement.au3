@@ -1,41 +1,50 @@
 #include-once
 
 ;~ Description: Move to a location. No RNG
-Func Move_($aX, $aY)
-    If Not GetAgentExists(-2) Then Return False
-    DllStructSetData($g_d_Move, 2, $aX)
-    DllStructSetData($g_d_Move, 3, $aY)
+Func Move_($iX, $iY)
+
+    DllStructSetData($g_d_Move, 2, $iX)
+    DllStructSetData($g_d_Move, 3, $iY)
     DllStructSetData($g_d_Move, 4, 0)  ; Z coordinate (usually 0)
+
     Core_Enqueue($g_p_Move, 16)
+
     Return True
 EndFunc ;==>Move_
 
 ;~ Description: Move to a location and wait until you reach it.
-Func MoveTo($aX, $aY, $aRandom = 50)
-    Local $lBlocked = 0, $lMe = Agent_GetAgentPtr(-2)
-    Local $lMapLoading = Map_GetInstanceInfo("Type"), $lMapLoadingOld
-    Local $lDestX = $aX + Random(-$aRandom, $aRandom)
-    Local $lDestY = $aY + Random(-$aRandom, $aRandom)
+Func MoveTo($iX, $iY, $iRandom = 50)
+    Local Static $iDistThreshold = 25 * 25
 
-    Move_($lDestX, $lDestY)
-    Sleep(200)
+    Local $iBlocked = 0, 
+    Local $pMe = Agent_GetAgentPtr(-2)
+    Local $iInstanceType = GetInstanceType()
+
+    Local $fDestX = $iX + Random(-$iRandom, $iRandom)
+    Local $fDestY = $iY + Random(-$iRandom, $iRandom)
+
+    Move_($fDestX, $fDestY)
+
     Do
-        If GetIsDead($lMe) Then Return False
-
-        $lMapLoadingOld = $lMapLoading
-        $lMapLoading = Map_GetInstanceInfo("Type")
-        If $lMapLoading <> $lMapLoadingOld Then Return False
-
-        If MoveX($lMe) = 0 And MoveY($lMe) = 0 Then
-        $lBlocked += 1
-        $lDestX = $aX + Random(-$aRandom, $aRandom)
-        $lDestY = $aY + Random(-$aRandom, $aRandom)
-        Move_($lDestX, $lDestY)
-        EndIf
         Sleep(100)
-    Until GetDistanceToXY($lDestX, $lDestY, $lMe) < 25 Or $lBlocked > 14
+
+        If GetIsDead($pMe) Then Return False
+
+        If $iInstanceType <> GetInstanceType() Then Return False
+
+        If Not GetIsMoving($pMe) Then
+            $iBlocked += 1
+
+            $fDestX = $iX + Random(-$iRandom, $iRandom)
+            $fDestY = $iY + Random(-$iRandom, $iRandom)
+
+            Move_($fDestX, $fDestY)
+        EndIf        
+
+    Until GetDistanceSqrToXY($fDestX, $fDestY, $pMe) < $iDistThreshold Or $iBlocked > 14
+
     Return True
-EndFunc   ;==>MoveTo
+EndFunc ;==>MoveTo
 
 ;~ Description: Go to NPC until you are within actionable distance and interact with them
 Func GoToNPC($npc = GetNearestNPCPtrToAgent(-2), $Interact = True)
@@ -69,10 +78,10 @@ EndFunc   ;==>GoToSignpostNearXY
 ; some fancy movement functions.
 
 ; Move to certain distance away from an agent at a given angle
-Func MoveToDistanceAwayfromAgent($aAgent = 0, $aRandom = 30, $aDistance = 100, $aSectors = 10)
+Func MoveToDistanceAwayfromAgent($aAgent = 0, $iRandom = 30, $aDistance = 100, $aSectors = 10)
     If $aAgent = 0 Or GetIsDead(-2) Then Return
     Local $lClosestXY = GetClosestXYinRangeOfAgent($aAgent, $aDistance, $aSectors)
-    MoveTo($lClosestXY[0], $lClosestXY[1], $aRandom)
+    MoveTo($lClosestXY[0], $lClosestXY[1], $iRandom)
 EndFunc   ;==>MoveToDistanceAwayfromAgent
 
 ; Returns the closest coordinates on a circle within a given radius of an agent
@@ -107,10 +116,10 @@ Func GetAllXYinRangeOfAgent($aAgent = 0, $aDistance = 100, $sectors = 360)
 EndFunc   ;==>GetAllXYinRangeOfAgent
 
 ; Move to certain distance away from an agent at a given angle
-Func MoveToClosestXYtoWaypointInRangeOfAgent($wpX, $wpY, $aAgent = 0, $aRandom = 30, $aDistance = 100, $aSectors = 10)
+Func MoveToClosestXYtoWaypointInRangeOfAgent($wpX, $wpY, $aAgent = 0, $iRandom = 30, $aDistance = 100, $aSectors = 10)
     If $aAgent = 0 Or GetIsDead(-2) Then Return
     Local $lClosestXY = GetClosestXYtoWaypointInRangeOfAgent($wpX, $wpY, $aAgent, $aDistance, $aSectors) 
-    MoveTo($lClosestXY[0], $lClosestXY[1], $aRandom)
+    MoveTo($lClosestXY[0], $lClosestXY[1], $iRandom)
 EndFunc   ;==>MoveToClosestXYtoWaypointInRangeOfAgent
 
 ; Returns the closest coordinates to a wayppoint on a circle within a given radius of an agent
