@@ -16,7 +16,7 @@ EndFunc ;==>Move_
 Func MoveTo($iX, $iY, $iRandom = 50)
     Local Static $iDistThreshold = 25 * 25
 
-    Local $iBlocked = 0, 
+    Local $iBlocked = 0
     Local $pMe = Agent_GetAgentPtr(-2)
     Local $iInstanceType = GetInstanceType()
 
