@@ -2001,7 +2001,7 @@ Func IsEventItem($iModelID)
     ;~ If $iModelID = $GC_I_MODELID_HONEYCOMB Then Return True
     ;~ If $iModelID = $GC_I_MODELID_SUGARY_BLUE_DRINK Then Return True
     ;~ ;~ Alcohol
-    ;~ If $iModelID = $GC_I_MODELID_HARD_APPLE_CIDER Then Return True
+    If $iModelID = $GC_I_MODELID_HARD_APPLE_CIDER Then Return True
     ;~ If $iModelID = $GC_I_MODELID_HUNTERS_ALE Then Return True
     ;~ If $iModelID = $GC_I_MODELID_KRYTAN_BRANDY Then Return True
     ;~ ;~ Party Points
@@ -2014,7 +2014,7 @@ Func IsEventItem($iModelID)
     ;~ If $iModelID = $GC_I_MODELID_PARTY_BEACON Then Return True
     
     ; Dragon Festival
-    If $iModelID = $GC_I_MODELID_VICTORY_TOKEN Then Return True ; also anniversary
+    ;~ If $iModelID = $GC_I_MODELID_VICTORY_TOKEN Then Return True ; also anniversary
     
     ; Wintersday in July
     ; -->see Wintersday
@@ -2029,7 +2029,7 @@ Func IsEventItem($iModelID)
     ;~ If $iModelID = $GC_I_MODELID_TRICK_OR_TREAT_BAGS Then Return True
     
     ; Special Treats Week
-    ;~ If $iModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
+    If $iModelID = $GC_I_MODELID_PUMPKIN_PIE Then Return True ; + Hard Apple Cider, see above
     
     ; Wintersday
     ;~ If $iModelID = $GC_I_MODELID_CC_SHARDS Then Return True
